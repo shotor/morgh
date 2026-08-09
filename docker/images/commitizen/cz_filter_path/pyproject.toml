@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cz-filter-path"
+version = "0.0.1"
+dependencies = ["commitizen"]
+
+[project.entry-points."commitizen.plugin"]
+cz_filter_path = "cz_filter_path:FilterPathCommitizen"
+
+[tool.setuptools]
+py-modules = ["cz_filter_path"]
