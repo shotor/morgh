@@ -2,58 +2,45 @@
 set -euo pipefail
 
 ############################################################
-######################## parse #############################
+######################## setup #############################
 ############################################################
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
-usage() {
-  cat <<EOF
-Usage: $0 <image>
-
-Build a Docker image and prepare its release.
-
-The script:
-
-1. Bumps the package version
-2. Generates the changelog
-3. Builds the Docker image
-4. Outputs the intended Git tag
-
-The changes are left uncommitted for the root builder.
-No Git commit or tag is created.
-EOF
-}
-
-if [ "$#" -lt 1 ]; then
-  usage
-  exit 1
-fi
-
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-  usage
-  exit 0
-fi
-
-if [ "$#" -ne 1 ]; then
-  echo "Unknown option: $2" >&2
-  echo >&2
-  usage >&2
-  exit 1
-fi
-
-IMAGE="$1"
-IMAGE_DIR="$IMAGES_DIR/$IMAGE"
-
-if [ ! -d "$IMAGE_DIR" ]; then
-  echo "Image not found: $IMAGE" >&2
-  exit 1
-fi
+CHANGED_IMAGES=()
 
 ############################################################
-######################### run ##############################
+######################### check #############################
+############################################################
+
+source "$WORKSPACE_DIR/.build/utils/get_latest_package_tag"
+source "$WORKSPACE_DIR/.build/utils/has_changes"
+
+echo "Docker images" >&2
+
+for image_dir in "$IMAGES_DIR"/*; do
+  [ -d "$image_dir" ] || continue
+
+  image="$(basename "$image_dir")"
+  tag="$(get_latest_package_tag "$image_dir")"
+
+  if [ -z "$tag" ]; then
+    echo "  $image: no tag found, will release" >&2
+    CHANGED_IMAGES+=("$image")
+
+  elif has_changes "$image_dir"; then
+    echo "  $image: changes since $tag, will release" >&2
+    CHANGED_IMAGES+=("$image")
+
+  else
+    echo "  $image: no changes since $tag" >&2
+  fi
+done
+
+############################################################
+######################### setup #############################
 ############################################################
 
 source "$WORKSPACE_DIR/.build/utils/bump_package"
@@ -64,32 +51,42 @@ source "$WORKSPACE_DIR/.build/utils/get_package_tag"
 source "$SCRIPT_DIR/utils/build_docker"
 
 ############################################################
-######################## version ###########################
+######################## release ############################
 ############################################################
 
-FROM_VERSION="$(get_version "$IMAGE_DIR")"
+for image in "${CHANGED_IMAGES[@]}"; do
+  image_dir="$IMAGES_DIR/$image"
 
-bump_package "$IMAGE_DIR" >&2
+  ##########################################################
+  ###################### version ###########################
+  ##########################################################
 
-NEW_VERSION="$(get_version "$IMAGE_DIR")"
-TAG="$(get_package_tag "$IMAGE_DIR" "$NEW_VERSION")"
+  from_version="$(get_version "$image_dir")"
 
-echo "Version: $FROM_VERSION -> $NEW_VERSION" >&2
+  bump_package "$image_dir" >&2
 
-############################################################
-###################### changelog ############################
-############################################################
+  new_version="$(get_version "$image_dir")"
+  tag="$(get_package_tag "$image_dir" "$new_version")"
 
-generate_changelog "$IMAGE_DIR" "$NEW_VERSION" >&2
+  echo "  $image: $from_version -> $new_version" >&2
 
-############################################################
-######################## build #############################
-############################################################
+  ##########################################################
+  ###################### changelog #########################
+  ##########################################################
 
-build_docker "$IMAGE" "$IMAGE_DIR" "$NEW_VERSION" >&2
+  generate_changelog "$image_dir" "$new_version" >&2
 
-############################################################
-######################## return ############################
-############################################################
+  ##########################################################
+  ######################## build ###########################
+  ##########################################################
 
-echo "$TAG"
+  echo "  $image: building" >&2
+
+  build_docker "$image" "$image_dir" "$new_version" >&2
+
+  ##########################################################
+  ######################## return ##########################
+  ##########################################################
+
+  echo "$tag"
+done

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+has_changes() {
+  local folder="$1"
+  local workspace_dir
+  local relative_path
+  local latest_tag
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+  relative_path="${folder#"$workspace_dir/"}"
+
+  # Uncommitted, staged, or untracked changes.
+  if [ -n "$(
+    git -C "$workspace_dir" status --porcelain -- "$relative_path"
+  )" ]; then
+    return 0
+  fi
+
+  latest_tag="$(get_latest_package_tag "$folder")"
+
+  # No previous release means the package needs to be built.
+  if [ -z "$latest_tag" ]; then
+    return 0
+  fi
+
+  # Committed changes since the previous release.
+  if ! git -C "$workspace_dir" \
+    diff --quiet "$latest_tag..HEAD" -- "$relative_path"; then
+    return 0
+  fi
+
+  return 1
+}
