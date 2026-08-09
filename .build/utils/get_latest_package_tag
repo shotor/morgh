@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+get_latest_package_tag() {
+  local folder="$1"
+  local workspace_dir
+  local relative_path
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+  relative_path="${folder#"$workspace_dir/"}"
+
+  git -C "$workspace_dir" \
+    tag --list "$relative_path/v*" \
+    --sort=-version:refname \
+    | head -n 1
+}
