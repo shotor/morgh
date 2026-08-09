@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+bump_package() {
+  local folder="$1"
+  local workspace_dir
+  local filter_path
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+  filter_path="${folder#"$workspace_dir/"}"
+
+  (
+    cd "$folder"
+    CZ_FILTER_PATH="$filter_path" cz bump --files-only --yes
+  )
+}

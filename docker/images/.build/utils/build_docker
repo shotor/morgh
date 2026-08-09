@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+build_docker() {
+  local image="$1"
+  local image_dir="$2"
+  local version="$3"
+  local repository="shotor/$image"
+
+  docker buildx build \
+    --load \
+    -t "$repository:$version" \
+    -t "$repository:latest" \
+    "$image_dir"
+}
