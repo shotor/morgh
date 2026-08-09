@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+generate_changelog() {
+  local folder="$1"
+  local tag="$2"
+  local workspace_dir
+  local filter_path
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+  filter_path="${folder#"$workspace_dir/"}"
+
+  (
+    cd "$folder"
+    CZ_FILTER_PATH="$filter_path" \
+      cz changelog --unreleased-version="$tag"
+  )
+}
