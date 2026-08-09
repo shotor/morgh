@@ -1,0 +1,7 @@
+[tool.commitizen]
+version = "0.0.1"
+name = "cz_filter_path"
+version_scheme = "semver2"
+tag_format = "docker/images/devcontainer/v$version"
+filter_path = "docker/images/devcontainer"
+update_changelog_on_bump = true
