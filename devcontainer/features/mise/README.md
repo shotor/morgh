@@ -7,7 +7,7 @@ Installs mise, the devtool manager.
 
 ```json
 "features": {
-    "ghcr.io/shotor/mise:0": {}
+    "ghcr.io/shotor/morgh/mise:0": {}
 }
 ```
 
