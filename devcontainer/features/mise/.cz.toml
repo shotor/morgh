@@ -2,7 +2,7 @@
 version = "0.0.1"
 name = "cz_filter_path"
 version_scheme = "semver2"
-tag_format = "devcontainer/features/mise/v$version"
+tag_format = "devcontainer/features/mise/$version"
 filter_path = "devcontainer/features/mise"
 update_changelog_on_bump = true
 version_files = [".cz.toml:version", "devcontainer-feature.json:version"]

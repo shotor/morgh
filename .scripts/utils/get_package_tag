@@ -9,5 +9,5 @@ get_package_tag() {
   workspace_dir="$(git rev-parse --show-toplevel)"
   filter_path="${folder#"$workspace_dir/"}"
 
-  echo "$filter_path/v$version"
+  echo "$filter_path/$version"
 }
