@@ -1,0 +1,17 @@
+{
+  "features": {
+    "ghcr.io/shotor/devcontainer/features/mise:0": {
+      "version": "0.1.4",
+      "resolved": "ghcr.io/shotor/devcontainer/features/mise@sha256:1f594679c9dc5b0b73fb2ba73470225b4b195743c183f19d5278a46359397d96",
+      "integrity": "sha256:1f594679c9dc5b0b73fb2ba73470225b4b195743c183f19d5278a46359397d96"
+    },
+    "ghcr.io/shotor/devcontainer/features/node:0": {
+      "version": "0.1.4",
+      "resolved": "ghcr.io/shotor/devcontainer/features/node@sha256:65ff5a88d1f49ce163fca23110bf87d3acc5ba7c080ec2bdf3502f78f40a7ccd",
+      "integrity": "sha256:65ff5a88d1f49ce163fca23110bf87d3acc5ba7c080ec2bdf3502f78f40a7ccd",
+      "dependsOn": [
+        "ghcr.io/shotor/devcontainer/features/mise:0"
+      ]
+    }
+  }
+}
