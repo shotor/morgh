@@ -1,3 +1,9 @@
+## devcontainer/features/node/0.1.4 (2026-08-10)
+
+### Fix
+
+- **node**: proper home resolution
+
 ## devcontainer/features/node/0.1.3 (2026-08-10)
 
 ### Fix

@@ -1,3 +1,9 @@
+## devcontainer/features/mise/0.1.4 (2026-08-10)
+
+### Fix
+
+- **mise**: proper home resolution
+
 ## devcontainer/features/mise/0.1.3 (2026-08-10)
 
 ### Fix
