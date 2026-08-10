@@ -15,8 +15,8 @@ CHANGED_IMAGES=()
 ######################### check #############################
 ############################################################
 
-source "$WORKSPACE_DIR/.build/utils/get_latest_package_tag"
-source "$WORKSPACE_DIR/.build/utils/has_changes"
+source "$WORKSPACE_DIR/.scripts/utils/get_latest_package_tag"
+source "$WORKSPACE_DIR/.scripts/utils/has_changes"
 
 echo "Docker images" >&2
 
@@ -43,10 +43,10 @@ done
 ######################### setup #############################
 ############################################################
 
-source "$WORKSPACE_DIR/.build/utils/bump_package"
-source "$WORKSPACE_DIR/.build/utils/generate_changelog"
-source "$WORKSPACE_DIR/.build/utils/get_version"
-source "$WORKSPACE_DIR/.build/utils/get_package_tag"
+source "$WORKSPACE_DIR/.scripts/utils/bump_package"
+source "$WORKSPACE_DIR/.scripts/utils/generate_changelog"
+source "$WORKSPACE_DIR/.scripts/utils/get_version"
+source "$WORKSPACE_DIR/.scripts/utils/get_package_tag"
 
 source "$SCRIPT_DIR/utils/build_docker"
 

@@ -15,7 +15,7 @@ CHANGED_FOLDERS=()
 ######################### check #############################
 ############################################################
 
-source "$WORKSPACE_DIR/.build/utils/has_changes"
+source "$WORKSPACE_DIR/.scripts/utils/has_changes"
 
 echo "Devcontainer" >&2
 
@@ -33,9 +33,9 @@ for folder_dir in "$DEVCONTAINER_DIR"/*; do
 done
 
 ############################################################
-########################## run ##############################
+########################## build ##############################
 ############################################################
 
 for folder in "${CHANGED_FOLDERS[@]}"; do
-  "$DEVCONTAINER_DIR/$folder/.build/run"
+  "$DEVCONTAINER_DIR/$folder/.scripts/build"
 done
