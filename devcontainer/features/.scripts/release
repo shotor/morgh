@@ -15,14 +15,9 @@ WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
 usage() {
   cat <<EOF
-Usage: $0 <feature> [source]
+Usage: $0
 
-Publish a Dev Container feature.
-
-Arguments:
-  feature         Feature to release
-  source          Optional feature source directory
-                  Defaults to $FEATURES_DIR/<feature>
+Publish the Dev Container feature collection.
 
 Options:
   -h, --help      Show this help message
@@ -39,13 +34,13 @@ case "${1:-}" in
     exit 0
     ;;
   "")
+    ;;
+  *)
+    echo "Unknown argument: $1" >&2
     usage >&2
     exit 1
     ;;
 esac
-
-FEATURE="$1"
-FEATURE_DIR="${2:-"$FEATURES_DIR/$FEATURE"}"
 
 ############################################################
 ######################## sources ############################
@@ -57,11 +52,11 @@ source "$WORKSPACE_DIR/.scripts/utils/log"
 ######################## release ############################
 ############################################################
 
-info "$FEATURE: publishing"
+info "Dev Container features: publishing"
 
 devcontainer features publish \
   -r ghcr.io \
   -n shotor/devcontainer/features \
-  "$FEATURE_DIR"
+  "$FEATURES_DIR"
 
-success "$FEATURE: published"
+success "Dev Container features: published"
