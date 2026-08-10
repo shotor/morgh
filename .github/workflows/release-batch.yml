@@ -5,11 +5,20 @@ on:
     tags:
       - "release/**"
 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release batch tag
+        required: false
+        type: string
+
 permissions:
   contents: read
+  packages: write
 
 jobs:
   collect:
+    name: Collect
     runs-on: ubuntu-latest
 
     outputs:
@@ -23,13 +32,16 @@ jobs:
 
       - name: Collect
         id: collect
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           source .scripts/utils/get_release_tags
 
-          tags="$(get_release_tags --json)"
+          tags="$(get_release_tags "$TAG" --json)"
           echo "tags=$tags" >> "$GITHUB_OUTPUT"
 
   release:
+    name: Release ${{ matrix.tag }}
     needs: collect
 
     strategy:
