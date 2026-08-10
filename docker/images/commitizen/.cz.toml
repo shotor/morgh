@@ -3,5 +3,6 @@ version = "0.1.1"
 name = "cz_filter_path"
 version_scheme = "semver2"
 tag_format = "docker/images/commitizen/$version"
+ignored_tag_formats = ["*"]
 filter_path = "docker/images/commitizen"
 update_changelog_on_bump = true

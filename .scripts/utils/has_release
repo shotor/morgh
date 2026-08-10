@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+has_release() {
+  local package_dir="$1"
+  local workspace_dir
+  local relative_path
+  local tag
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+  relative_path="${package_dir#"$workspace_dir/"}"
+
+  source "$workspace_dir/.scripts/utils/get_latest_package_tag"
+
+  tag="$(get_latest_package_tag "$package_dir")"
+
+  (
+    cd "$package_dir"
+
+    python "$workspace_dir/.scripts/utils/get_package_increment.py" \
+      "$relative_path" \
+      "$tag"
+  )
+}

@@ -2,6 +2,7 @@
 
 bump_package() {
   local folder="$1"
+  local increment="$2"
   local workspace_dir
   local filter_path
 
@@ -10,6 +11,11 @@ bump_package() {
 
   (
     cd "$folder"
-    CZ_FILTER_PATH="$filter_path" cz bump --files-only --yes
+
+    CZ_FILTER_PATH="$filter_path" \
+      cz bump \
+        --increment "$increment" \
+        --files-only \
+        --yes
   )
 }

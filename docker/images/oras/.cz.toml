@@ -3,5 +3,6 @@ version = "0.1.0"
 name = "cz_filter_path"
 version_scheme = "semver2"
 tag_format = "docker/images/oras/$version"
+ignored_tag_formats = ["*"]
 filter_path = "docker/images/oras"
 update_changelog_on_bump = true

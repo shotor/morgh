@@ -17,6 +17,7 @@ FEATURE_DIR="$FEATURES_DIR/$FEATURE"
 ############################################################
 
 source "$WORKSPACE_DIR/.scripts/utils/log"
+source "$WORKSPACE_DIR/.scripts/utils/has_release"
 source "$WORKSPACE_DIR/.scripts/utils/bump_package"
 source "$WORKSPACE_DIR/.scripts/utils/generate_changelog"
 source "$WORKSPACE_DIR/.scripts/utils/get_version"
@@ -48,10 +49,16 @@ done
 ############################################################
 
 from_version="$(get_version "$FEATURE_DIR")"
+increment="$(has_release "$FEATURE_DIR")"
+
+if [ -z "$increment" ]; then
+  echo "$FEATURE: no releasable changes" >&2
+  exit 1
+fi
 
 info "$FEATURE: bumping version"
 
-bump_package "$FEATURE_DIR" >&2
+bump_package "$FEATURE_DIR" "$increment" >&2
 
 new_version="$(get_version "$FEATURE_DIR")"
 tag="$(get_package_tag "$FEATURE_DIR" "$new_version")"
