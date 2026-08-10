@@ -1,3 +1,9 @@
+## devcontainer/features/mise/0.1.2 (2026-08-10)
+
+### Fix
+
+- **mise**: don't use sudo
+
 ## devcontainer/features/mise/0.1.1 (2026-08-10)
 
 ### Fix
