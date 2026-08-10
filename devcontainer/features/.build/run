@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FEATURES_DIR="$(dirname "$SCRIPT_DIR")"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+CHANGED_FEATURES=()
+
+############################################################
+######################### check #############################
+############################################################
+
+source "$WORKSPACE_DIR/.build/utils/bump_package"
+source "$WORKSPACE_DIR/.build/utils/generate_changelog"
+source "$WORKSPACE_DIR/.build/utils/get_version"
+source "$WORKSPACE_DIR/.build/utils/get_package_tag"
+source "$WORKSPACE_DIR/.build/utils/get_latest_package_tag"
+source "$WORKSPACE_DIR/.build/utils/has_changes"
+
+echo "Devcontainer features" >&2
+
+for feature_dir in "$FEATURES_DIR"/*; do
+  [ -d "$feature_dir" ] || continue
+
+  feature="$(basename "$feature_dir")"
+  tag="$(get_latest_package_tag "$feature_dir")"
+
+  if [ -z "$tag" ]; then
+    echo "  $feature: no tag found, will release" >&2
+    CHANGED_FEATURES+=("$feature")
+
+  elif has_changes "$feature_dir"; then
+    echo "  $feature: changes since $tag, will release" >&2
+    CHANGED_FEATURES+=("$feature")
+
+  else
+    echo "  $feature: no changes since $tag" >&2
+  fi
+done
+
+############################################################
+###################### generate docs ########################
+############################################################
+
+echo "Generating feature documentation" >&2
+
+devcontainer features generate-docs \
+  -p "$FEATURES_DIR" \
+  -n shotor \
+  >&2
+
+############################################################
+######################## release ############################
+############################################################
+
+for feature in "${CHANGED_FEATURES[@]}"; do
+  feature_dir="$FEATURES_DIR/$feature"
+
+  ##########################################################
+  ###################### version ###########################
+  ##########################################################
+
+  from_version="$(get_version "$feature_dir")"
+
+  bump_package "$feature_dir" >&2
+
+  new_version="$(get_version "$feature_dir")"
+  tag="$(get_package_tag "$feature_dir" "$new_version")"
+
+  echo "  $feature: $from_version -> $new_version" >&2
+
+  ##########################################################
+  ###################### changelog #########################
+  ##########################################################
+
+  generate_changelog "$feature_dir" "$tag" >&2
+
+  ##########################################################
+  ####################### package ##########################
+  ##########################################################
+
+  echo "  $feature: packaging" >&2
+
+  devcontainer features package -f \
+    "$feature_dir" \
+    -o "$feature_dir/output" \
+    >&2
+
+  ##########################################################
+  ######################## return ##########################
+  ##########################################################
+
+  echo "$tag"
+done
