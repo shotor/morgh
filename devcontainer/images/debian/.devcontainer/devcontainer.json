@@ -1,0 +1,7 @@
+{
+  "name": "debian",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "user"
+}

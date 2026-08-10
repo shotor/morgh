@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <devcontainer.json>"
+  exit 1
+fi
+
+jq -r '.customizations.vscode.extensions[]' "$1" |
+while read -r ext; do
+  echo "Installing $ext..."
+  codium --install-extension "$ext" --force
+done
