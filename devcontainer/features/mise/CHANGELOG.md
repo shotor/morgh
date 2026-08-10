@@ -1,3 +1,9 @@
+## devcontainer/features/mise/0.1.3 (2026-08-10)
+
+### Fix
+
+- **mise**: add curl
+
 ## devcontainer/features/mise/0.1.2 (2026-08-10)
 
 ### Fix
