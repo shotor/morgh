@@ -7,7 +7,7 @@ Installs Node.js using mise.
 
 ```json
 "features": {
-    "ghcr.io/shotor/node:0": {}
+    "ghcr.io/shotor/morgh/node:0": {}
 }
 ```
 
