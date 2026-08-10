@@ -1,19 +1,21 @@
 # morgh
 
-shotor
+Personal development infrastructure, dev containers, Docker images, and dotfiles.
 
 ## Contents
 
-### devcontainer
+### [devcontainer](devcontainer)
 
-### docker
+Dev Container images and Features for reusable development environments.
 
-### dotfiles
+### [docker](docker)
 
-### notes
+Docker images and supporting tooling.
 
-### scripts
+### [dotfiles](dotfiles)
+
+Shell, terminal, editor, and application configuration.
 
 ## License
 
-MIT
+[MIT](https://github.com/shotor/morgh/blob/main/LICENSE).

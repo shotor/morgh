@@ -45,4 +45,4 @@ The default working directory is:
 
 ## License
 
-Licensed under the MIT License. See [LICENSE](https://github.com/shotor/morgh/blob/main/LICENSE).
+[MIT](https://github.com/shotor/morgh/blob/main/LICENSE).
