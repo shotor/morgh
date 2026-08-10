@@ -1,6 +1,7 @@
 FROM node:24-alpine
 
-RUN apk add --no-cache \
+RUN apk add \
+  --no-cache \
   docker-cli \
   docker-cli-buildx
 
