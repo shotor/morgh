@@ -22,7 +22,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      tags: ${{ steps.collect.outputs.tags }}
+      docker-tags: ${{ steps.collect.outputs.docker-tags }}
+      release-features: ${{ steps.collect.outputs.release-features }}
 
     steps:
       - name: Checkout
@@ -38,19 +39,45 @@ jobs:
           source .scripts/utils/get_release_tags
 
           tags="$(get_release_tags "$TAG" --json)"
-          echo "tags=$tags" >> "$GITHUB_OUTPUT"
 
-  release:
+          docker_tags="$(
+            jq -c '
+              map(select(startswith("docker/images/")))
+            ' <<< "$tags"
+          )"
+
+          release_features="$(
+            jq -r '
+              any(.[]; startswith("devcontainer/features/"))
+            ' <<< "$tags"
+          )"
+
+          echo "docker-tags=$docker_tags" >> "$GITHUB_OUTPUT"
+          echo "release-features=$release_features" >> "$GITHUB_OUTPUT"
+
+  docker:
     name: Release ${{ matrix.tag }}
     needs: collect
+    if: ${{ needs.collect.outputs.docker-tags != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        tag: ${{ fromJSON(needs.collect.outputs.tags) }}
+        tag: ${{ fromJSON(needs.collect.outputs.docker-tags) }}
 
-    uses: ./.github/workflows/release.yml
+    uses: ./.github/workflows/release-docker.yml
     with:
       tag: ${{ matrix.tag }}
+
+    secrets: inherit
+
+  features:
+    name: Release Dev Container Features
+    needs: collect
+    if: ${{ needs.collect.outputs.release-features == 'true' }}
+
+    uses: ./.github/workflows/release-devcontainer-features.yml
+    with:
+      tag: ${{ inputs.tag || github.ref_name }}
 
     secrets: inherit

@@ -30,7 +30,7 @@ info "$FEATURE: generating documentation"
 
 devcontainer features generate-docs \
   -p "$FEATURES_DIR" \
-  -n shotor/morgh \
+  -n shotor/devcontainer/features \
   >&2
 
 # generate-docs may generate docs for other features too,
