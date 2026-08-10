@@ -31,7 +31,7 @@ Build changed workspaces and prepare releases.
 
 Options:
   --ci            Create a release commit after building
-  --dry-run       Echo the release commit instead of creating it
+  --dry-build       Echo the release commit instead of creating it
   -h, --help      Show this help message
 EOF
 }
@@ -41,7 +41,7 @@ while [ "$#" -gt 0 ]; do
     --ci)
       CI=true
       ;;
-    --dry-run)
+    --dry-build)
       DRY_RUN=true
       ;;
     -h|--help)
@@ -85,18 +85,18 @@ for folder in "${FOLDERS[@]}"; do
 done
 
 ############################################################
-######################### run ###############################
+######################### build ###############################
 ############################################################
 
 for folder in "${CHANGED_FOLDERS[@]}"; do
-  run="$WORKSPACE_DIR/$folder/.build/run"
+  build="$WORKSPACE_DIR/$folder/.scripts/build"
 
-  if [ ! -x "$run" ]; then
-    echo "$folder: .build/run not found or not executable" >&2
+  if [ ! -x "$build" ]; then
+    echo "$folder: .scripts/build not found or not executable" >&2
     exit 1
   fi
 
-  mapfile -t folder_tags < <("$run")
+  mapfile -t folder_tags < <("$build")
   TAGS+=("${folder_tags[@]}")
 done
 
