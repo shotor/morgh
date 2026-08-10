@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+has_commit_changes() {
+  local path="$1"
+
+  git diff-tree \
+    --no-commit-id \
+    --name-only \
+    -r HEAD \
+    -- "$path" \
+    | grep -q .
+}
