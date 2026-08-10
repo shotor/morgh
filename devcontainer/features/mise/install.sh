@@ -12,7 +12,7 @@ apt-get install -y --no-install-recommends \
 rm -rf /var/lib/apt/lists/*
 
 su -s /bin/sh "$USER" -c \
-  "HOME='$HOME' curl -fsSL https://mise.run | sh"
+  "export HOME='$HOME'; curl -fsSL https://mise.run | sh"
 
 MISE_INIT='eval "$(~/.local/bin/mise activate zsh)"'
 
