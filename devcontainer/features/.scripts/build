@@ -9,91 +9,79 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FEATURES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
-CHANGED_FEATURES=()
+FEATURE="$1"
+FEATURE_DIR="$FEATURES_DIR/$FEATURE"
 
 ############################################################
-######################### check #############################
+######################## sources ############################
 ############################################################
 
+source "$WORKSPACE_DIR/.scripts/utils/log"
 source "$WORKSPACE_DIR/.scripts/utils/bump_package"
 source "$WORKSPACE_DIR/.scripts/utils/generate_changelog"
 source "$WORKSPACE_DIR/.scripts/utils/get_version"
 source "$WORKSPACE_DIR/.scripts/utils/get_package_tag"
-source "$WORKSPACE_DIR/.scripts/utils/get_latest_package_tag"
-source "$WORKSPACE_DIR/.scripts/utils/has_changes"
-
-echo "Devcontainer features" >&2
-
-for feature_dir in "$FEATURES_DIR"/*; do
-  [ -d "$feature_dir" ] || continue
-
-  feature="$(basename "$feature_dir")"
-  tag="$(get_latest_package_tag "$feature_dir")"
-
-  if [ -z "$tag" ]; then
-    echo "  $feature: no tag found, will release" >&2
-    CHANGED_FEATURES+=("$feature")
-
-  elif has_changes "$feature_dir"; then
-    echo "  $feature: changes since $tag, will release" >&2
-    CHANGED_FEATURES+=("$feature")
-
-  else
-    echo "  $feature: no changes since $tag" >&2
-  fi
-done
 
 ############################################################
 ###################### generate docs ########################
 ############################################################
 
-echo "Generating feature documentation" >&2
+info "$FEATURE: generating documentation"
 
 devcontainer features generate-docs \
   -p "$FEATURES_DIR" \
-  -n shotor \
+  -n shotor/morgh \
   >&2
 
-############################################################
-######################## release ############################
-############################################################
+# generate-docs may generate docs for other features too,
+# so restore changes outside the current feature.
 
-for feature in "${CHANGED_FEATURES[@]}"; do
-  feature_dir="$FEATURES_DIR/$feature"
+for feature_dir in "$FEATURES_DIR"/*; do
+  [ -d "$feature_dir" ] || continue
+  [ "$feature_dir" = "$FEATURE_DIR" ] && continue
 
-  ##########################################################
-  ###################### version ###########################
-  ##########################################################
-
-  from_version="$(get_version "$feature_dir")"
-
-  bump_package "$feature_dir" >&2
-
-  new_version="$(get_version "$feature_dir")"
-  tag="$(get_package_tag "$feature_dir" "$new_version")"
-
-  echo "  $feature: $from_version -> $new_version" >&2
-
-  ##########################################################
-  ###################### changelog #########################
-  ##########################################################
-
-  generate_changelog "$feature_dir" "$tag" >&2
-
-  ##########################################################
-  ####################### package ##########################
-  ##########################################################
-
-  echo "  $feature: packaging" >&2
-
-  devcontainer features package -f \
-    "$feature_dir" \
-    -o "$feature_dir/output" \
-    >&2
-
-  ##########################################################
-  ######################## return ##########################
-  ##########################################################
-
-  echo "$tag"
+  git restore --source=HEAD --staged --worktree -- "$feature_dir"
 done
+
+############################################################
+######################## version ############################
+############################################################
+
+from_version="$(get_version "$FEATURE_DIR")"
+
+info "$FEATURE: bumping version"
+
+bump_package "$FEATURE_DIR" >&2
+
+new_version="$(get_version "$FEATURE_DIR")"
+tag="$(get_package_tag "$FEATURE_DIR" "$new_version")"
+
+success "$FEATURE: $from_version -> $new_version"
+
+############################################################
+###################### changelog ############################
+############################################################
+
+info "$FEATURE: generating changelog"
+
+generate_changelog "$FEATURE_DIR" "$tag" >&2
+
+############################################################
+######################## build ##############################
+############################################################
+
+info "$FEATURE: packaging"
+
+devcontainer features package -f \
+  "$FEATURE_DIR" \
+  -o "$FEATURE_DIR/output" \
+  >&2
+
+success "$FEATURE: build complete"
+
+############################################################
+######################## return #############################
+############################################################
+
+success "$FEATURE: $tag"
+echo "$tag"

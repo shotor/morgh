@@ -1,0 +1,2 @@
+commitizen==4.17.0
+./docker/images/commitizen/cz_filter_path

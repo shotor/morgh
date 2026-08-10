@@ -2,11 +2,18 @@
 
 commit_release_message() {
   local tags=("$@")
-  local message="bump: release new versions"
+  local workspace_dir
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+
+  source "$workspace_dir/.scripts/utils/log"
 
   if [ "${#tags[@]}" -eq 0 ]; then
-    return 0
+    error "No release tags provided"
+    return 1
   fi
+
+  local message="bump: release new versions"
 
   message+=$'\n'
 

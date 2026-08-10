@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+PACKAGE_DIRS=(
+  "devcontainer/features"
+  "docker/images"
+)
+
+JSON=false
+PACKAGES=()
+
+############################################################
+######################## parse #############################
+############################################################
+
+usage() {
+  cat <<EOF
+Usage: $0 [options]
+
+Collect packages that need to be released.
+
+Options:
+  --json          Output packages as JSON
+  -h, --help      Show this help message
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --json)
+      JSON=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+
+  shift
+done
+
+############################################################
+######################## collect ############################
+############################################################
+
+source "$SCRIPT_DIR/utils/log"
+source "$SCRIPT_DIR/utils/get_latest_package_tag"
+source "$SCRIPT_DIR/utils/has_changes"
+
+info "Collecting packages"
+echo >&2
+
+for package_root in "${PACKAGE_DIRS[@]}"; do
+  info "$package_root"
+
+  package_root="$WORKSPACE_DIR/$package_root"
+
+  for package_dir in "$package_root"/*; do
+    [ -d "$package_dir" ] || continue
+
+    package="${package_dir#"$WORKSPACE_DIR"/}"
+    name="$(basename "$package_dir")"
+    tag="$(get_latest_package_tag "$package_dir")"
+
+    if [ -z "$tag" ]; then
+      echo "  $name: no tag found, will release" >&2
+      PACKAGES+=("$package")
+
+    elif has_changes "$package_dir"; then
+      echo "  $name: changes since $tag, will release" >&2
+      PACKAGES+=("$package")
+
+    else
+      echo "  $name: no changes since $tag" >&2
+    fi
+  done
+
+  echo >&2
+done
+
+############################################################
+######################## summary ############################
+############################################################
+
+if [ "${#PACKAGES[@]}" -eq 0 ]; then
+  info "No packages to release"
+else
+  info "Packages to release"
+
+  for package in "${PACKAGES[@]}"; do
+    echo "  $package" >&2
+  done
+fi
+
+echo >&2
+
+############################################################
+######################## output #############################
+############################################################
+
+if [ "$JSON" = true ]; then
+  printf '%s\n' "${PACKAGES[@]}" |
+    jq -R -s -c 'split("\n") | map(select(length > 0))'
+else
+  printf '%s\n' "${PACKAGES[@]}"
+fi

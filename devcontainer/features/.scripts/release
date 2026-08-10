@@ -9,90 +9,60 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FEATURES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
-CHANGED_FEATURES=()
+############################################################
+######################## usage #############################
+############################################################
 
-DRY_RUN=false
+usage() {
+  cat <<EOF
+Usage: $0 <feature> [source]
+
+Publish a Dev Container feature.
+
+Arguments:
+  feature         Feature to release
+  source          Optional feature source directory
+                  Defaults to $FEATURES_DIR/<feature>
+
+Options:
+  -h, --help      Show this help message
+EOF
+}
 
 ############################################################
 ######################## parse #############################
 ############################################################
 
-usage() {
-  cat <<EOF
-Usage: $0 [options]
-
-Release changed Dev Container features.
-
-Options:
-  --dry-run       Log what would be published without publishing
-  -h, --help      Show this help message
-EOF
-}
-
-while [ "$#" -gt 0 ]; do
-  case "$1" in
-    --dry-run)
-      DRY_RUN=true
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      echo >&2
-      usage >&2
-      exit 1
-      ;;
-  esac
-
-  shift
-done
-
-############################################################
-######################### check ############################
-############################################################
-
-source "$WORKSPACE_DIR/.scripts/utils/has_commit_changes"
-
-echo "Devcontainer features" >&2
-
-for feature_dir in "$FEATURES_DIR"/*; do
-  [ -d "$feature_dir" ] || continue
-
-  feature="$(basename "$feature_dir")"
-
-  if has_commit_changes "$feature_dir"; then
-    echo "  $feature: will release" >&2
-    CHANGED_FEATURES+=("$feature")
-  else
-    echo "  $feature: no changes" >&2
-  fi
-done
-
-############################################################
-######################## release ###########################
-############################################################
-
-for feature in "${CHANGED_FEATURES[@]}"; do
-  feature_dir="$FEATURES_DIR/$feature"
-  output_dir="$feature_dir/output"
-
-  if [ ! -d "$output_dir" ]; then
-    echo "$feature: output directory not found" >&2
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  "")
+    usage >&2
     exit 1
-  fi
+    ;;
+esac
 
-  if [ "$DRY_RUN" = true ]; then
-    echo "  $feature: would publish $output_dir" >&2
-    continue
-  fi
+FEATURE="$1"
+FEATURE_DIR="${2:-"$FEATURES_DIR/$FEATURE"}"
 
-  echo "  $feature: publishing" >&2
+############################################################
+######################## sources ############################
+############################################################
 
-  devcontainer features publish \
-    -r ghcr.io \
-    -n shotor \
-    "$output_dir" \
-    >&2
-done
+source "$WORKSPACE_DIR/.scripts/utils/log"
+
+############################################################
+######################## release ############################
+############################################################
+
+info "$FEATURE: publishing"
+
+devcontainer features publish \
+  "$FEATURE_DIR" \
+  -r ghcr.io \
+  -n shotor/morgh \
+  >&2
+
+success "$FEATURE: published"

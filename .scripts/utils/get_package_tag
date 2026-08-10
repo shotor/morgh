@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 get_package_tag() {
-  local folder="$1"
+  local package_dir="$1"
   local version="$2"
   local workspace_dir
-  local filter_path
+  local relative_path
 
   workspace_dir="$(git rev-parse --show-toplevel)"
-  filter_path="${folder#"$workspace_dir/"}"
+  relative_path="${package_dir#"$workspace_dir/"}"
 
-  echo "$filter_path/$version"
+  printf '%s/%s\n' "$relative_path" "$version"
 }
