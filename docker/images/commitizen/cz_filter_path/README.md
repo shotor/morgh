@@ -41,7 +41,7 @@ The path can also be provided dynamically:
 CZ_FILTER_PATH="packages/cli" cz changelog
 ```
 
-`CZ_FILTER_PATH` takes precedence over `component_path`.
+The environment variable `CZ_FILTER_PATH` takes precedence over `component_path`.
 
 If no path is configured, commits are not filtered.
 
