@@ -1,0 +1,8 @@
+{
+  "name": "node",
+  "image": "ghcr.io/shotor/devcontainer/images/debian:0",
+  "features": {
+    "ghcr.io/shotor/devcontainer/features/node:0": {}
+  },
+  "remoteUser": "user"
+}
