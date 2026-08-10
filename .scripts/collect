@@ -57,7 +57,7 @@ done
 
 source "$SCRIPT_DIR/utils/log"
 source "$SCRIPT_DIR/utils/get_latest_package_tag"
-source "$SCRIPT_DIR/utils/has_changes"
+source "$SCRIPT_DIR/utils/has_release"
 
 info "Collecting packages"
 echo >&2
@@ -77,13 +77,16 @@ for package_root in "${PACKAGE_DIRS[@]}"; do
     if [ -z "$tag" ]; then
       echo "  $name: no tag found, will release" >&2
       PACKAGES+=("$package")
+      continue
+    fi
 
-    elif has_changes "$package_dir"; then
-      echo "  $name: changes since $tag, will release" >&2
+    increment="$(has_release "$package_dir")"
+
+    if [ -n "$increment" ]; then
+      echo "  $name: $increment changes since $tag, will release" >&2
       PACKAGES+=("$package")
-
     else
-      echo "  $name: no changes since $tag" >&2
+      echo "  $name: no releasable changes since $tag" >&2
     fi
   done
 

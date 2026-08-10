@@ -14,7 +14,7 @@ class FilterPathCommitizen(ConventionalCommitsCz):
     path = os.environ.get("CZ_FILTER_PATH")
 
     if not path:
-      path = self.config.settings.get("component_path")
+      path = self.config.settings.get("filter_path")
 
     if not path:
       return parsed_message

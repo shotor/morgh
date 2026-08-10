@@ -20,6 +20,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+          cache: pip
+          cache-dependency-path: .github/requirements.txt
+
+      - name: Install Python dependencies
+        run: .github/scripts/install-python-deps
+
       - name: Collect
         id: collect
         run: |
@@ -28,6 +38,7 @@ jobs:
 
   build:
     needs: collect
+    if: ${{ needs.collect.outputs.packages != '[]' }}
     runs-on: ubuntu-latest
 
     strategy:
