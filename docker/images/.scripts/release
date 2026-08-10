@@ -56,7 +56,7 @@ source "$WORKSPACE_DIR/.scripts/utils/get_version"
 source "$SCRIPT_DIR/utils/build_docker"
 
 VERSION="$(get_version "$IMAGE_DIR")"
-REPOSITORY="ghcr.io/shotor/morgh/$IMAGE"
+REPOSITORY="ghcr.io/shotor/$IMAGE"
 
 ############################################################
 ######################## build ##############################

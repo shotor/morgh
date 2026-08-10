@@ -60,9 +60,8 @@ source "$WORKSPACE_DIR/.scripts/utils/log"
 info "$FEATURE: publishing"
 
 devcontainer features publish \
-  "$FEATURE_DIR" \
   -r ghcr.io \
-  -n shotor/morgh \
-  >&2
+  -n shotor/devcontainer/features \
+  "$FEATURE_DIR"
 
 success "$FEATURE: published"

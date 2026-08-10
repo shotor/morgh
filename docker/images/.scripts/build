@@ -50,7 +50,7 @@ generate_changelog "$IMAGE_DIR" "$tag" >&2
 ######################## build ##############################
 ############################################################
 
-repository="ghcr.io/shotor/morgh/$IMAGE"
+repository="ghcr.io/shotor/$IMAGE"
 
 info "$IMAGE: building"
 
