@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Release batch tag
+        description: Dev Container image tag
         required: true
         type: string
 
@@ -51,9 +51,4 @@ jobs:
         env:
           TAG: ${{ inputs.tag }}
         run: |
-          name="${TAG#devcontainer/images/}"
-          name="${name%/*}"
-
-          devcontainer/images/.scripts/release \
-            "$name" \
-            "$TAG"
+          devcontainer/images/.scripts/release "$TAG"
