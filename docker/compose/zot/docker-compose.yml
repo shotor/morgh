@@ -1,0 +1,32 @@
+services:
+  zot:
+    image: ghcr.io/project-zot/zot-linux-amd64:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - zot-data:/var/lib/registry
+    command:
+      - serve
+      - /etc/zot/config.json
+    configs:
+      - source: zot
+        target: /etc/zot/config.json
+
+configs:
+  zot:
+    content: |
+      {
+        "storage": {
+          "rootDirectory": "/var/lib/registry"
+        },
+        "http": {
+          "address": "0.0.0.0",
+          "port": "5000"
+        },
+        "log": {
+          "level": "info"
+        }
+      }
+
+volumes:
+  zot-data:
