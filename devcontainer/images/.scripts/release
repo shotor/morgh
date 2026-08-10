@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+TAG="$1"
+
+package="${TAG%/*}"
+version="${TAG##*/}"
+image="${package##*/}"
+
+IMAGE_DIR="$WORKSPACE_DIR/$package"
+REPOSITORY="ghcr.io/shotor/devcontainer/images/$image"
+
+############################################################
+######################## sources ###########################
+############################################################
+
+source "$WORKSPACE_DIR/.scripts/utils/log"
+
+############################################################
+######################## aliases ###########################
+############################################################
+
+IFS=. read -r major minor patch <<< "$version"
+
+aliases=(
+  "$version"
+  "$major.$minor"
+  "$major"
+  "latest"
+)
+
+############################################################
+######################## release ###########################
+############################################################
+
+info "$image: releasing $version"
+
+args=(
+  --workspace-folder "$IMAGE_DIR"
+  --push
+)
+
+for alias in "${aliases[@]}"; do
+  args+=(--image-name "$REPOSITORY:$alias")
+done
+
+devcontainer build "${args[@]}" >&2
+
+success "$image: release complete"
+
+for alias in "${aliases[@]}"; do
+  echo "  $REPOSITORY:$alias" >&2
+done

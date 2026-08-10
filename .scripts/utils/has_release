@@ -13,6 +13,11 @@ has_release() {
 
   tag="$(get_latest_package_tag "$package_dir")"
 
+  if [ -z "$tag" ]; then
+    echo "MINOR"
+    return
+  fi
+
   (
     cd "$package_dir"
 
