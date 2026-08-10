@@ -1,34 +1,54 @@
 #!/usr/bin/env bash
 
 get_release_tags() {
+  local ref="HEAD"
   local json=false
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --json)
+        json=true
+        ;;
+      *)
+        ref="$1"
+        ;;
+    esac
+
+    shift
+  done
+
   local workspace_dir
+  local message
+  local tags=()
 
   workspace_dir="$(git rev-parse --show-toplevel)"
 
   source "$workspace_dir/.scripts/utils/log"
 
-  if [ "${1:-}" = "--json" ]; then
-    json=true
-  fi
-
-  local message
-  message="$(git log -1 --pretty=%B)"
-
-  if [[ "$message" != bump:* ]]; then
-    error "Current commit is not a release commit"
+  if ! git -C "$workspace_dir" rev-parse --verify "$ref^{commit}" >/dev/null 2>&1; then
+    error "Release ref not found: $ref"
     return 1
   fi
 
-  local tags=()
+  message="$(
+    git -C "$workspace_dir" \
+      log -1 \
+      --pretty=%B \
+      "$ref"
+  )"
+
+  if [[ "$message" != bump:* ]]; then
+    error "$ref is not a release commit"
+    return 1
+  fi
 
   mapfile -t tags < <(
     printf '%s\n' "$message" |
-      sed -n 's/^- \(.*\) -> \(v.*\)$/\1\/\2/p'
+      sed -n 's/^- \(.*\) -> \([0-9][0-9.]*\)$/\1\/\2/p'
   )
 
   if [ "${#tags[@]}" -eq 0 ]; then
-    error "No package tags found in release commit"
+    error "No package tags found in release commit: $ref"
     return 1
   fi
 

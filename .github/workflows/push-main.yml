@@ -30,6 +30,7 @@ jobs:
 
   build:
     needs: collect
+    if: ${{ needs.collect.outputs.packages != '[]' }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -64,11 +65,13 @@ jobs:
         run: .github/scripts/install-node-deps
 
       - name: Build
+        id: build
         env:
           PACKAGE: ${{ matrix.package }}
         run: |
           parent="${PACKAGE%/*}"
           name="${PACKAGE##*/}"
+          artifact="${PACKAGE//\//-}"
 
           result="$RUNNER_TEMP/build-result"
           mkdir -p "$result"
@@ -78,10 +81,12 @@ jobs:
           git add -A
           git diff --cached --binary > "$result/changes.patch"
 
+          echo "artifact=$artifact" >> "$GITHUB_OUTPUT"
+
       - name: Upload result
         uses: actions/upload-artifact@v7
         with:
-          name: build-${{ strategy.job-index }}
+          name: build-${{ steps.build.outputs.artifact }}
           path: ${{ runner.temp }}/build-result
 
   commit:
@@ -129,4 +134,19 @@ jobs:
 
       - name: Push
         run: |
-          git push --atomic origin HEAD:main --tags
+          mapfile -t tags < "$RUNNER_TEMP/tags"
+
+          git push origin HEAD:main
+
+          for tag in "${tags[@]}"; do
+            git push origin "refs/tags/$tag"
+          done
+
+          batch_tag="$(
+            git tag \
+              --list 'release/*' \
+              --points-at HEAD |
+              head -n 1
+          )"
+
+          git push origin "refs/tags/$batch_tag"

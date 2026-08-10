@@ -9,7 +9,7 @@ get_latest_package_tag() {
   relative_path="${package_dir#"$workspace_dir/"}"
 
   git -C "$workspace_dir" \
-    tag --list "$relative_path/v*" \
+    tag --list "$relative_path/*" \
     --sort=-version:refname \
     | head -n 1
 }
