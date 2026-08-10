@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IMAGES_DIR="$(dirname "$SCRIPT_DIR")"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+CHANGED_IMAGES=()
+
+DRY_RUN=false
+
+############################################################
+######################## parse #############################
+############################################################
+
+usage() {
+  cat <<EOF
+Usage: $0 [options]
+
+Release changed Docker images.
+
+Options:
+  --dry-run       Log what would be pushed without pushing
+  -h, --help      Show this help message
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      echo >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+
+  shift
+done
+
+############################################################
+######################### check #############################
+############################################################
+
+source "$WORKSPACE_DIR/.scripts/utils/get_version"
+source "$WORKSPACE_DIR/.scripts/utils/has_commit_changes"
+
+echo "Docker images" >&2
+
+for image_dir in "$IMAGES_DIR"/*; do
+  [ -d "$image_dir" ] || continue
+
+  image="$(basename "$image_dir")"
+
+  if has_commit_changes "$image_dir"; then
+    echo "  $image: will release" >&2
+    CHANGED_IMAGES+=("$image")
+  else
+    echo "  $image: no changes" >&2
+  fi
+done
+
+############################################################
+######################## release ############################
+############################################################
+
+for image in "${CHANGED_IMAGES[@]}"; do
+  image_dir="$IMAGES_DIR/$image"
+  version="$(get_version "$image_dir")"
+  repository="shotor/$image"
+
+  if [ "$DRY_RUN" = true ]; then
+    echo "  $image: would push $repository:$version" >&2
+    echo "  $image: would push $repository:latest" >&2
+    continue
+  fi
+
+  echo "  $image: pushing $repository:$version" >&2
+  docker push "$repository:$version"
+
+  echo "  $image: pushing $repository:latest" >&2
+  docker push "$repository:latest"
+done

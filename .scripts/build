@@ -126,7 +126,7 @@ if [ "$CI" = true ]; then
     git commit -m "$MESSAGE"
 
     for tag in "${TAGS[@]}"; do
-      git tag "$tag"
+      git tag -m "$tag" "$tag"
     done
   fi
 fi
