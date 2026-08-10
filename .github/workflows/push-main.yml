@@ -76,10 +76,10 @@ jobs:
           result="$RUNNER_TEMP/build-result"
           mkdir -p "$result"
 
-          "$parent/.scripts/build" "$name" > "$result/tag"
+          "$parent/.scripts/build" "$name" > "$result/$artifact.tag"
 
           git add -A
-          git diff --cached --binary > "$result/changes.patch"
+          git diff --cached --binary > "$result/$artifact.patch"
 
           echo "artifact=$artifact" >> "$GITHUB_OUTPUT"
 
@@ -105,19 +105,17 @@ jobs:
         with:
           pattern: build-*
           path: ${{ runner.temp }}/build-results
+          merge-multiple: true
 
       - name: Apply changes
         run: |
-          for result in "$RUNNER_TEMP"/build-results/build-*; do
-            git apply --index "$result/changes.patch"
+          for patch in "$RUNNER_TEMP"/build-results/*.patch; do
+            git apply --index "$patch"
           done
 
       - name: Collect tags
         run: |
-          find "$RUNNER_TEMP/build-results" \
-            -type f \
-            -name tag \
-            -exec cat {} \; \
+          cat "$RUNNER_TEMP"/build-results/*.tag \
             > "$RUNNER_TEMP/tags"
 
       - name: Configure Git
