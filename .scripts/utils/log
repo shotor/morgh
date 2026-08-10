@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+RED=$'\033[31m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+BLUE=$'\033[34m'
+MAGENTA=$'\033[35m'
+CYAN=$'\033[36m'
+WHITE=$'\033[37m'
+RESET=$'\033[0m'
+
+info() {
+  printf '%s%s%s\n' "$CYAN" "$*" "$RESET" >&2
+}
+
+success() {
+  printf '%s%s%s\n' "$GREEN" "$*" "$RESET" >&2
+}
+
+warn() {
+  printf '%s%s%s\n' "$YELLOW" "$*" "$RESET" >&2
+}
+
+error() {
+  printf '%s%s%s\n' "$RED" "$*" "$RESET" >&2
+}

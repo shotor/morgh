@@ -9,84 +9,62 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
-CHANGED_IMAGES=()
+IMAGE="$1"
+IMAGE_DIR="$IMAGES_DIR/$IMAGE"
 
 ############################################################
-######################### check #############################
+######################## sources ############################
 ############################################################
 
-source "$WORKSPACE_DIR/.scripts/utils/get_latest_package_tag"
-source "$WORKSPACE_DIR/.scripts/utils/has_changes"
-
-echo "Docker images" >&2
-
-for image_dir in "$IMAGES_DIR"/*; do
-  [ -d "$image_dir" ] || continue
-
-  image="$(basename "$image_dir")"
-  tag="$(get_latest_package_tag "$image_dir")"
-
-  if [ -z "$tag" ]; then
-    echo "  $image: no tag found, will release" >&2
-    CHANGED_IMAGES+=("$image")
-
-  elif has_changes "$image_dir"; then
-    echo "  $image: changes since $tag, will release" >&2
-    CHANGED_IMAGES+=("$image")
-
-  else
-    echo "  $image: no changes since $tag" >&2
-  fi
-done
-
-############################################################
-######################### setup #############################
-############################################################
-
+source "$WORKSPACE_DIR/.scripts/utils/log"
 source "$WORKSPACE_DIR/.scripts/utils/bump_package"
 source "$WORKSPACE_DIR/.scripts/utils/generate_changelog"
 source "$WORKSPACE_DIR/.scripts/utils/get_version"
 source "$WORKSPACE_DIR/.scripts/utils/get_package_tag"
-
 source "$SCRIPT_DIR/utils/build_docker"
 
 ############################################################
-######################## release ############################
+######################## version ############################
 ############################################################
 
-for image in "${CHANGED_IMAGES[@]}"; do
-  image_dir="$IMAGES_DIR/$image"
+from_version="$(get_version "$IMAGE_DIR")"
 
-  ##########################################################
-  ###################### version ###########################
-  ##########################################################
+info "$IMAGE: bumping version"
 
-  from_version="$(get_version "$image_dir")"
+bump_package "$IMAGE_DIR" >&2
 
-  bump_package "$image_dir" >&2
+new_version="$(get_version "$IMAGE_DIR")"
+tag="$(get_package_tag "$IMAGE_DIR" "$new_version")"
 
-  new_version="$(get_version "$image_dir")"
-  tag="$(get_package_tag "$image_dir" "$new_version")"
+success "$IMAGE: $from_version -> $new_version"
 
-  echo "  $image: $from_version -> $new_version" >&2
+############################################################
+###################### changelog ############################
+############################################################
 
-  ##########################################################
-  ###################### changelog #########################
-  ##########################################################
+info "$IMAGE: generating changelog"
 
-  generate_changelog "$image_dir" "$new_version" >&2
+generate_changelog "$IMAGE_DIR" "$tag" >&2
 
-  ##########################################################
-  ######################## build ###########################
-  ##########################################################
+############################################################
+######################## build ##############################
+############################################################
 
-  echo "  $image: building" >&2
+repository="ghcr.io/shotor/morgh/$IMAGE"
 
-  build_docker "$image" "$image_dir" "$new_version" >&2
+info "$IMAGE: building"
 
-  ##########################################################
-  ######################## return ##########################
-  ##########################################################
+build_docker \
+  "$IMAGE_DIR" \
+  "$repository" \
+  "$new_version" \
+  >&2
 
-  echo "$tag"
-done
+success "$IMAGE: build complete"
+
+############################################################
+######################## return #############################
+############################################################
+
+success "$IMAGE: $tag"
+echo "$tag"

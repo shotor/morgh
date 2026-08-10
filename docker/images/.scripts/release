@@ -9,86 +9,81 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
-CHANGED_IMAGES=()
+############################################################
+######################## usage #############################
+############################################################
 
-DRY_RUN=false
+usage() {
+  cat <<EOF
+Usage: $0 <image> [source]
+
+Build and publish a Docker image.
+
+Arguments:
+  image           Image to release
+  source          Optional image source directory
+                  Defaults to $IMAGES_DIR/<image>
+
+Options:
+  -h, --help      Show this help message
+EOF
+}
 
 ############################################################
 ######################## parse #############################
 ############################################################
 
-usage() {
-  cat <<EOF
-Usage: $0 [options]
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  "")
+    usage >&2
+    exit 1
+    ;;
+esac
 
-Release changed Docker images.
-
-Options:
-  --dry-run       Log what would be pushed without pushing
-  -h, --help      Show this help message
-EOF
-}
-
-while [ "$#" -gt 0 ]; do
-  case "$1" in
-    --dry-run)
-      DRY_RUN=true
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      echo >&2
-      usage >&2
-      exit 1
-      ;;
-  esac
-
-  shift
-done
+IMAGE="$1"
+IMAGE_DIR="${2:-"$IMAGES_DIR/$IMAGE"}"
 
 ############################################################
-######################### check #############################
+######################## sources ############################
 ############################################################
 
+source "$WORKSPACE_DIR/.scripts/utils/log"
 source "$WORKSPACE_DIR/.scripts/utils/get_version"
-source "$WORKSPACE_DIR/.scripts/utils/has_commit_changes"
+source "$SCRIPT_DIR/utils/build_docker"
 
-echo "Docker images" >&2
+VERSION="$(get_version "$IMAGE_DIR")"
+REPOSITORY="ghcr.io/shotor/morgh/$IMAGE"
 
-for image_dir in "$IMAGES_DIR"/*; do
-  [ -d "$image_dir" ] || continue
+############################################################
+######################## build ##############################
+############################################################
 
-  image="$(basename "$image_dir")"
+info "$IMAGE: building"
 
-  if has_commit_changes "$image_dir"; then
-    echo "  $image: will release" >&2
-    CHANGED_IMAGES+=("$image")
-  else
-    echo "  $image: no changes" >&2
-  fi
-done
+build_docker \
+  "$IMAGE_DIR" \
+  "$REPOSITORY" \
+  "$VERSION" \
+  >&2
+
+success "$IMAGE: build complete"
 
 ############################################################
 ######################## release ############################
 ############################################################
 
-for image in "${CHANGED_IMAGES[@]}"; do
-  image_dir="$IMAGES_DIR/$image"
-  version="$(get_version "$image_dir")"
-  repository="shotor/$image"
+info "$IMAGE: pushing $REPOSITORY:$VERSION"
 
-  if [ "$DRY_RUN" = true ]; then
-    echo "  $image: would push $repository:$version" >&2
-    echo "  $image: would push $repository:latest" >&2
-    continue
-  fi
+docker push "$REPOSITORY:$VERSION"
 
-  echo "  $image: pushing $repository:$version" >&2
-  docker push "$repository:$version"
+success "$IMAGE: pushed $REPOSITORY:$VERSION"
 
-  echo "  $image: pushing $repository:latest" >&2
-  docker push "$repository:latest"
-done
+info "$IMAGE: pushing $REPOSITORY:latest"
+
+docker push "$REPOSITORY:latest"
+
+success "$IMAGE: pushed $REPOSITORY:latest"

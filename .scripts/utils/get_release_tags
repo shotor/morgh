@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+get_release_tags() {
+  local json=false
+  local workspace_dir
+
+  workspace_dir="$(git rev-parse --show-toplevel)"
+
+  source "$workspace_dir/.scripts/utils/log"
+
+  if [ "${1:-}" = "--json" ]; then
+    json=true
+  fi
+
+  local message
+  message="$(git log -1 --pretty=%B)"
+
+  if [[ "$message" != bump:* ]]; then
+    error "Current commit is not a release commit"
+    return 1
+  fi
+
+  local tags=()
+
+  mapfile -t tags < <(
+    printf '%s\n' "$message" |
+      sed -n 's/^- \(.*\) -> \(v.*\)$/\1\/\2/p'
+  )
+
+  if [ "${#tags[@]}" -eq 0 ]; then
+    error "No package tags found in release commit"
+    return 1
+  fi
+
+  if [ "$json" = true ]; then
+    printf '%s\n' "${tags[@]}" |
+      jq -R -s -c 'split("\n") | map(select(length > 0))'
+  else
+    printf '%s\n' "${tags[@]}"
+  fi
+}

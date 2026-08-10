@@ -1,0 +1,128 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    outputs:
+      packages: ${{ steps.collect.outputs.packages }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Collect
+        id: collect
+        run: |
+          packages="$(.scripts/collect --json)"
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: collect
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.collect.outputs.packages) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+          cache: pip
+          cache-dependency-path: .github/requirements.txt
+
+      - name: Install Python dependencies
+        run: .github/scripts/install-python-deps
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: .github/package-lock.json
+
+      - name: Install Node dependencies
+        run: .github/scripts/install-node-deps
+
+      - name: Build
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          parent="${PACKAGE%/*}"
+          name="${PACKAGE##*/}"
+
+          result="$RUNNER_TEMP/build-result"
+          mkdir -p "$result"
+
+          "$parent/.scripts/build" "$name" > "$result/tag"
+
+      - name: Upload result
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/build-result
+
+  comment:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download builds
+        uses: actions/download-artifact@v8
+        with:
+          pattern: build-*
+          path: ${{ runner.temp }}/build-results
+
+      - name: Create message
+        id: message
+        run: |
+          mapfile -t tags < <(
+            find "$RUNNER_TEMP/build-results" \
+              -type f \
+              -name tag \
+              -exec cat {} \;
+          )
+
+          source .scripts/utils/commit_release_message
+
+          message="$(commit_release_message "${tags[@]}")"
+
+          {
+            echo 'message<<EOF'
+            printf '%s\n' "$message"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Comment
+        uses: actions/github-script@v9
+        env:
+          RELEASE_MESSAGE: ${{ steps.message.outputs.message }}
+        with:
+          script: |
+            const comment = require('./.github/scripts/pr-comment.js');
+
+            await comment({
+              github,
+              context,
+              message: process.env.RELEASE_MESSAGE,
+            });

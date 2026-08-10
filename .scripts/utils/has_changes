@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
 has_changes() {
-  local folder="$1"
+  local package_dir="$1"
   local workspace_dir
   local relative_path
   local latest_tag
 
   workspace_dir="$(git rev-parse --show-toplevel)"
-  relative_path="${folder#"$workspace_dir/"}"
+  relative_path="${package_dir#"$workspace_dir/"}"
+
+  source "$workspace_dir/.scripts/utils/get_latest_package_tag"
 
   # Uncommitted, staged, or untracked changes.
   if [ -n "$(
@@ -16,9 +18,9 @@ has_changes() {
     return 0
   fi
 
-  latest_tag="$(get_latest_package_tag "$folder")"
+  latest_tag="$(get_latest_package_tag "$package_dir")"
 
-  # No previous release means the package needs to be built.
+  # No previous release means the package has changes.
   if [ -z "$latest_tag" ]; then
     return 0
   fi
