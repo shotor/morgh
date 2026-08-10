@@ -1,0 +1,44 @@
+{
+  "name": "morgh",
+  "image": "ghcr.io/shotor/devcontainer/images/debian:0",
+  "features": {
+    "ghcr.io/shotor/devcontainer/features/codex:0": {},
+    "ghcr.io/shotor/devcontainer/features/cursor:0": {}
+  },
+
+  "remoteUser": "user",
+  "updateRemoteUserUID": true,
+
+  "containerEnv": {
+    "HISTFILE": "/commandhistory/.zsh_history"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["esbenp.prettier-vscode"],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  "mounts": [
+    {
+      "type": "bind",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/history",
+      "target": "/commandhistory"
+    },
+    {
+      "type": "bind",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/codex",
+      "target": "/home/user/.codex"
+    },
+    {
+      "type": "bind",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor",
+      "target": "/home/user/.cursor"
+    }
+  ]
+}

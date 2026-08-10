@@ -1,3 +1,6 @@
+.devcontainer/volumes/**
+!.devcontainer/volumes/**/.gitkeep
+
 __NOTES__.md
 
 node_modules/
