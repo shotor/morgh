@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+commit_release_message() {
+  local tags=("$@")
+  local message="bump: release new versions"
+
+  if [ "${#tags[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  message+=$'\n'
+
+  for tag in "${tags[@]}"; do
+    local package="${tag%/*}"
+    local version="${tag##*/}"
+
+    message+=$'\n'"- $package -> $version"
+  done
+
+  printf '%s\n' "$message"
+}

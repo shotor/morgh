@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+FOLDERS=(
+  "devcontainer"
+  "docker"
+)
+
+CHANGED_FOLDERS=()
+TAGS=()
+
+CI=false
+DRY_RUN=false
+
+############################################################
+######################## parse ##############################
+############################################################
+
+usage() {
+  cat <<EOF
+Usage: $0 [options]
+
+Build changed workspaces and prepare releases.
+
+Options:
+  --ci            Create a release commit after building
+  --dry-run       Echo the release commit instead of creating it
+  -h, --help      Show this help message
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --ci)
+      CI=true
+      ;;
+    --dry-run)
+      DRY_RUN=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      echo >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+
+  shift
+done
+
+############################################################
+######################### check #############################
+############################################################
+
+source "$SCRIPT_DIR/utils/has_changes"
+source "$SCRIPT_DIR/utils/commit_release_message"
+
+echo "Checking workspaces" >&2
+
+for folder in "${FOLDERS[@]}"; do
+  folder_dir="$WORKSPACE_DIR/$folder"
+
+  if [ ! -d "$folder_dir" ]; then
+    echo "$folder: not found" >&2
+    continue
+  fi
+
+  if has_changes "$folder_dir"; then
+    echo "$folder: changes detected" >&2
+    CHANGED_FOLDERS+=("$folder")
+  else
+    echo "$folder: no changes" >&2
+  fi
+done
+
+############################################################
+######################### run ###############################
+############################################################
+
+for folder in "${CHANGED_FOLDERS[@]}"; do
+  run="$WORKSPACE_DIR/$folder/.build/run"
+
+  if [ ! -x "$run" ]; then
+    echo "$folder: .build/run not found or not executable" >&2
+    exit 1
+  fi
+
+  mapfile -t folder_tags < <("$run")
+  TAGS+=("${folder_tags[@]}")
+done
+
+if [ "${#TAGS[@]}" -eq 0 ]; then
+  echo "No releases found" >&2
+  exit 1
+fi
+
+echo >&2
+echo "Going to release:" >&2
+
+for tag in "${TAGS[@]}"; do
+  echo "  $tag" >&2
+done
+
+############################################################
+########################## ci ##############################
+############################################################
+
+if [ "$CI" = true ]; then
+  MESSAGE="$(commit_release_message "${TAGS[@]}")"
+
+  if [ "$DRY_RUN" = true ]; then
+    printf '%s\n' "$MESSAGE"
+  else
+    git add -A
+    git commit -m "$MESSAGE"
+
+    for tag in "${TAGS[@]}"; do
+      git tag "$tag"
+    done
+  fi
+fi
