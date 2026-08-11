@@ -1,0 +1,18 @@
+{
+  "id": "rust",
+  "version": "0.0.1",
+  "name": "Rust",
+  "description": "Installs the Rust toolchain using rustup.",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "rust-analyzer.check.command": "clippy"
+      }
+    }
+  }
+}
