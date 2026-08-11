@@ -24,7 +24,7 @@ jobs:
     outputs:
       docker-image-tags: ${{ steps.collect.outputs.docker-image-tags }}
       devcontainer-image-tags: ${{ steps.collect.outputs.devcontainer-image-tags }}
-      devcontainer-feature-tags: ${{ steps.collect.outputs.devcontainer-feature-tags }}
+      release-devcontainer-features: ${{ steps.collect.outputs.release-devcontainer-features }}
 
     steps:
       - name: Checkout
@@ -53,15 +53,15 @@ jobs:
             ' <<< "$tags"
           )"
 
-          devcontainer_feature_tags="$(
-            jq -c '
-              map(select(startswith("devcontainer/features/")))
+          release_devcontainer_features="$(
+            jq -r '
+              any(.[]; startswith("devcontainer/features/"))
             ' <<< "$tags"
           )"
 
           echo "docker-image-tags=$docker_image_tags" >> "$GITHUB_OUTPUT"
           echo "devcontainer-image-tags=$devcontainer_image_tags" >> "$GITHUB_OUTPUT"
-          echo "devcontainer-feature-tags=$devcontainer_feature_tags" >> "$GITHUB_OUTPUT"
+          echo "release-devcontainer-features=$release_devcontainer_features" >> "$GITHUB_OUTPUT"
 
   docker-images:
     name: Release ${{ matrix.tag }}
@@ -96,17 +96,12 @@ jobs:
     secrets: inherit
 
   devcontainer-features:
-    name: Release ${{ matrix.tag }}
+    name: Release Dev Container Features
     needs: collect
-    if: ${{ needs.collect.outputs.devcontainer-feature-tags != '[]' }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        tag: ${{ fromJSON(needs.collect.outputs.devcontainer-feature-tags) }}
+    if: ${{ needs.collect.outputs.release-devcontainer-features == 'true' }}
 
     uses: ./.github/workflows/release-devcontainer-features.yml
     with:
-      tag: ${{ matrix.tag }}
+      tag: ${{ inputs.tag || github.ref_name }}
 
     secrets: inherit
