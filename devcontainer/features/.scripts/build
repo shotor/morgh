@@ -42,6 +42,7 @@ for feature_dir in "$FEATURES_DIR"/*; do
   [ "$feature_dir" = "$FEATURE_DIR" ] && continue
 
   git restore --source=HEAD --staged --worktree -- "$feature_dir"
+  git clean -fd -- "$feature_dir"
 done
 
 ############################################################
