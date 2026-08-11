@@ -1,3 +1,9 @@
+## devcontainer/features/cursor/0.2.3 (2026-08-11)
+
+### Fix
+
+- **auth**: change symlink
+
 ## devcontainer/features/cursor/0.2.2 (2026-08-11)
 
 ### Fix
