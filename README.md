@@ -18,4 +18,4 @@ Shell, terminal, editor, and application configuration.
 
 ## License
 
-[MIT](https://github.com/shotor/morgh/blob/main/LICENSE).
+[MIT](https://github.com/shotor/morgh/blob/main/LICENSE)
