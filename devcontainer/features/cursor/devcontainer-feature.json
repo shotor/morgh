@@ -1,6 +1,6 @@
 {
   "id": "cursor",
-  "version": "0.0.1",
+  "version": "0.2.3",
   "name": "Cursor",
   "description": "Installs the Cursor CLI."
 }
