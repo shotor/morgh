@@ -5,13 +5,41 @@ generate_changelog() {
   local tag="$2"
   local workspace_dir
   local filter_path
+  local latest_tag
+  local first_rev
+  local start_rev
 
   workspace_dir="$(git rev-parse --show-toplevel)"
   filter_path="${folder#"$workspace_dir/"}"
 
+  source "$workspace_dir/.scripts/utils/get_latest_package_tag"
+
+  latest_tag="$(get_latest_package_tag "$folder")"
+
+  if [ -z "$latest_tag" ]; then
+    first_rev="$(
+      git -C "$workspace_dir" log \
+        --format='%H' \
+        --reverse \
+        -- "$filter_path" |
+        head -n 1
+    )"
+
+    start_rev="${first_rev}^"
+  fi
+
   (
     cd "$folder"
-    CZ_FILTER_PATH="$filter_path" \
-      cz changelog --unreleased-version="$tag"
+
+    if [ -n "$latest_tag" ]; then
+      CZ_FILTER_PATH="$filter_path" \
+        cz changelog \
+          --unreleased-version="$tag"
+    else
+      CZ_FILTER_PATH="$filter_path" \
+        cz changelog \
+          --start-rev="$start_rev" \
+          --unreleased-version="$tag"
+    fi
   )
 }
