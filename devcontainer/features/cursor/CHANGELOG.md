@@ -1,3 +1,9 @@
+## devcontainer/features/cursor/0.2.5 (2026-08-11)
+
+### Fix
+
+- **cursor**: make sure files are installed
+
 ## devcontainer/features/cursor/0.2.4 (2026-08-11)
 
 ### Fix
