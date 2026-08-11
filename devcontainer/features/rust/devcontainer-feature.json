@@ -1,6 +1,6 @@
 {
   "id": "rust",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "name": "Rust",
   "description": "Installs the Rust toolchain using rustup.",
   "customizations": {

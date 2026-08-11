@@ -1,6 +1,6 @@
 {
   "id": "qt6",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "name": "Qt 6",
   "description": "Installs Qt 6 development tools and QML modules.",
   "installsAfter": [
