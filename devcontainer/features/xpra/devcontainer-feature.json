@@ -1,0 +1,7 @@
+{
+  "id": "xpra",
+  "version": "0.0.1",
+  "name": "Xpra",
+  "description": "Installs Xpra for persistent remote X11 applications.",
+  "postStartCommand": "/usr/local/share/xpra/post-start.sh"
+}
