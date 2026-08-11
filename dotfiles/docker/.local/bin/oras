@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec docker run --rm -i \
+  --user "$(id -u):$(id -g)" \
+  -v "$HOME/.docker:/root/.docker:ro" \
+  -v "$PWD:$PWD" \
+  -w "$PWD" \
+  ghcr.io/shotor/oras:latest \
+  "$@"

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+docker run --rm -it \
+  -v "$PWD:/workspace" \
+  -w /workspace \
+  -u "$(id -u):$(id -g)" \
+  node:24 \
+  npm "$@"
