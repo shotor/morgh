@@ -1,0 +1,19 @@
+{
+  "id": "qt6",
+  "version": "0.0.1",
+  "name": "Qt 6",
+  "description": "Installs Qt 6 development tools and QML modules.",
+  "installsAfter": [
+    "ghcr.io/shotor/devcontainer/features/rust",
+    "ghcr.io/shotor/devcontainer/features/xpra"
+  ],
+  "containerEnv": {
+    "PATH": "/usr/lib/qt6/bin:${containerEnv:PATH}",
+    "RUST_BACKTRACE": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.cmake-tools"]
+    }
+  }
+}
