@@ -1,0 +1,6 @@
+{
+  "id": "ffmpeg",
+  "version": "0.0.1",
+  "name": "FFmpeg",
+  "description": "Installs FFmpeg."
+}
