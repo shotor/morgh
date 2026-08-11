@@ -58,10 +58,19 @@ generate_changelog "$IMAGE_DIR" "$tag" >&2
 
 info "$IMAGE: building"
 
-devcontainer build \
-  --workspace-folder "$IMAGE_DIR" \
-  --image-name "ghcr.io/shotor/devcontainer/images/$IMAGE:$new_version" \
-  >&2
+args=(
+  --workspace-folder "$IMAGE_DIR"
+  --image-name "ghcr.io/shotor/devcontainer/images/$IMAGE:$new_version"
+)
+
+if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+  args+=(
+    --cache-from "type=gha,scope=devcontainer-$IMAGE"
+    --cache-to "type=gha,scope=devcontainer-$IMAGE,mode=max"
+  )
+fi
+
+devcontainer build "${args[@]}" >&2
 
 success "$IMAGE: build complete"
 
