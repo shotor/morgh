@@ -1,0 +1,6 @@
+{
+  "id": "wireguard",
+  "version": "0.0.1",
+  "name": "WireGuard",
+  "description": "Installs WireGuard and networking tools."
+}
