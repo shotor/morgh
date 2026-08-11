@@ -36,13 +36,13 @@ When `CURSOR_API_KEY` is already set, it is passed directly to Cursor Agent.
 
 ### Option 2: Auth File
 
-Alternatively, store the API key in:
+The API key can be stored in:
 
 ```text
 ~/.config/cursor/auth.json
 ```
 
-The file should contain:
+The file contains:
 
 ```json
 {
@@ -50,7 +50,25 @@ The file should contain:
 }
 ```
 
-The `agent` wrapper automatically reads the `apiKey` from this file and exports it as `CURSOR_API_KEY` before starting Cursor Agent.
+The included `agent-auth` helper can create this file from the `CURSOR_API_KEY` environment variable:
+
+```bash
+CURSOR_API_KEY="your-api-key" agent-auth
+```
+
+This is particularly useful with devcontainer lifecycle commands or secret injection. For example:
+
+```json
+{
+  "postCreateCommand": "agent-auth"
+}
+```
+
+If `CURSOR_API_KEY` is available to the lifecycle command, `agent-auth` writes it to `~/.config/cursor/auth.json`.
+
+If `CURSOR_API_KEY` is not set, `agent-auth` exits successfully without modifying the authentication configuration.
+
+When `agent` is started, the wrapper automatically reads `apiKey` from `~/.config/cursor/auth.json` if `CURSOR_API_KEY` is not already present in the environment.
 
 ### Precedence
 
