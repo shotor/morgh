@@ -1,4 +1,4 @@
-# morgh
+# 🐪🐔 shotor/morgh
 
 Personal development infrastructure, dev containers, Docker images, and dotfiles.
 
