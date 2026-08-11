@@ -37,7 +37,12 @@
     },
     {
       "type": "bind",
-      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor/config",
+      "target": "/home/user/.config/cursor"
+    },
+    {
+      "type": "bind",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor/home",
       "target": "/home/user/.cursor"
     }
   ]
