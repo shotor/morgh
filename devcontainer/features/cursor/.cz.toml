@@ -1,5 +1,5 @@
 [tool.commitizen]
-version = "0.2.0"
+version = "0.2.1"
 name = "cz_filter_path"
 version_scheme = "semver2"
 tag_format = "devcontainer/features/cursor/$version"
