@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AUTH_FILE="${HOME}/.config/cursor/auth.json"
+
+if [[ -z "${CURSOR_API_KEY:-}" && -f "$AUTH_FILE" ]]; then
+  API_KEY="$(jq -r '.apiKey // empty' "$AUTH_FILE")"
+
+  if [[ -n "$API_KEY" ]]; then
+    export CURSOR_API_KEY="$API_KEY"
+  fi
+fi
+
+exec cursor-agent "$@"
