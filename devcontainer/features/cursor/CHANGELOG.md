@@ -1,3 +1,9 @@
+## devcontainer/features/cursor/0.2.2 (2026-08-11)
+
+### Fix
+
+- **auth**: add agent auth script
+
 ## devcontainer/features/cursor/0.2.1 (2026-08-11)
 
 ### Fix
