@@ -1,4 +1,4 @@
-# shotor/morgh dotfiles
+# 🐪🐔 shotor/morgh dotfiles
 
 ## Dependencies
 
