@@ -1,3 +1,9 @@
+## devcontainer/features/cursor/0.2.4 (2026-08-11)
+
+### Fix
+
+- **cursor**: version
+
 ## devcontainer/features/cursor/0.2.3 (2026-08-11)
 
 ### Fix
