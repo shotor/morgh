@@ -1,5 +1,7 @@
 .devcontainer/volumes/**
+!.devcontainer/volumes/**/
 !.devcontainer/volumes/**/.gitkeep
+.devcontainer/volumes/**/.tmp
 
 __NOTES__.md
 
