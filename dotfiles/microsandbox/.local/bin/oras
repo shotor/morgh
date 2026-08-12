@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec msbe \
+  -v "$PWD:$PWD" \
+  -w "$PWD" \
+  ghcr.io/shotor/oras:latest \
+  oras "$@"

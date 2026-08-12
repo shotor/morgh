@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-docker run --rm -it \
+exec msbe \
   -v "$PWD:/workspace" \
   -w /workspace \
-  -u "$(id -u):$(id -g)" \
   node:24 \
   node "$@"

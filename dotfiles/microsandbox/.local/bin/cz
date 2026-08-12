@@ -3,16 +3,9 @@ set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-TTY_ARGS=()
-
-if [ -t 0 ] && [ -t 1 ]; then
-  TTY_ARGS=(-it)
-fi
-
-docker run --rm "${TTY_ARGS[@]}" \
-  --user "$(id -u):$(id -g)" \
+exec msbe \
   -e CZ_FILTER_PATH \
   -v "$REPO_ROOT:$REPO_ROOT" \
   -w "$PWD" \
-  shotor/commitizen:latest \
+  ghcr.io/shotor/commitizen:latest \
   cz "$@"

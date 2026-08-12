@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec msbe \
+  ghcr.io/shotor/magick:latest \
+  magick \
+  "$@"

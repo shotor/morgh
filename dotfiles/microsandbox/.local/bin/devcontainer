@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+uid="$(id -u)"
+gid="$(id -g)"
+
+exec msbe \
+  --root \
+  -e HOME=/tmp \
+  -e HOST_UID="$uid" \
+  -e HOST_GID="$gid" \
+  -v "$PWD:$PWD" \
+  -w "$PWD" \
+  ghcr.io/shotor/devcontainer:latest \
+  sh -c '
+    dockerd --storage-driver=vfs >/tmp/dockerd.log 2>&1 &
+    dockerd_pid=$!
+
+    until docker info >/dev/null 2>&1; do
+      if ! kill -0 "$dockerd_pid" 2>/dev/null; then
+        cat /tmp/dockerd.log >&2
+        exit 1
+      fi
+      sleep 0.05
+    done
+
+    exec su-exec "$HOST_UID:$HOST_GID" \
+      devcontainer "$@"
+  ' sh "$@"
