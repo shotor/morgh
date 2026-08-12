@@ -5,6 +5,52 @@ set -euo pipefail
 ######################## setup #############################
 ############################################################
 
+usage() {
+  cat <<'EOF'
+Usage:
+  build [options] <image>
+
+Determines the next release, bumps the version, generates the
+changelog, and builds the image.
+
+Options:
+  -c, --current  Build the current version without bumping.
+  -h, --help     Show this help.
+
+Examples:
+  build devcontainer
+  build --current devcontainer
+EOF
+}
+
+current=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -c|--current)
+      current=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "build: unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -ne 1 ]]; then
+  usage >&2
+  exit 2
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGES_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
@@ -13,7 +59,7 @@ IMAGE="$1"
 IMAGE_DIR="$IMAGES_DIR/$IMAGE"
 
 ############################################################
-######################## sources ############################
+######################## sources ###########################
 ############################################################
 
 source "$WORKSPACE_DIR/.scripts/utils/log"
@@ -25,36 +71,43 @@ source "$WORKSPACE_DIR/.scripts/utils/get_package_tag"
 source "$SCRIPT_DIR/utils/build_docker"
 
 ############################################################
-######################## version ############################
+######################## version ###########################
 ############################################################
 
-from_version="$(get_version "$IMAGE_DIR")"
-increment="$(has_release "$IMAGE_DIR")"
+if "$current"; then
+  new_version="$(get_version "$IMAGE_DIR")"
+  tag="$(get_package_tag "$IMAGE_DIR" "$new_version")"
 
-if [ -z "$increment" ]; then
-  echo "$IMAGE: no releasable changes" >&2
-  exit 1
+  info "$IMAGE: building current version $new_version"
+else
+  from_version="$(get_version "$IMAGE_DIR")"
+  increment="$(has_release "$IMAGE_DIR")"
+
+  if [[ -z "$increment" ]]; then
+    echo "$IMAGE: no releasable changes" >&2
+    exit 1
+  fi
+
+  info "$IMAGE: bumping version"
+
+  bump_package "$IMAGE_DIR" "$increment" >&2
+
+  new_version="$(get_version "$IMAGE_DIR")"
+  tag="$(get_package_tag "$IMAGE_DIR" "$new_version")"
+
+  success "$IMAGE: $from_version -> $new_version"
+
+  ##########################################################
+  ###################### changelog #########################
+  ##########################################################
+
+  info "$IMAGE: generating changelog"
+
+  generate_changelog "$IMAGE_DIR" "$tag" >&2
 fi
 
-info "$IMAGE: bumping version"
-
-bump_package "$IMAGE_DIR" "$increment" >&2
-
-new_version="$(get_version "$IMAGE_DIR")"
-tag="$(get_package_tag "$IMAGE_DIR" "$new_version")"
-
-success "$IMAGE: $from_version -> $new_version"
-
 ############################################################
-###################### changelog ############################
-############################################################
-
-info "$IMAGE: generating changelog"
-
-generate_changelog "$IMAGE_DIR" "$tag" >&2
-
-############################################################
-######################## build ##############################
+######################## build #############################
 ############################################################
 
 repository="ghcr.io/shotor/$IMAGE"
@@ -70,7 +123,7 @@ build_docker \
 success "$IMAGE: build complete"
 
 ############################################################
-######################## return #############################
+######################## return ############################
 ############################################################
 
 success "$IMAGE: $tag"
