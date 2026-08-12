@@ -1,0 +1,9 @@
+{
+  "id": "python",
+  "name": "python",
+  "version": "0.0.1",
+  "description": "Installs Python using mise.",
+  "dependsOn": {
+    "ghcr.io/shotor/devcontainer/features/mise:0": {}
+  }
+}
