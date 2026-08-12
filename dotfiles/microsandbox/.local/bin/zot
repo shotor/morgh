@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+MORGH=/home/shotor/git/shotor2/morgh/
+ZOT="$MORGH/docker/compose/zot"
+
+create() {
+    msb create \
+      ghcr.io/shotor/docker-compose:latest \
+      --name zot \
+      --replace \
+      --net public \
+      --port 5000:5000 \
+      --mount-dir "$ZOT:/workspace:stat-virt=off" \
+      -v zot-docker:/var/lib/docker \
+      -v zot-data:/var/lib/zot \
+      --init /sbin/docker-init
+}
+
+help() {
+    cat <<EOF
+Usage: $0 <command> [options]
+
+Manage the Zot registry running in an MSB Docker host.
+
+Commands:
+  create          Create/recreate the Zot MSB sandbox
+  up              Start the Zot Docker Compose stack
+  down            Stop and remove the Zot Compose containers
+  logs            Show Compose logs
+  logs --follow   Follow Compose logs
+  rm              Remove the Zot MSB sandbox
+  rm --force      Force remove the Zot MSB sandbox
+  help            Show this help message
+
+Examples:
+  $0 create
+  $0 up
+  $0 down
+  $0 logs
+  $0 logs --follow
+  $0 rm
+  $0 rm --force
+EOF
+}
+
+case "${1:-}" in
+    create)
+        create
+        ;;
+
+    up)
+        if ! msb ls | awk '$1 == "zot" && $3 == "running" { found=1 } END { exit !found }'; then
+            create
+        fi
+
+        msb exec zot -- \
+          sh -c 'cd /workspace && docker compose up -d'
+        ;;
+
+    down)
+        msb exec zot -- \
+          sh -c 'cd /workspace && docker compose down'
+        ;;
+
+    logs)
+        if [[ "${2:-}" == "--follow" ]]; then
+            msb exec zot -- \
+              sh -c 'cd /workspace && docker compose logs --follow'
+        elif [[ -n "${2:-}" ]]; then
+            echo "Error: unknown logs option: $2" >&2
+            echo "Usage: $0 logs [--follow]" >&2
+            exit 1
+        else
+            msb exec zot -- \
+              sh -c 'cd /workspace && docker compose logs'
+        fi
+        ;;
+
+    rm)
+        case "${2:-}" in
+            "")
+                msb rm zot
+                ;;
+            --force)
+                msb rm --force zot
+                ;;
+            *)
+                echo "Error: unknown rm option: $2" >&2
+                echo "Usage: $0 rm [--force]" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+
+    help|-h|--help)
+        help
+        ;;
+
+    "")
+        help
+        exit 1
+        ;;
+
+    *)
+        echo "Error: unknown command: $1" >&2
+        echo >&2
+        help
+        exit 1
+        ;;
+esac

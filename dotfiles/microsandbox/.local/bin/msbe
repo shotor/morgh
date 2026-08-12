@@ -161,10 +161,10 @@ for env in "${envs[@]}"; do
   fi
 done
 
-if [[ -t 0 ]]; then
+if [[ -t 0 && -t 1 ]]; then
   exec_args+=(--tty)
 else
-  exec_args+=(--stream)
+  exec_args+=(--no-tty)
 fi
 
 msb exec \
