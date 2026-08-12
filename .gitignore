@@ -1,10 +1,16 @@
+# devcontainer volumes
 .devcontainer/volumes/**
 !.devcontainer/volumes/**/
 !.devcontainer/volumes/**/.gitkeep
-.devcontainer/volumes/**/.tmp
+.devcontainer/volumes/**/.tmp/
 
-__NOTES__.md
-
+# dependencies
 node_modules/
+.venv/
 
-devcontainer/features/*/output
+# build output
+devcontainer/features/*/output/
+
+# temporary files
+__scratch__/
+__NOTES__.md
