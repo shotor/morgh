@@ -14,7 +14,7 @@ docker compose up
 
 ```sh
 msb create \
-  ghcr.io/shotor/docker:latest \
+  ghcr.io/shotor/docker-compose:latest \
   --name zot \
   --replace \
   --net public \
