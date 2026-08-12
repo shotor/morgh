@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  msbe [options] <image> <command> [args...]
+
+Run a command in an ephemeral MicroSandbox.
+
+Options:
+      --pull              Pull the image before running.
+  -V, --verbose           Show sandbox create and cleanup output.
+  -r, --root              Run the command as root.
+  -e, --env <env>         Set an environment variable.
+  -v, --mount <src:dst>   Mount a directory.
+  -w, --workdir <path>    Set the working directory.
+  -h, --help              Show this help.
+EOF
+}
+
+pull=false
+verbose=false
+root=false
+workdir="/work"
+mounts=()
+envs=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --pull)
+      pull=true
+      shift
+      ;;
+    -V|--verbose)
+      verbose=true
+      shift
+      ;;
+    -r|--root)
+      root=true
+      shift
+      ;;
+    -e|--env)
+      [[ $# -ge 2 ]] || {
+        echo "msbe: $1 requires an argument" >&2
+        exit 2
+      }
+      envs+=("$2")
+      shift 2
+      ;;
+    -v|--mount)
+      [[ $# -ge 2 ]] || {
+        echo "msbe: $1 requires an argument" >&2
+        exit 2
+      }
+      mounts+=("$2")
+      shift 2
+      ;;
+    -w|--workdir)
+      [[ $# -ge 2 ]] || {
+        echo "msbe: $1 requires an argument" >&2
+        exit 2
+      }
+      workdir="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "msbe: unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -lt 2 ]]; then
+  usage >&2
+  exit 2
+fi
+
+image="$1"
+shift
+
+name="msbe-$$-$(date +%s%N)"
+uid="$(id -u)"
+gid="$(id -g)"
+
+cleanup() {
+  if "$verbose"; then
+    nohup sh -c "
+      msb stop '$name' || true
+      msb rm '$name' || true
+    " </dev/null &
+  else
+    nohup sh -c "
+      msb stop '$name' >/dev/null 2>&1 || true
+      msb rm '$name' >/dev/null 2>&1 || true
+    " >/dev/null 2>&1 </dev/null &
+  fi
+}
+
+if "$pull"; then
+  msb pull "$image" || exit $?
+fi
+
+create_args=()
+
+if [[ ${#mounts[@]} -eq 0 ]]; then
+  create_args+=(
+    --mount-dir "$PWD:/work:stat-virt=off"
+  )
+else
+  for mount in "${mounts[@]}"; do
+    create_args+=(
+      --mount-dir "$mount:stat-virt=off"
+    )
+  done
+fi
+
+if "$verbose"; then
+  msb create \
+    "$image" \
+    --name "$name" \
+    "${create_args[@]}" || exit $?
+else
+  msb create \
+    --quiet \
+    "$image" \
+    --name "$name" \
+    "${create_args[@]}" \
+    >/dev/null 2>&1 || exit $?
+fi
+
+trap cleanup EXIT
+
+exec_args=(
+  --workdir "$workdir"
+)
+
+if "$root"; then
+  exec_args+=(--user root)
+else
+  exec_args+=(--user "$uid:$gid")
+fi
+
+for env in "${envs[@]}"; do
+  if [[ "$env" == *=* ]]; then
+    exec_args+=(--env "$env")
+  else
+    exec_args+=(--env "$env=${!env-}")
+  fi
+done
+
+if [[ -t 0 ]]; then
+  exec_args+=(--tty)
+else
+  exec_args+=(--stream)
+fi
+
+msb exec \
+  "${exec_args[@]}" \
+  "$name" \
+  -- "$@"
