@@ -1,6 +1,6 @@
 {
   "id": "docker",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Docker",
   "description": "Installs Docker, containerd, BuildKit, nerdctl and Docker Compose"
 }
