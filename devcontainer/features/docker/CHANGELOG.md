@@ -1,3 +1,9 @@
+## devcontainer/features/docker/0.2.2 (2026-08-13)
+
+### Fix
+
+- **docker**: proper wait for containerd
+
 ## devcontainer/features/docker/0.2.1 (2026-08-13)
 
 ### Fix
