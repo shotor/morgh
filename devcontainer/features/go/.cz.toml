@@ -1,5 +1,5 @@
 [tool.commitizen]
-version = "0.0.1"
+version = "0.1.0"
 name = "cz_filter_path"
 version_scheme = "semver2"
 tag_format = "devcontainer/features/go/$version"
