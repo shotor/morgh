@@ -1,17 +1,12 @@
 #!/bin/sh
 set -eu
 
-if ! nerdctl-real info >/dev/null 2>&1; then
-  containerd >/tmp/containerd.log 2>&1 &
-  containerd_pid=$!
+if ! sudo nerdctl-real info >/dev/null 2>&1; then
+  sudo sh -c 'containerd >/var/log/containerd.log 2>&1 &'
 
-  until nerdctl-real info >/dev/null 2>&1; do
-    if ! kill -0 "$containerd_pid" 2>/dev/null; then
-      cat /tmp/containerd.log >&2
-      exit 1
-    fi
+  until sudo nerdctl-real info >/dev/null 2>&1; do
     sleep 0.05
   done
 fi
 
-exec nerdctl-real "$@"
+exec sudo nerdctl-real "$@"
