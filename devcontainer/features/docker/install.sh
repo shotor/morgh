@@ -33,7 +33,8 @@ EOF
 
 apt-get update
 apt-get install -y --no-install-recommends \
-  containerd.io
+  containerd.io \
+  containernetworking-plugins
 
 rm -rf /var/lib/apt/lists/*
 
