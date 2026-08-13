@@ -1,3 +1,9 @@
+## devcontainer/features/docker/0.2.0 (2026-08-13)
+
+### Feat
+
+- **docker**: use native snapshotter for nested virt
+
 ## devcontainer/features/docker/0.1.1 (2026-08-13)
 
 ### Fix
