@@ -1,0 +1,9 @@
+{
+  "id": "go",
+  "name": "go",
+  "version": "0.0.1",
+  "description": "Installs Go using mise.",
+  "dependsOn": {
+    "ghcr.io/shotor/devcontainer/features/mise:0": {}
+  }
+}
