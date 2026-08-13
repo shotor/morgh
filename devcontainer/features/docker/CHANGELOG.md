@@ -1,3 +1,9 @@
+## devcontainer/features/docker/0.2.1 (2026-08-13)
+
+### Fix
+
+- **docker**: add containernetworking-plugins
+
 ## devcontainer/features/docker/0.2.0 (2026-08-13)
 
 ### Feat
