@@ -58,5 +58,15 @@ curl -fsSL \
 
 mv /usr/local/bin/nerdctl /usr/local/bin/nerdctl-real
 
+# Configure nerdctl.
+#
+# We use containerd's native snapshotter instead of overlayfs because this
+# feature runs containerd inside the devcontainer. Nested overlayfs mounts
+# may not be supported by the outer container environment.
+install -d -m 0755 /etc/nerdctl
+install -m 0644 "$(dirname "$0")/nerdctl.toml" \
+  /etc/nerdctl/nerdctl.toml
+
+# Provide Docker-compatible and nerdctl commands through our wrapper.
 install -m 0755 "$(dirname "$0")/docker.sh" /usr/local/bin/docker
 install -m 0755 "$(dirname "$0")/docker.sh" /usr/local/bin/nerdctl
