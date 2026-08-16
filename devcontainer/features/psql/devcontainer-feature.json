@@ -1,0 +1,6 @@
+{
+  "id": "psql",
+  "name": "psql",
+  "version": "0.0.1",
+  "description": "Installs psql"
+}
