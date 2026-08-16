@@ -4,6 +4,8 @@
 !.devcontainer/volumes/**/.gitkeep
 .devcontainer/volumes/**/.tmp/
 
+.devsy-internal
+
 # dependencies
 node_modules/
 .venv/
