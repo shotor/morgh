@@ -1,0 +1,6 @@
+{
+  "id": "claude",
+  "version": "0.0.1",
+  "name": "Claude",
+  "description": "Installs Anthropic Claude Code CLI."
+}
