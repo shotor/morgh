@@ -2,5 +2,8 @@
   "id": "pi",
   "version": "0.1.0",
   "name": "Pi",
-  "description": "Installs Pi CLI."
+  "description": "Installs Pi CLI.",
+  "dependsOn": {
+    "ghcr.io/shotor/devcontainer/features/mise:0": {}
+  }
 }
