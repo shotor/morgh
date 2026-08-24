@@ -2,26 +2,24 @@
   "name": "morgh",
   "image": "ghcr.io/shotor/devcontainer/images/debian:0",
   "features": {
+    "ghcr.io/shotor/devcontainer/features/claude:0": {},
     "ghcr.io/shotor/devcontainer/features/codex:0": {},
-    "ghcr.io/shotor/devcontainer/features/cursor:0": {}
+    "ghcr.io/shotor/devcontainer/features/cursor:0": {},
+    "ghcr.io/shotor/devcontainer/features/pi:0": {}
   },
+  "postCreateCommand": "agent-auth",
 
   "remoteUser": "user",
   "updateRemoteUserUID": true,
 
-  "containerEnv": {
-    "HISTFILE": "/commandhistory/.zsh_history"
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
   },
 
-  "customizations": {
-    "vscode": {
-      "extensions": ["esbenp.prettier-vscode"],
-      "settings": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "terminal.integrated.defaultProfile.linux": "zsh"
-      }
-    }
+  "containerEnv": {
+    "HISTFILE": "/commandhistory/.zsh_history"
   },
 
   "mounts": [
@@ -37,13 +35,29 @@
     },
     {
       "type": "bind",
-      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor/config",
-      "target": "/home/user/.config/cursor"
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor",
+      "target": "/home/user/.cursor"
     },
     {
       "type": "bind",
-      "source": "${localWorkspaceFolder}/.devcontainer/volumes/cursor/home",
-      "target": "/home/user/.cursor"
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/claude",
+      "target": "/home/user/.claude"
+    },
+    {
+      "type": "bind",
+      "source": "${localWorkspaceFolder}/.devcontainer/volumes/pi",
+      "target": "/home/user/.pi"
     }
-  ]
+  ],
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["oxc.oxc-vscode"],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "oxc.oxc-vscode",
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  }
 }
