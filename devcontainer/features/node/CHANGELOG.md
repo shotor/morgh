@@ -1,3 +1,9 @@
+## devcontainer/features/node/0.2.0 (2026-08-24)
+
+### Feat
+
+- **node**: symlink node shims
+
 ## devcontainer/features/node/0.1.4 (2026-08-10)
 
 ### Fix

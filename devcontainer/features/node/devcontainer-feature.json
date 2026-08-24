@@ -1,7 +1,7 @@
 {
   "id": "node",
   "name": "node",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Installs Node.js using mise.",
   "dependsOn": {
     "ghcr.io/shotor/devcontainer/features/mise:0": {}
