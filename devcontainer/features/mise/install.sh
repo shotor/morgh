@@ -14,11 +14,18 @@ rm -rf /var/lib/apt/lists/*
 su -s /bin/sh "$USER" -c \
   "export HOME='$HOME'; curl -fsSL https://mise.run | sh"
 
-MISE_INIT='eval "$(~/.local/bin/mise activate zsh)"'
+MISE_INIT_ZSH='eval "$(~/.local/bin/mise activate zsh)"'
 
 touch "$ZSHRC"
 
-grep -Fqx "$MISE_INIT" "$ZSHRC" 2>/dev/null \
-  || echo "$MISE_INIT" >> "$ZSHRC"
+grep -Fqx "$MISE_INIT_ZSH" "$ZSHRC" 2>/dev/null \
+  || echo "$MISE_INIT_ZSH" >> "$ZSHRC"
 
-chown "$USER:$(id -gn "$USER")" "$ZSHRC"
+MISE_INIT_BASH='eval "$(~/.local/bin/mise activate bash)"'
+
+touch "$ZSHRC" "$BASHRC"
+
+grep -Fqx "$MISE_INIT_BASH" "$BASHRC" 2>/dev/null \
+  || echo "$MISE_INIT_BASH" >> "$BASHRC"
+
+chown "$USER:$(id -gn "$USER")" "$ZSHRC" "$BASHRC"
