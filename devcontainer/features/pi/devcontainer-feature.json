@@ -4,6 +4,6 @@
   "name": "Pi",
   "description": "Installs Pi CLI.",
   "dependsOn": {
-    "ghcr.io/shotor/devcontainer/features/mise:0": {}
+    "ghcr.io/shotor/devcontainer/features/node:0": {}
   }
 }
