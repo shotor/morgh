@@ -1,3 +1,9 @@
+## devcontainer/features/mise/0.1.6 (2026-08-24)
+
+### Fix
+
+- **mise**: missing variable
+
 ## devcontainer/features/mise/0.1.5 (2026-08-24)
 
 ### Fix
