@@ -1,43 +1,35 @@
 {
-  "workbench.colorTheme": "Quiet Light",
-  "ts.updateImportsOnFileMove.enabled": true,
+  // General
   "editor.formatOnSave": true,
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "explorer.compactFolders": false,
-  "explorer.autoReveal": false,
-  "workbench.iconTheme": "material-icon-theme",
-  "explorer.confirmDragAndDrop": false,
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.fontSize": 16,
-  "cSpell.userWords": ["guichart"],
-  "typst-lsp.exportPdf": "never",
-  "js.updateImportsOnFileMove.enabled": true,
-  "explorer.confirmDelete": false,
-  "rust-analyzer.server.path": "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer",
-  "workbench.editorAssociations": {
-    "{git,gitlens,chat-editing-snapshot-text-model,copilot,git-graph,git-graph-3}:/**/*.qrc": "default",
-    "*.qrc": "qt-core.qrcEditor"
-  },
-  "qt-core.additionalQtPaths": [
-    {
-      "name": "Qt-5.15.18-linux-g++_from_PATH",
-      "path": "/usr/bin/qmake"
-    }
-  ],
-  "qt-core.qtInstallationRoot": "/usr/lib/qt6",
-  "editor.tabSize": 2,
-  "qt-qml.qmlls.additionalImportPaths": ["/usr/lib/qt6/qml"],
-  "terminal.integrated.initialHint": false,
   "editor.fontFamily": "'FiraCode Nerd Font Mono', monospace",
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.fontSize": 16,
+  "editor.tabSize": 2,
+
+  "explorer.autoReveal": false,
+  "explorer.compactFolders": false,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmPasteNative": false,
+  
+  "terminal.integrated.initialHint": false,
+
+  "workbench.colorTheme": "Quiet Light",
+  "workbench.iconTheme": "material-icon-theme",
+
+  // Typescript
+  "ts.updateImportsOnFileMove.enabled": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
   },
-  "explorer.confirmPasteNative": false
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+
+  // JSON
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+  },
 }
