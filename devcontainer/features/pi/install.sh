@@ -12,4 +12,4 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 rm -rf /var/lib/apt/lists/*
 
 su -s /bin/bash "$USER" -c \
-    "HOME='$USER_HOME' curl -fsSL https://pi.dev/install.sh | sh"
+    "HOME='$USER_HOME' curl -fsSL https://pi.dev/install.sh | bash"
