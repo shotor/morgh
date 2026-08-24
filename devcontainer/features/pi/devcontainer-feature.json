@@ -1,6 +1,6 @@
 {
   "id": "pi",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "Pi",
   "description": "Installs Pi CLI.",
   "dependsOn": {

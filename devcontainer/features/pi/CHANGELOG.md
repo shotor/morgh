@@ -1,3 +1,9 @@
+## devcontainer/features/pi/0.1.3 (2026-08-24)
+
+### Fix
+
+- **pi**: use bash
+
 ## devcontainer/features/pi/0.1.2 (2026-08-24)
 
 ### Fix
