@@ -4,6 +4,7 @@ set -euo pipefail
 USER="${_REMOTE_USER}"
 HOME="$(getent passwd "$USER" | cut -d: -f6)"
 ZSHRC="$HOME/.zshrc"
+BASHRC="$HOME/.bashrc"
 
 apt-get update
 apt-get install -y --no-install-recommends \
