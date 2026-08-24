@@ -1,3 +1,9 @@
+## devcontainer/features/pi/0.1.4 (2026-08-24)
+
+### Refactor
+
+- **pi**: fix indentation
+
 ## devcontainer/features/pi/0.1.3 (2026-08-24)
 
 ### Fix
