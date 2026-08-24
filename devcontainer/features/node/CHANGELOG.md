@@ -1,3 +1,9 @@
+## devcontainer/features/node/0.2.1 (2026-08-24)
+
+### Fix
+
+- **node**: write wrapper instead of symlinks
+
 ## devcontainer/features/node/0.2.0 (2026-08-24)
 
 ### Feat
