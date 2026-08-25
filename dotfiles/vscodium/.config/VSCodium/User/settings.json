@@ -10,7 +10,7 @@
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "explorer.confirmPasteNative": false,
-  
+
   "terminal.integrated.initialHint": false,
 
   "workbench.colorTheme": "Quiet Light",
@@ -22,7 +22,7 @@
     "editor.defaultFormatter": "oxc.oxc-vscode",
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "oxc.oxc-vscode",
   },
 
   // JSON
@@ -31,5 +31,11 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
 }
