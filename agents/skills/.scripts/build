@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+############################################################
+######################## setup #############################
+############################################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_DIR="$(dirname "$SCRIPT_DIR")"
+WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
+
+SKILL="$1"
+SKILL_DIR="$SKILLS_DIR/$SKILL"
+
+############################################################
+######################## sources ###########################
+############################################################
+
+source "$WORKSPACE_DIR/.scripts/utils/log"
+source "$WORKSPACE_DIR/.scripts/utils/has_release"
+source "$WORKSPACE_DIR/.scripts/utils/bump_package"
+source "$WORKSPACE_DIR/.scripts/utils/generate_changelog"
+source "$WORKSPACE_DIR/.scripts/utils/get_version"
+source "$WORKSPACE_DIR/.scripts/utils/get_package_tag"
+
+############################################################
+######################## version ###########################
+############################################################
+
+from_version="$(get_version "$SKILL_DIR")"
+increment="$(has_release "$SKILL_DIR")"
+
+if [ -z "$increment" ]; then
+  echo "$SKILL: no releasable changes" >&2
+  exit 1
+fi
+
+info "$SKILL: bumping version"
+
+bump_package "$SKILL_DIR" "$increment" >&2
+
+new_version="$(get_version "$SKILL_DIR")"
+tag="$(get_package_tag "$SKILL_DIR" "$new_version")"
+
+success "$SKILL: $from_version -> $new_version"
+
+############################################################
+###################### changelog ###########################
+############################################################
+
+info "$SKILL: generating changelog"
+
+generate_changelog "$SKILL_DIR" "$tag" >&2
+
+############################################################
+######################## return ############################
+############################################################
+
+success "$SKILL_DIR: $tag"
+echo "$tag"
