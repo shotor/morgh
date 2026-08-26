@@ -1,0 +1,9 @@
+[tool.commitizen]
+version = "0.0.1"
+name = "cz_filter_path"
+version_scheme = "semver2"
+tag_format = "agents/skills/shotor-rust/$version"
+ignored_tag_formats = ["*"]
+filter_path = "agents/skills/shotor-rust"
+update_changelog_on_bump = true
+version_files = [".cz.toml:version"]
