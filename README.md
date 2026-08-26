@@ -4,6 +4,10 @@ Personal development infrastructure, dev containers, Docker images, and dotfiles
 
 ## Contents
 
+### [agents](agents)
+
+Custom agent skills and mcp implementations.
+
 ### [devcontainer](devcontainer)
 
 Dev Container images and Features for reusable development environments.
@@ -18,4 +22,4 @@ Shell, terminal, editor, and application configuration.
 
 ## License
 
-[MIT](https://github.com/shotor/morgh/blob/main/LICENSE)
+[MIT](LICENSE)
