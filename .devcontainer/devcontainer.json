@@ -5,7 +5,8 @@
     "ghcr.io/shotor/devcontainer/features/claude:0": {},
     "ghcr.io/shotor/devcontainer/features/codex:0": {},
     "ghcr.io/shotor/devcontainer/features/cursor:0": {},
-    "ghcr.io/shotor/devcontainer/features/pi:0": {}
+    "ghcr.io/shotor/devcontainer/features/pi:0": {},
+    "ghcr.io/shotor/devcontainer/features/python:0": {}
   },
   "postCreateCommand": "agent-auth",
 

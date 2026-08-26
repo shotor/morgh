@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(git rev-parse --show-toplevel)"
 
 PACKAGE_DIRS=(
+  "agents/skills"
   "devcontainer/features"
   "devcontainer/images"
   "docker/images"
