@@ -6,17 +6,7 @@ Using `npx`:
 
 ```sh
 npx skills add https://github.com/shotor/morgh/tree/main/agents/skills/shotor-rust
-```
-
-Using `bunx`:
-
-```sh
 bunx skills add https://github.com/shotor/morgh/tree/main/agents/skills/shotor-rust
-```
-
-Or install the CLI globally:
-
-```sh
 pnpm add -g skills
 skills add https://github.com/shotor/morgh/tree/main/agents/skills/shotor-rust
 ```
