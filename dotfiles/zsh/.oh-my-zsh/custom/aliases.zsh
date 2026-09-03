@@ -8,7 +8,8 @@ fi
 
 c() {
   {
-    printf '%q' "$@"
+    printf '$'
+    printf ' %q' "$@"
     printf '\n'
     "$@" 2>&1
   } | tee >(wl-copy)

@@ -38,4 +38,6 @@
   "[dockercompose]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
+  "remote.autoForwardPortsSource": "hybrid",
+  "redhat.telemetry.enabled": false,
 }

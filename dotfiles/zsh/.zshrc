@@ -11,3 +11,4 @@ source $ZSH/oh-my-zsh.sh
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
+eval "$(/home/shotor/.local/bin/mise activate zsh)"

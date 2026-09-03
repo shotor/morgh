@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cur=$(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage)
+
+if [ "$cur" = com.ekaaty.vinyl.desktop.dark ]; then
+  plasma-apply-lookandfeel -a com.ekaaty.vinyl.desktop.light && plasma-apply-colorscheme VinylPurpleLight
+else
+  plasma-apply-lookandfeel -a com.ekaaty.vinyl.desktop.dark && plasma-apply-colorscheme VinylPurpleDark
+fi
