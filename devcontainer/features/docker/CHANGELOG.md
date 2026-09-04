@@ -1,3 +1,9 @@
+## devcontainer/features/docker/0.2.4 (2026-09-04)
+
+### Fix
+
+- background docker daemon
+
 ## devcontainer/features/docker/0.2.3 (2026-09-04)
 
 ### Fix
