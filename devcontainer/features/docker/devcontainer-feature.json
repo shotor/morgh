@@ -1,6 +1,6 @@
 {
   "id": "docker",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "name": "Docker",
   "description": "Installs Docker CE: dockerd (BuildKit built in) with the buildx and compose cli plugins"
 }

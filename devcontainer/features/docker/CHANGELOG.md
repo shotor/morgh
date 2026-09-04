@@ -1,3 +1,9 @@
+## devcontainer/features/docker/0.2.3 (2026-09-04)
+
+### Fix
+
+- remove nerdctl
+
 ## devcontainer/features/docker/0.2.2 (2026-08-13)
 
 ### Fix
