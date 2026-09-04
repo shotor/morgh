@@ -8,6 +8,8 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 
+USER="${_REMOTE_USER}"
+
 apt-get update
 apt-get install -y --no-install-recommends \
   ca-certificates \
@@ -31,43 +33,21 @@ Architectures: $(dpkg --print-architecture)
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
 
+# dockerd has BuildKit built in; buildx and compose are cli plugins
 apt-get update
 apt-get install -y --no-install-recommends \
+  docker-ce \
+  docker-ce-cli \
   containerd.io \
-  containernetworking-plugins
+  docker-buildx-plugin \
+  docker-compose-plugin
 
 rm -rf /var/lib/apt/lists/*
 
-NERDCTL_VERSION="2.3.5"
+# the cli talks to the socket without sudo
+usermod -aG docker "$USER"
 
-case "$(dpkg --print-architecture)" in
-  amd64)
-    nerdctl_arch="amd64"
-    ;;
-  arm64)
-    nerdctl_arch="arm64"
-    ;;
-  *)
-    echo "Unsupported architecture: $(dpkg --print-architecture)"
-    exit 1
-    ;;
-esac
-
-curl -fsSL \
-  "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${nerdctl_arch}.tar.gz" \
-  | tar -xz -C /usr/local/bin nerdctl
-
-mv /usr/local/bin/nerdctl /usr/local/bin/nerdctl-real
-
-# Configure nerdctl.
-#
-# We use containerd's native snapshotter instead of overlayfs because this
-# feature runs containerd inside the devcontainer. Nested overlayfs mounts
-# may not be supported by the outer container environment.
-install -d -m 0755 /etc/nerdctl
-install -m 0644 "$(dirname "$0")/nerdctl.toml" \
-  /etc/nerdctl/nerdctl.toml
-
-# Provide Docker-compatible and nerdctl commands through our wrapper.
+# /usr/local/bin/docker shadows /usr/bin/docker: starts dockerd on first use. The
+# storage driver is dockerd's own pick (overlay2 where it works, down its list to vfs
+# where nested mounts are not allowed, e.g. inside microsandbox).
 install -m 0755 "$(dirname "$0")/docker.sh" /usr/local/bin/docker
-install -m 0755 "$(dirname "$0")/docker.sh" /usr/local/bin/nerdctl
