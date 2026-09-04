@@ -1,7 +1,7 @@
 
 # Docker (docker)
 
-Installs Docker, containerd, BuildKit, nerdctl and Docker Compose
+Installs Docker CE: dockerd (BuildKit built in) with the buildx and compose cli plugins
 
 ## Example Usage
 
@@ -15,7 +15,7 @@ Installs Docker, containerd, BuildKit, nerdctl and Docker Compose
 
 ## Compatability
 
-This feature currently only supports Alpine.
+This feature only supports Debian-based distributions.
 
 
 ---
