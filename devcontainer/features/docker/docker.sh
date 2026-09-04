@@ -1,19 +1,19 @@
 #!/bin/sh
 set -eu
 
-SOCKET="/run/containerd/containerd.sock"
-LOG="/var/log/containerd.log"
+DOCKER=/usr/bin/docker
+LOG="/var/log/dockerd.log"
 
-if [ ! -S "$SOCKET" ]; then
-  sudo sh -c "containerd >'$LOG' 2>&1 &"
+if ! "$DOCKER" info >/dev/null 2>&1; then
+  sudo sh -c "dockerd >'$LOG' 2>&1 &"
 
   attempts=0
 
-  while [ ! -S "$SOCKET" ]; do
+  while ! "$DOCKER" info >/dev/null 2>&1; do
     attempts=$((attempts + 1))
 
     if [ "$attempts" -ge 200 ]; then
-      echo "Error: containerd failed to start." >&2
+      echo "Error: dockerd failed to start." >&2
       echo "Check $LOG for details." >&2
       exit 1
     fi
@@ -22,4 +22,4 @@ if [ ! -S "$SOCKET" ]; then
   done
 fi
 
-exec sudo nerdctl-real "$@"
+exec "$DOCKER" "$@"

@@ -2,5 +2,5 @@
   "id": "docker",
   "version": "0.2.2",
   "name": "Docker",
-  "description": "Installs Docker, containerd, BuildKit, nerdctl and Docker Compose"
+  "description": "Installs Docker CE: dockerd (BuildKit built in) with the buildx and compose cli plugins"
 }

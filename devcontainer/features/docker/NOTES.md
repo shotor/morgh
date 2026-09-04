@@ -1,3 +1,3 @@
 ## Compatability
 
-This feature currently only supports Alpine.
+This feature only supports Debian-based distributions.
