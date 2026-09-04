@@ -5,7 +5,9 @@ DOCKER=/usr/bin/docker
 LOG="/var/log/dockerd.log"
 
 if ! "$DOCKER" info >/dev/null 2>&1; then
-  sudo sh -c "dockerd >'$LOG' 2>&1 &"
+  # fully detached: a daemon that keeps the session's stdin would hold a non-interactive
+  # `ssh host docker ...` open forever
+  sudo sh -c "setsid dockerd >'$LOG' 2>&1 </dev/null &"
 
   attempts=0
 
