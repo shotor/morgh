@@ -8,17 +8,16 @@
 #  - at every start (the feature's entrypoint = `import-ca` without arguments): the
 #    local directory Debian reserves for exactly this, /usr/local/share/ca-certificates —
 #    mount the project's certificates there as *.crt files (PEM, a bundle is fine).
-# Both end up in /etc/ssl/certs/ca-certificates.crt (openssl, curl, git, python's ssl),
-# and /etc/ssl/import-ca.pem bundles just the imported ones for tools with a store of
-# their own (node, through NODE_EXTRA_CA_CERTS).
+# Both end up in /etc/ssl/certs/ca-certificates.crt: openssl, curl, git and python's ssl
+# read it, and the feature points NODE_EXTRA_CA_CERTS at it too (node keeps a store of
+# its own; the system bundle always parses, a bundle of only the imported ones is empty
+# without any and node refuses an empty file with a warning at every start).
 #
 #   import-ca [--certs PEM] [--url URL[#fp[,fp...]]]...
 set -euo pipefail
 
 STORE=/usr/share/ca-certificates/import-ca
 CONF=/etc/ca-certificates.conf
-LOCAL=/usr/local/share/ca-certificates
-BUNDLE=/etc/ssl/import-ca.pem
 
 # a fingerprint as `step certificate fingerprint` or `openssl x509 -fingerprint -sha256`
 # print it: hex, with or without colons, any case, optional sha256: prefix
@@ -78,4 +77,3 @@ while [ $# -gt 0 ]; do
 done
 # the refresh: the store's and the local directory's (a mount: what is there now)
 update-ca-certificates
-find -L "$STORE" "$LOCAL" -type f -name '*.crt' -exec cat {} + > "$BUNDLE" 2>/dev/null || : > "$BUNDLE"
