@@ -2,6 +2,7 @@
   "name": "morgh",
   "image": "ghcr.io/shotor/devcontainer/images/debian:0",
   "features": {
+    "ghcr.io/shotor/devcontainer/features/apt-upgrade:0": {},
     "ghcr.io/shotor/devcontainer/features/claude:0": {},
     "ghcr.io/shotor/devcontainer/features/codex:0": {},
     "ghcr.io/shotor/devcontainer/features/cursor:0": {},
@@ -24,6 +25,16 @@
   },
 
   "mounts": [
+    {
+      "type": "volume",
+      "source": "${devcontainerId}-local-bin",
+      "target": "/home/user/.local/bin"
+    },
+    {
+      "type": "volume",
+      "source": "${devcontainerId}-claude-install",
+      "target": "/home/user/.local/share/claude"
+    },
     {
       "type": "bind",
       "source": "${localWorkspaceFolder}/.devcontainer/volumes/history",
