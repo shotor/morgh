@@ -1,0 +1,3 @@
+# containerd is running inside a devcontainer, where nested overlayfs
+# mounts may not be supported.
+snapshotter = "native"
