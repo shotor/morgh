@@ -1,6 +1,6 @@
 {
   "id": "import-ca",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "name": "import-ca",
   "description": "Private CA certificates for the trust store, as many as you like: PEM text and URLs (optionally pinned by SHA-256 fingerprint) at build time, and whatever *.crt files are in /usr/local/share/ca-certificates at each start — mount the project's there.",
   "options": {
