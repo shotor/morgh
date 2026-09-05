@@ -1,6 +1,6 @@
 {
   "id": "apt-upgrade",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "name": "apt-upgrade",
   "description": "Upgrades every Debian package at build time, so an image built from a floating base tag carries current packages. List it first: later features install on the upgraded system."
 }
