@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# import-ca: private CA certificates for the system trust store, two ways in:
+#  - at build time (the feature's certs/urls options, or by hand): PEM text and URLs,
+#    a URL optionally pinned by SHA-256 fingerprint (fetched without TLS verification
+#    then). Those land in the distro's directory, /usr/share/ca-certificates/import-ca/
+#    <fingerprint>.crt, listed in /etc/ca-certificates.conf — the same certificate twice
+#    is one file
+#  - at every start (the feature's entrypoint = `import-ca` without arguments): the
+#    local directory Debian reserves for exactly this, /usr/local/share/ca-certificates —
+#    mount the project's certificates there as *.crt files (PEM, a bundle is fine).
+# Both end up in /etc/ssl/certs/ca-certificates.crt (openssl, curl, git, python's ssl),
+# and /etc/ssl/import-ca.pem bundles just the imported ones for tools with a store of
+# their own (node, through NODE_EXTRA_CA_CERTS).
+#
+#   import-ca [--certs PEM] [--url URL[#fp[,fp...]]]...
+set -euo pipefail
+
+STORE=/usr/share/ca-certificates/import-ca
+CONF=/etc/ca-certificates.conf
+LOCAL=/usr/local/share/ca-certificates
+BUNDLE=/etc/ssl/import-ca.pem
+
+# a fingerprint as `step certificate fingerprint` or `openssl x509 -fingerprint -sha256`
+# print it: hex, with or without colons, any case, optional sha256: prefix
+normalize() {
+  printf '%s' "$1" | tr 'A-Z' 'a-z' | sed 's/^sha256[:=]//; s/://g'
+}
+
+# import_pem <file> <allowed fingerprints, comma separated, or empty> <origin>
+# splits the file into certificates; every one must match an allowed fingerprint when
+# any is given
+import_pem() {
+  local file=$1 allowed=$2 origin=$3 n=0 cert fp subject
+  local tmp; tmp=$(mktemp -d)
+  awk -v dir="$tmp" '/-----BEGIN CERTIFICATE-----/ { n++; out = dir "/" n ".pem" } out { print > out } /-----END CERTIFICATE-----/ { out = "" }' "$file"
+  for cert in "$tmp"/*.pem; do
+    [ -e "$cert" ] || break
+    fp=$(normalize "$(openssl x509 -in "$cert" -noout -fingerprint -sha256 | sed 's/^.*=//')")
+    subject=$(openssl x509 -in "$cert" -noout -subject | sed 's/^subject=//')
+    if [ -n "$allowed" ] && ! printf '%s' ",$allowed," | grep -qF ",$fp,"; then
+      echo "import-ca: $origin: $subject has fingerprint $fp, not one of: $allowed" >&2
+      exit 1
+    fi
+    openssl x509 -in "$cert" -out "$STORE/$fp.crt"
+    grep -qxF "import-ca/$fp.crt" "$CONF" || echo "import-ca/$fp.crt" >> "$CONF"
+    echo "import-ca: $origin: $subject ($fp)"
+    n=$((n + 1))
+  done
+  rm -rf "$tmp"
+  if [ "$n" -eq 0 ]; then
+    echo "import-ca: $origin: no certificate found" >&2
+    exit 1
+  fi
+}
+
+import_url() {
+  local entry=$1 url=${1%%#*} allowed="" tmp
+  [ "$url" = "$entry" ] || allowed=$(normalize "${entry#*#}")
+  tmp=$(mktemp)
+  if [ -n "$allowed" ]; then
+    # the pin is the trust: the server is usually the CA itself, whose certificate the
+    # store cannot verify yet
+    curl -fsS --insecure -o "$tmp" "$url"
+  else
+    curl -fsS -o "$tmp" "$url"
+  fi
+  import_pem "$tmp" "$allowed" "$url"
+  rm -f "$tmp"
+}
+
+mkdir -p "$STORE"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --certs) tmp=$(mktemp); printf '%s\n' "$2" > "$tmp"; import_pem "$tmp" "" "certs"; rm -f "$tmp"; shift 2;;
+    --url) import_url "$2"; shift 2;;
+    *) echo "import-ca: unknown argument $1" >&2; exit 2;;
+  esac
+done
+# the refresh: the store's and the local directory's (a mount: what is there now)
+update-ca-certificates
+find -L "$STORE" "$LOCAL" -type f -name '*.crt' -exec cat {} + > "$BUNDLE" 2>/dev/null || : > "$BUNDLE"

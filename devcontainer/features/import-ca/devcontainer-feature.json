@@ -1,0 +1,23 @@
+{
+  "id": "import-ca",
+  "version": "0.0.1",
+  "name": "import-ca",
+  "description": "Private CA certificates for the trust store, as many as you like: PEM text and URLs (optionally pinned by SHA-256 fingerprint) at build time, and whatever *.crt files are in /usr/local/share/ca-certificates at each start — mount the project's there.",
+  "options": {
+    "certs": {
+      "type": "string",
+      "default": "",
+      "description": "PEM certificates to trust at build time, concatenated (a bundle holds any number)."
+    },
+    "urls": {
+      "type": "string",
+      "default": "",
+      "description": "URLs serving PEM certificates, fetched at build time, separated by whitespace. `url#fingerprint[,fingerprint...]` pins what the URL may return by SHA-256 fingerprint and skips TLS verification for that fetch; a URL without a fingerprint is fetched with normal verification."
+    }
+  },
+  "containerEnv": {
+    "NODE_EXTRA_CA_CERTS": "/etc/ssl/import-ca.pem",
+    "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt"
+  },
+  "entrypoint": "/usr/local/bin/import-ca"
+}
