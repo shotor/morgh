@@ -1,0 +1,6 @@
+{
+  "id": "firefox",
+  "version": "0.0.1",
+  "name": "Firefox",
+  "description": "Installs Firefox stable from Mozilla's APT repository and its runtime dependencies."
+}
