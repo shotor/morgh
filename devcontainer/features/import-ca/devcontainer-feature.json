@@ -16,7 +16,7 @@
     }
   },
   "containerEnv": {
-    "NODE_EXTRA_CA_CERTS": "/etc/ssl/import-ca.pem",
+    "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
     "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt"
   },
   "entrypoint": "/usr/local/bin/import-ca"
