@@ -22,7 +22,7 @@
     "editor.defaultFormatter": "oxc.oxc-vscode",
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
 
   // JSON
@@ -40,4 +40,8 @@
   },
   "remote.autoForwardPortsSource": "hybrid",
   "redhat.telemetry.enabled": false,
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "python.languageServer": "Default",
 }

@@ -2,9 +2,7 @@ gitshotor() {
   git config user.name "shotor"
   git config user.email "shotor@shotor.com"
   git config gpg.format ssh
-  # quoted: git expands ~ itself, the shell's expansion writes this machine's home
-  # into the checkout, which devvm pull/sync carries to the other one
-  git config user.signingkey '~/.ssh/shotor_id_ed25519.pub'
+  git config user.signingkey "key::ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmyJfbxkoZuv1owYO1hiV60bE65mIkw7RGDmKtNicpy shotor@shotor.com"
   git config commit.gpgsign true
   git config tag.gpgSign true
 
@@ -14,3 +12,4 @@ gitshotor() {
   git config sendemail.smtpUser shotor@shotor.com
   git config sendemail.from shotor@shotor.com
 }
+
