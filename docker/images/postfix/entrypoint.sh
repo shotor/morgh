@@ -1,11 +1,16 @@
 #!/bin/sh
-# writes the ldap maps from the environment, so the bind password is never in a file the image carries, then runs
+# writes the ldap maps from the environment or from the files it names, so the bind password is never in a file the
+# image carries, then runs
 # postfix in the foreground. Every public address is an alias, a value of MAIL_LDAP_ALIAS_ATTRIBUTE on a member of the
 # mail group or of the noreply group, '@domain' among them being a catch-all, postfix's own fallback lookup. A mail
 # member's alias resolves to its uid in the private mailbox domain, where postfix delivers and which nobody outside can
 # address; a noreply member's alias is accepted and discarded. Both may send as their aliases. A member without an alias
 # receives nothing and may send as nothing
 set -eu
+
+# a *_FILE variant names a file holding the value, so the bind credentials never sit in the environment
+[ -n "${MAIL_LDAP_BIND_DN_FILE:-}" ] && MAIL_LDAP_BIND_DN="$(cat "$MAIL_LDAP_BIND_DN_FILE")"
+[ -n "${MAIL_LDAP_PASSWORD_FILE:-}" ] && MAIL_LDAP_PASSWORD="$(cat "$MAIL_LDAP_PASSWORD_FILE")"
 
 if [ -n "${MAIL_LDAP_URI:-}" ]; then
   member="(&(objectClass=person)(memberOf=${MAIL_LDAP_GROUP}))"
