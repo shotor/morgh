@@ -1,3 +1,9 @@
+## docker/images/postfix/0.3.0 (2026-09-27)
+
+### Feat
+
+- **docker**: read the ldap credentials from files
+
 ## docker/images/postfix/0.2.3 (2026-09-27)
 
 ### Fix
