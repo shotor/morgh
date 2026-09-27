@@ -8,10 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /
  && git clone https://github.com/radicallyopensecurity/keycloak-app-passwords /src \
  && git -C /src checkout --quiet "$REF"
 
+# the jar is named after the extension's version; the shade plugin leaves an original- copy beside it
 FROM source AS extension
 ARG KEYCLOAK_VERSION
 WORKDIR /src/extension
-RUN mvn --quiet --batch-mode -DskipTests "-Dkeycloak.version=$KEYCLOAK_VERSION" clean package
+RUN mvn --quiet --batch-mode -DskipTests "-Dkeycloak.version=$KEYCLOAK_VERSION" clean package \
+ && cp target/keycloak-app-passwords-[0-9]*.jar /keycloak-app-passwords.jar
 
 # keycloakify needs maven and java beside node for the theme jar
 FROM node:22-bookworm AS theme
@@ -21,7 +23,7 @@ WORKDIR /src/theme
 RUN npm ci && npm run build-keycloak-theme
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
-COPY --from=extension /src/extension/target/keycloak-app-passwords-DEV.jar /opt/keycloak/providers/keycloak-app-passwords.jar
+COPY --from=extension /keycloak-app-passwords.jar /opt/keycloak/providers/keycloak-app-passwords.jar
 COPY --from=theme /src/theme/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar /opt/keycloak/providers/keycloak-app-passwords-theme.jar
 COPY keycloak-app-passwords.config.json /opt/keycloak/providers/keycloak-app-passwords.config.json
 # the same build options the cluster starts it with, so start needs no rebuild
