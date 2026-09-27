@@ -1,3 +1,9 @@
+## docker/images/keycloak/0.2.2 (2026-09-27)
+
+### Fix
+
+- **docker**: noreply group, app password in config
+
 ## docker/images/keycloak/0.2.1 (2026-09-27)
 
 ### Fix
