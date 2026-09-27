@@ -1,3 +1,9 @@
+## docker/images/postfix/0.2.3 (2026-09-27)
+
+### Fix
+
+- **docker**: noreply group, app password in config
+
 ## docker/images/postfix/0.2.2 (2026-09-27)
 
 ### Fix
