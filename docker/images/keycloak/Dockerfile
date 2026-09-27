@@ -1,5 +1,5 @@
 # keycloak with radicallyopensecurity's app passwords: the extension jar built from a pinned commit against the same
-# keycloak version, the account theme that manages them, and the extension's config
+# keycloak version and the account theme that manages them; the extension's config is mounted by the cluster
 ARG KEYCLOAK_VERSION=26.7.4
 
 FROM maven:3.9-eclipse-temurin-17 AS source
@@ -25,7 +25,6 @@ RUN npm ci && npm run build-keycloak-theme
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
 COPY --from=extension /keycloak-app-passwords.jar /opt/keycloak/providers/keycloak-app-passwords.jar
 COPY --from=theme /src/theme/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar /opt/keycloak/providers/keycloak-app-passwords-theme.jar
-COPY keycloak-app-passwords.config.json /opt/keycloak/providers/keycloak-app-passwords.config.json
 # the same build options the cluster starts it with, so start needs no rebuild
 ENV KC_DB=postgres \
     KC_FEATURES=authorization:v1,hostname:v2,scripts:v1,opentelemetry:v1 \
