@@ -29,5 +29,6 @@ COPY --from=theme /src/theme/dist_keycloak/keycloak-theme-for-kc-all-other-versi
 ENV KC_DB=postgres \
     KC_FEATURES=authorization:v1,hostname:v2,scripts:v1,opentelemetry:v1 \
     KC_HEALTH_ENABLED=true \
-    KC_METRICS_ENABLED=true
+    KC_METRICS_ENABLED=true \
+    KC_TRACING_ENABLED=true
 RUN /opt/keycloak/bin/kc.sh build
