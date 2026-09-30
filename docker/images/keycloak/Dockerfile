@@ -30,5 +30,6 @@ ENV KC_DB=postgres \
     KC_FEATURES=authorization:v1,hostname:v2,scripts:v1,opentelemetry:v1 \
     KC_HEALTH_ENABLED=true \
     KC_METRICS_ENABLED=true \
-    KC_TRACING_ENABLED=true
+    KC_TRACING_ENABLED=true \
+    KC_TRACING_SAMPLER_TYPE=parentbased_traceidratio
 RUN /opt/keycloak/bin/kc.sh build
