@@ -1,3 +1,9 @@
+## docker/images/keycloak/0.2.3 (2026-09-30)
+
+### Fix
+
+- **docker**: keycloak with tracing
+
 ## docker/images/keycloak/0.2.2 (2026-09-27)
 
 ### Fix
