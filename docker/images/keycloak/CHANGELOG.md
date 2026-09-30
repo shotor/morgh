@@ -1,3 +1,13 @@
+## docker/images/keycloak/0.3.0 (2026-09-30)
+
+### Feat
+
+- **docker**: keycloak-app-passwords 1.2.0, fourteen characters
+
+### Fix
+
+- **docker**: build the app passwords extension on java 21
+
 ## docker/images/keycloak/0.2.4 (2026-09-30)
 
 ### Fix
