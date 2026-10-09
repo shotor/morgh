@@ -18,7 +18,7 @@ RUN mvn --quiet --batch-mode -DskipTests "-Dkeycloak.version=$KEYCLOAK_VERSION" 
  && cp target/keycloak-app-passwords-[0-9]*.jar /keycloak-app-passwords.jar
 
 # keycloakify needs maven and java beside node for the theme jar
-FROM node:22-bookworm AS theme
+FROM node:25-bookworm AS theme
 RUN apt-get update && apt-get install -y --no-install-recommends maven && rm -rf /var/lib/apt/lists/*
 COPY --from=source /src /src
 WORKDIR /src/theme
