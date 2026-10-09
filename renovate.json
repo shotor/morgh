@@ -45,6 +45,16 @@
       ],
       "semanticCommitType": "ci",
       "semanticCommitScope": "actions"
+    },
+    {
+      "description": "keycloak's version comes from its github releases, which carry dates; quay.io's tags have none and would wait forever",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "quay.io/keycloak/keycloak"
+      ],
+      "enabled": false
     }
   ]
 }
