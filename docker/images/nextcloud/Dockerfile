@@ -1,4 +1,4 @@
-FROM nextcloud:34.0.3-apache
+FROM nextcloud:35.0.1-apache
 
 # the imagick extras package is named per imagemagick major; resolved from the base image's index
 RUN apt-get update && \
