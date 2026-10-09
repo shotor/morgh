@@ -1,7 +1,7 @@
 # keycloak with radicallyopensecurity's app passwords: the extension jar built from a pinned commit against the same
 # keycloak version and the account theme that manages them; the extension's config is mounted by the cluster
 # renovate: datasource=github-releases depName=keycloak/keycloak
-ARG KEYCLOAK_VERSION=26.7.4
+ARG KEYCLOAK_VERSION=26.8.0
 
 FROM maven:3.9-eclipse-temurin-21 AS source
 # renovate: datasource=git-refs depName=https://github.com/radicallyopensecurity/keycloak-app-passwords currentValue=main
