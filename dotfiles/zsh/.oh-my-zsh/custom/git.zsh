@@ -2,7 +2,7 @@ gitshotor() {
   git config user.name "shotor"
   git config user.email "shotor@shotor.com"
   git config gpg.format ssh
-  git config user.signingkey "key::ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmyJfbxkoZuv1owYO1hiV60bE65mIkw7RGDmKtNicpy shotor@shotor.com"
+  git config user.signingkey ~/.ssh/fido/shotor_git_primary_ed25519-sk
   git config commit.gpgsign true
   git config tag.gpgSign true
 
