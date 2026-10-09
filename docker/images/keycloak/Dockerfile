@@ -3,7 +3,7 @@
 # renovate: datasource=github-releases depName=keycloak/keycloak
 ARG KEYCLOAK_VERSION=26.7.4
 
-FROM maven:3.9-eclipse-temurin-21 AS source
+FROM maven:3.10-eclipse-temurin-21 AS source
 # renovate: datasource=git-refs depName=https://github.com/radicallyopensecurity/keycloak-app-passwords currentValue=main
 ARG REF=d30fe485c3e08ad4ef13b582f0551f981b79af34
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/* \
