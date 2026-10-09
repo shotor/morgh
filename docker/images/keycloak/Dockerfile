@@ -1,8 +1,10 @@
 # keycloak with radicallyopensecurity's app passwords: the extension jar built from a pinned commit against the same
 # keycloak version and the account theme that manages them; the extension's config is mounted by the cluster
+# renovate: datasource=docker depName=quay.io/keycloak/keycloak
 ARG KEYCLOAK_VERSION=26.7.4
 
 FROM maven:3.9-eclipse-temurin-21 AS source
+# renovate: datasource=git-refs depName=https://github.com/radicallyopensecurity/keycloak-app-passwords currentValue=main
 ARG REF=d30fe485c3e08ad4ef13b582f0551f981b79af34
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/* \
  && git clone https://github.com/radicallyopensecurity/keycloak-app-passwords /src \
