@@ -1,3 +1,9 @@
+## docker/images/nextcloud/0.3.0 (2026-10-09)
+
+### Feat
+
+- **nextcloud**: Shotor Dot Foo alone
+
 ## docker/images/nextcloud/0.2.0 (2026-10-09)
 
 ### Feat
