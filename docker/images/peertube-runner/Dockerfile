@@ -1,5 +1,5 @@
 # peertube's remote transcoding runner: the npm package at a pinned version beside debian's ffmpeg, as the node user
-FROM node:22-bookworm-slim
+FROM node:25-bookworm-slim
 # renovate: datasource=npm depName=@peertube/peertube-runner
 ARG RUNNER_VERSION=0.7.0
 RUN apt-get update \
