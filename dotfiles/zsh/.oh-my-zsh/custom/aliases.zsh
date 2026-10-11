@@ -23,3 +23,7 @@ c() {
     "$@" 2>&1
   } | tee >(wl-copy)
 }
+
+agkeepass() { export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket; ssh-add -l; }
+aggit() { export SSH_AUTH_SOCK="$HOME/.ssh/agent-git.sock"; ssh-add -l; }
+
