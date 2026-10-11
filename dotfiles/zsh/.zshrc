@@ -8,6 +8,7 @@ plugins=(
 )
 
 SSH_ASKPASS_REQUIRE=never
+export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
 source $ZSH/oh-my-zsh.sh
 
