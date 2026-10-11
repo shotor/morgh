@@ -1,3 +1,9 @@
+## docker/images/keycloak/0.3.1 (2026-10-11)
+
+### Fix
+
+- **docker**: update dependency keycloak/keycloak to v26.8.0
+
 ## docker/images/keycloak/0.3.0 (2026-09-30)
 
 ### Feat
