@@ -63,7 +63,7 @@ jobs:
         run: .github/scripts/install-python-deps
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
