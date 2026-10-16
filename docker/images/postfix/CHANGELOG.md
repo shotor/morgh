@@ -1,3 +1,9 @@
+## docker/images/postfix/0.4.0 (2026-10-16)
+
+### Feat
+
+- **postfix**: aliases from several directory attributes
+
 ## docker/images/postfix/0.3.0 (2026-09-27)
 
 ### Feat
