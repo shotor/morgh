@@ -16,10 +16,13 @@ if [ -n "${MAIL_LDAP_URI:-}" ]; then
   noreply="(&(objectClass=person)(memberOf=${MAIL_LDAP_NOREPLY_GROUP}))"
   sender="(&(objectClass=person)(|(memberOf=${MAIL_LDAP_GROUP})(memberOf=${MAIL_LDAP_NOREPLY_GROUP})))"
   alias=""
+  domain=""
   for attribute in $(printf '%s' "${MAIL_LDAP_ALIAS_ATTRIBUTE:-mailAlternateAddress}" | tr ',' ' '); do
     alias="${alias}(${attribute}=%s)"
+    domain="${domain}(${attribute}=*@%s)"
   done
   alias="(|${alias})"
+  domain="(|${domain})"
   map() {
     printf 'server_host = %s\nsearch_base = %s\nversion = 3\nscope = sub\nbind = yes\nbind_dn = %s\nbind_pw = %s\nresult_attribute = uid\n%s\nquery_filter = %s\n' \
       "$MAIL_LDAP_URI" "$MAIL_LDAP_BASE" "$MAIL_LDAP_BIND_DN" "$MAIL_LDAP_PASSWORD" "$3" "$2" > "/etc/postfix/ldap/$1.cf"
@@ -31,6 +34,8 @@ if [ -n "${MAIL_LDAP_URI:-}" ]; then
   map noreply "(&${noreply}${alias})" "result_format = DISCARD"
   # who may send as an address: the owner of the alias, by login name, in either group
   map senders "(&${sender}${alias})" "result_format = %s"
+  # a domain is postfix's own while anyone in either group has an address or a catch-all there
+  map domains "(&${sender}${domain})" "result_format = OK"
   chown root:postfix /etc/postfix/ldap/*.cf
   chmod 0640 /etc/postfix/ldap/*.cf
 fi
