@@ -1,3 +1,9 @@
+## docker/images/postfix/0.5.0 (2026-10-17)
+
+### Feat
+
+- **postfix**: domains from the directory
+
 ## docker/images/postfix/0.4.0 (2026-10-16)
 
 ### Feat
