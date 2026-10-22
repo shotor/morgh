@@ -1,5 +1,5 @@
 # renovate: datasource=github-releases depName=oras-project/oras extractVersion=^v(?<version>.+)$
-ARG VERSION=1.3.4
+ARG VERSION=1.3.5
 
 FROM alpine:3.24 AS download
 
