@@ -1,5 +1,5 @@
 # renovate: datasource=pypi depName=knot-exporter
-ARG VERSION=3.6.1
+ARG VERSION=3.6.2
 
 FROM cznic/knot:v${VERSION}
 
