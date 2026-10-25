@@ -1,0 +1,34 @@
+#!/bin/bash
+set -euo pipefail
+
+[[ -e /run/qubes-service/vpn-dns ]] || exit 0
+
+listen_address=$(qubesdb-read /qubes-ip)
+[[ $listen_address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || exit 1
+
+dns=()
+for key in /qubes-netvm-primary-dns /qubes-netvm-secondary-dns; do
+    address=$(qubesdb-read "$key")
+    [[ $address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || exit 1
+    dns+=("$address")
+done
+
+rules="$(cat <<EOF
+add table ip morgh_dns
+delete table ip morgh_dns
+table ip morgh_dns {
+    chain prerouting {
+        type nat hook prerouting priority -101; policy accept;
+        iifgroup 2 ip daddr { ${dns[0]}, ${dns[1]} } meta l4proto { tcp, udp } th dport 53 dnat to $listen_address:5353
+    }
+}
+add chain ip qubes morgh-dns-input
+flush chain ip qubes morgh-dns-input
+add rule ip qubes morgh-dns-input iifgroup 2 ct status dnat meta l4proto { tcp, udp } th dport 5353 accept
+EOF
+)"
+
+if ! nft list chain ip qubes custom-input | grep -Fq 'jump morgh-dns-input'; then
+    rules+=$'\nadd rule ip qubes custom-input jump morgh-dns-input'
+fi
+printf '%s\n' "$rules" | nft -f -

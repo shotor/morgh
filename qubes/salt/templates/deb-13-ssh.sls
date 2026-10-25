@@ -4,6 +4,7 @@
 include:
   - shotor.terminal
   - shotor.ssh-agent
+  - shotor.ctap
 
 ssh-packages:
   pkg.installed:

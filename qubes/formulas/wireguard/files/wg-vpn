@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+if [ "${1-}" = save ]; then
+    echo 'Edit the WireGuard config directly to preserve DNS domain mappings.' >&2
+    exit 1
+fi
+if [ "$#" -eq 2 ]; then
+    case "$2" in
+        */*) config=$2 ;;
+        *) config=/etc/wireguard/$2.conf ;;
+    esac
+    if [ -f "$config" ] && grep -Eiq '^[[:space:]]*SaveConfig[[:space:]]*=[[:space:]]*true([[:space:]]|#|$)' "$config"; then
+        echo 'Remove SaveConfig=true to preserve DNS domain mappings.' >&2
+        exit 1
+    fi
+fi
+
+export PATH=/usr/libexec/morgh/wg-dns:/usr/sbin:/usr/bin:/sbin:/bin
+exec /usr/bin/wg-quick "$@"

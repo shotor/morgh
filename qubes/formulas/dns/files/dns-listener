@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+install -d -m 0755 /run/systemd/resolved.conf.d
+if [ -e /run/qubes-service/vpn-dns ]; then
+    printf '[Resolve]\nDNSStubListenerExtra=0.0.0.0:5353\n' > /run/systemd/resolved.conf.d/90-vpn.conf
+else
+    rm -f /run/systemd/resolved.conf.d/90-vpn.conf
+fi

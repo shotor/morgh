@@ -1,0 +1,47 @@
+#!/bin/bash
+set -euo pipefail
+
+action=${1:?Missing action}
+interface=${2:?Missing interface}
+if [[ ! -e /sys/class/net/$interface && $interface == tun.* ]]; then
+    interface=${interface#tun.}
+fi
+
+case "$action" in
+    -a)
+        servers=()
+        domains=()
+        while read -r key value; do
+            case "$key" in
+                nameserver) servers+=("$value") ;;
+                search|domain)
+                    read -ra names <<< "$value"
+                    for name in "${names[@]}"; do
+                        name=${name#\~}
+                        [[ $name != . && $name =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || {
+                            echo 'WireGuard DNS requires specific domain suffixes.' >&2
+                            exit 1
+                        }
+                        domains+=("~$name")
+                    done
+                    ;;
+            esac
+        done
+        if (( ${#servers[@]} == 0 || ${#domains[@]} == 0 )); then
+            echo 'WireGuard DNS must contain both server addresses and domain suffixes.' >&2
+            exit 1
+        fi
+        trap 'resolvectl revert "$interface" >/dev/null 2>&1 || true' ERR
+        resolvectl default-route "$interface" no
+        resolvectl domain "$interface" "${domains[@]}"
+        resolvectl dns "$interface" "${servers[@]}"
+        ;;
+    -d)
+        [[ -e /sys/class/net/$interface ]] || exit 0
+        resolvectl revert "$interface"
+        ;;
+    *)
+        echo 'Unsupported WireGuard DNS operation.' >&2
+        exit 1
+        ;;
+esac

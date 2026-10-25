@@ -1,11 +1,11 @@
 include:
   - shotor.terminal
+  - shotor.network
+  - shotor.wireguard
 
 network-packages:
   pkg.installed:
     - pkgs:
-      - qubes-core-agent-passwordless-root
-      - qubes-core-agent-networking
       - qubes-core-agent-network-manager
       - network-manager-gnome
       - wpasupplicant

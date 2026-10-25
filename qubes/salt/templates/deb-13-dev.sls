@@ -4,6 +4,7 @@ include:
   - shotor.codex
   - shotor.neovim
   - shotor.ssh-agent.client
+  - shotor.ctap.client
   - shotor.morgh
 
 dev-packages:
