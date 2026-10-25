@@ -1,4 +1,4 @@
-# Qubes
+# 🐪🐔 shotor/morgh qubes
 
 ## Deploy (dom0)
 
