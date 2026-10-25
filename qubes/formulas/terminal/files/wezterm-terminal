@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ "${1-}" = -e ]; then
+  shift
+fi
+config=/etc/wezterm/wezterm.lua
+if [ -f "$HOME/.wezterm.lua" ]; then
+  config="$HOME/.wezterm.lua"
+elif [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/wezterm/wezterm.lua" ]; then
+  config="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm/wezterm.lua"
+fi
+exec /usr/bin/wezterm --config-file "$config" start --always-new-process -- "$@"

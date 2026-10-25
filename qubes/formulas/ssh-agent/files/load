@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ $# -ne 1 ]]; then
+  echo 'Usage: fido-load CLIENT_QUBE' >&2
+  exit 1
+fi
+[[ $(qubesdb-read /name) == sys-fido ]]
+case "$1" in
+  ''|*[!a-zA-Z0-9_-]*|-*) echo 'Invalid client name' >&2; exit 1 ;;
+esac
+[[ -f "/etc/fido/clients/$1" ]] || { echo "Client not permitted: $1" >&2; exit 1; }
+config="$HOME/.config/fido/$1"
+umask 077
+runtime="/run/user/$(id -u)"
+exec 9>"$runtime/fido-load.lock"
+flock -x 9
+/usr/bin/fido-start
+SSH_AUTH_SOCK="$runtime/fido-agent-$1/agent.sock"
+export SSH_AUTH_SOCK
+ssh-add -D
+handles=''
+loaded=false
+cleanup() {
+  local status=$?
+  trap - EXIT
+  if [[ $loaded != true ]]; then
+    ssh-add -D >/dev/null 2>&1 || true
+  fi
+  if [[ -n $handles ]]; then
+    rm -rf -- "$handles"
+  fi
+  exit "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+[[ -f "$config" ]] || { echo "Create $config with one key handle filename per line" >&2; exit 1; }
+keys=()
+while IFS= read -r key || [[ -n "$key" ]]; do
+  case "$key" in
+    ''|\#*) continue ;;
+    *[!a-zA-Z0-9_.-]*|.*|-*|*.pub) echo 'Invalid key handle filename' >&2; exit 1 ;;
+  esac
+  keys+=("$key")
+done < "$config"
+[[ ${#keys[@]} -gt 0 ]] || exit 0
+handles=$(mktemp -d "$runtime/fido-load.XXXXXXXXXX")
+(cd "$handles" && ssh-keygen -K -w internal -N '')
+for key in "${keys[@]}"; do
+  [[ -f "$handles/$key" ]] || { echo "Assigned resident key not found: $key" >&2; exit 1; }
+done
+for key in "${keys[@]}"; do
+  ssh-add "$handles/$key"
+done
+loaded=true

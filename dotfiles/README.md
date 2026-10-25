@@ -9,6 +9,11 @@
 
 Run commands from the `dotfiles` directory.
 
+For Qubes, the checkout is `/srv/shotor/morgh`. Salt and the dev-session login
+hook run Stow automatically; see [the Qubes setup](../qubes/README.md).
+The dev profile uses `git vim wezterm nvim tmux`. Dom0 uses `git vim` here plus
+the Qubes-specific `i3` and `x11` packages under `qubes/salt/dom0/files`.
+
 ### Install on a new machine
 
 Stow a package into your home directory:

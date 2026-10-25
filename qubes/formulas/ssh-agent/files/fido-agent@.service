@@ -1,0 +1,10 @@
+[Unit]
+Description=FIDO SSH agent for %i
+
+[Service]
+Type=forking
+RuntimeDirectory=fido-agent-%i
+RuntimeDirectoryMode=0700
+Environment=SSH_ASKPASS=/usr/lib/openssh/gnome-ssh-askpass
+ExecStart=/usr/bin/ssh-agent -a %t/fido-agent-%i/agent.sock -P ""
+Restart=on-failure
