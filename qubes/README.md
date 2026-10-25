@@ -3,7 +3,10 @@
 ## Deploy (dom0)
 
 Configure the private FIDO pillar below before the first highstate.
-Push dotfile changes to GitHub before the dev template clones or pulls them.
+Push dotfile changes to GitHub before deployment. Dev template highstate clones
+or updates the checkout through the Qubes update proxy, then runs Stow.
+Updates use fast-forward only and do not reset local changes. Existing AppVMs
+keep their independent persistent checkouts.
 
 ```sh
 cpfrom dev-qubes /srv/git/morgh /srv/shotor/morgh
