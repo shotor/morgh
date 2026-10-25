@@ -1,0 +1,13 @@
+{% set browser_clients = salt['pillar.get']('fido:browser_clients', []) %}
+{% if browser_clients is string or browser_clients is mapping or browser_clients is not sequence %}
+{{ raise('fido:browser_clients must be a list of VM names (use [] to permit none).') }}
+{% endif %}
+{% for qube in browser_clients %}
+{% if qube is not string or (qube | regex_match('^[A-Za-z][A-Za-z0-9_-]{0,30}$')) is none %}
+{{ raise('fido:browser_clients contains an invalid VM name.') }}
+{% endif %}
+{% if qube == 'sys-fido' %}
+{{ raise('sys-fido is the backend and cannot be a browser client.') }}
+{% endif %}
+{% endfor %}
+{% set browser_clients = browser_clients | unique | sort %}

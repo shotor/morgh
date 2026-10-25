@@ -25,6 +25,65 @@ sudo qubesctl --skip-dom0 --show-output --targets=tpl-deb-13-dev state.highstate
 
 Shut down the updated template and restart its AppVMs afterward.
 
+## Network templates
+
+`tpl-deb-13-net` supplies networking and WireGuard packages for network, firewall,
+and WireGuard VMs. `tpl-deb-13-ts` supplies networking and Tailscale packages.
+Create the templates separately before targeting them with highstate.
+
+Enable services only on the corresponding gateways (dom0), then restart them:
+
+```sh
+qvm-service TS_VM tailscale on
+qvm-service TS_VM vpn-dns on
+qvm-service WG_VM vpn-dns on
+```
+
+WireGuard configuration in `/etc/wireguard` and Tailscale state in
+`/var/lib/tailscale` persist separately in each AppVM. Configure credentials in
+the AppVM, not the template.
+
+Authenticate inside the Tailscale gateway:
+
+```sh
+sudo tailscale up --login-server=https://HEADSCALE_SERVER --accept-dns=true
+```
+
+Headscale supplies the recursive DNS servers for all domains. Enable
+`--accept-routes=true` if you also need Headscale's advertised subnet routes.
+
+Put each WireGuard config in `/etc/wireguard/NAME.conf`, owned by root with mode
+`0600`. Its `DNS=` entries must include the DNS server addresses and internal
+domain suffixes. WireGuard tunnels start manually; Tailscale reconnects at boot
+after authentication. Keep IPv4 and IPv6 configs as separate files with distinct
+names of at most 15 characters. Simultaneous tunnels must have compatible routes.
+
+Start or stop a tunnel inside the gateway:
+
+```sh
+sudo systemctl start wg-quick@NAME
+sudo systemctl stop wg-quick@NAME
+resolvectl status
+```
+
+The service uses `wg-vpn` to register only the configured DNS domains with
+resolved. For manual operation use `sudo wg-vpn up NAME` / `down NAME`, not
+plain `wg-quick`. Omit `SaveConfig=true` so shutdown cannot discard the domain
+mappings. Other queries use the gateway's normal upstream DNS.
+
+Connect AppVMs to the gateway and enable IPv6 there if needed (dom0):
+
+```sh
+qvm-prefs APP_VM netvm VPN_VM
+qvm-features VPN_VM ipv6 1
+```
+
+Restart the gateway and connected AppVMs after enabling IPv6. Multiple
+WireGuard tunnels can share one gateway. To also use the separate Tailscale
+gateway, set the WireGuard gateway's NetVM to the Tailscale gateway.
+These states configure DNS and tunnel startup; they do not install a VPN
+kill switch or select an exit node.
+
 ## FIDO clients (dom0)
 
 ```sh
@@ -69,6 +128,41 @@ qvm-usb list
 qvm-usb assign --device sys-fido sys-usb:USB_PORT
 qvm-usb attach sys-fido sys-usb:USB_PORT
 ```
+
+## Browser security keys
+
+In dom0, add `browser_clients` under the existing `fido` mapping in
+`/srv/pillar/base/fido/init.sls`, keeping `clients` unchanged:
+
+```yaml
+fido:
+  clients:
+    - SSH_CLIENT_VM
+  browser_clients:
+    - BROWSER_VM
+```
+
+Browser access is independent of SSH key assignments. Listed VMs can use CTAP
+credentials on the YubiKey; this list does not restrict individual credentials.
+An absent or empty `browser_clients` list denies browser access.
+
+From dom0, after copying the checkout:
+
+```sh
+cd /srv/shotor/morgh/qubes
+./init.sh
+sudo qubesctl --skip-dom0 --show-output --targets=tpl-deb-13-ssh,tpl-deb-13-dev state.highstate
+sudo qubesctl state.highstate
+qvm-service BROWSER_VM qubes-ctap-proxy on
+```
+
+Shut down both templates, then restart `sys-fido` and the browser VM. Keep the
+YubiKey attached to `sys-fido`. Run `fido-load` again for SSH after restarting it.
+The browser client uses `qubes-ctapproxy@sys-fido.service`; other browser
+templates must include `shotor.ctap.client`. No browser extension is required.
+
+The formula requires `qubes-ctap` 2.0.8 or newer, which includes the
+[QSB-120 fixes](https://www.qubes-os.org/news/2026/10/08/qsb-120/).
 
 ## FIDO key assignments (sys-fido)
 
