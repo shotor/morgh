@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+if [ "$(qubesdb-read /name)" = sys-fido ]; then
+  if [ -n "${DISPLAY:-}" ]; then
+    systemctl --user import-environment DISPLAY
+  fi
+  if [ -n "${XAUTHORITY:-}" ]; then
+    systemctl --user import-environment XAUTHORITY
+  fi
+  for config in /etc/fido/clients/*; do
+    [ -f "$config" ] || continue
+    systemctl --user start "fido-agent@${config##*/}.service"
+  done
+elif fido-socket >/dev/null 2>&1; then
+  systemctl --user start fido-forward.socket
+fi

@@ -20,6 +20,10 @@ Docker images and supporting tooling.
 
 Shell, terminal, editor, and application configuration.
 
+### [qubes](qubes)
+
+Qubes OS Salt states.
+
 ## License
 
 [MIT](LICENSE)

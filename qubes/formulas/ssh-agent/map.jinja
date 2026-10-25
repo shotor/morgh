@@ -1,0 +1,16 @@
+{% set ssh_clients = salt['pillar.get']('fido:clients', none) %}
+{% if ssh_clients is none %}
+{{ raise('Missing fido:clients pillar. Configure and enable the private fido pillar in dom0; see README.md.') }}
+{% endif %}
+{% if ssh_clients is string or ssh_clients is mapping or ssh_clients is not sequence %}
+{{ raise('fido:clients must be a list of VM names (use [] to permit none).') }}
+{% endif %}
+{% for qube in ssh_clients %}
+{% if qube is not string or (qube | regex_match('^[A-Za-z][A-Za-z0-9_-]{0,30}$')) is none %}
+{{ raise('fido:clients contains an invalid VM name.') }}
+{% endif %}
+{% if qube == 'sys-fido' %}
+{{ raise('sys-fido is the backend and cannot be a FIDO client.') }}
+{% endif %}
+{% endfor %}
+{% set ssh_clients = ssh_clients | unique | sort %}

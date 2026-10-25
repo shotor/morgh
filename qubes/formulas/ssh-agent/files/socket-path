@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+qube=$(qubesdb-read /name)
+[ "$qube" != sys-fido ]
+[ -f "/etc/fido/clients/$qube" ]
+printf '/run/user/%s/fido.sock\n' "$(id -u)"

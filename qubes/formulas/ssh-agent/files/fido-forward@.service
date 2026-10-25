@@ -1,0 +1,8 @@
+[Unit]
+Description=Forward an SSH agent connection to sys-fido
+
+[Service]
+ExecStart=/usr/bin/fido-connect
+StandardInput=socket
+StandardOutput=inherit
+StandardError=journal

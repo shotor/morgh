@@ -1,0 +1,8 @@
+[Unit]
+Description=SSH agent connection to sys-fido
+
+[Socket]
+ListenStream=%t/fido.sock
+SocketMode=0600
+Accept=yes
+RemoveOnStop=yes

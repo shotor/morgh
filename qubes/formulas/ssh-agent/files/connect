@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+qube=$(qubesdb-read /name)
+[ "$qube" != sys-fido ]
+[ -f "/etc/fido/clients/$qube" ]
+exec /usr/bin/qrexec-client-vm sys-fido "fido.Agent+$qube"

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+profile=${1:?Usage: morgh-setup dev|dom0}
+case "$profile" in
+  dev|dom0) ;;
+  *) echo 'Expected dev or dom0.' >&2; exit 1 ;;
+esac
+repo=/srv/shotor/morgh
+umask 0002
+[[ -d "$repo/.git" ]] || { echo "$repo is not a Git checkout." >&2; exit 1; }
+
+backup=''
+stow_package() {
+  local directory=$1 package=$2 source relative target parent
+  [[ -d "$directory/$package" ]] || { echo "Missing Stow package: $package" >&2; exit 1; }
+  while IFS= read -r -d '' source; do
+    relative=${source#"$directory/$package/"}
+    target="$HOME/$relative"
+    if [[ -e "$target" || -L "$target" ]]; then
+      if [[ $(readlink -f -- "$target") == "$source" ]]; then
+        continue
+      fi
+      parent=$(dirname -- "$target")
+      while [[ "$parent" != "$HOME" ]]; do
+        if [[ -L "$parent" ]]; then
+          echo "Resolve the existing directory symlink before stowing: $parent" >&2
+          exit 1
+        fi
+        parent=$(dirname -- "$parent")
+      done
+      if [[ -z "$backup" ]]; then
+        mkdir -p "$HOME/.local/state"
+        backup=$(mktemp -d "$HOME/.local/state/morgh-backup.XXXXXXXX")
+        chmod 0700 "$backup"
+        echo "Existing dotfiles backed up to $backup"
+      fi
+      mkdir -p -- "$backup/$(dirname -- "$relative")"
+      mv -- "$target" "$backup/$relative"
+    fi
+  done < <(find "$directory/$package" -type f -print0)
+  stow --dir="$directory" --target="$HOME" --no-folding --restow "$package"
+}
+
+stow_package "$repo/dotfiles" git
+stow_package "$repo/dotfiles" vim
+if [[ "$profile" == dev ]]; then
+  stow_package "$repo/dotfiles" wezterm
+  stow_package "$repo/dotfiles" nvim
+  stow_package "$repo/dotfiles" tmux
+else
+  stow_package "$repo/qubes/salt/dom0/files" i3
+  stow_package "$repo/qubes/salt/dom0/files" x11
+fi

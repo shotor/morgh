@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Personal SSH agent
+Exec=/usr/bin/fido-start
+Terminal=false
+NoDisplay=true

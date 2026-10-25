@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 || "$1" == --help ]]; then
+  echo 'Usage: codexjail /srv/git/PROJECT or /srv/shotor/PROJECT [CODEX_ARGUMENTS...]'
+  exit 0
+fi
+
+if [[ $(id -un) != agent || $(id -gn) != work ]]; then
+  exec sudo -H -u agent -g work -- /usr/bin/codexjail "$@"
+fi
+
+project=$(realpath -e -- "$1")
+shift
+if [[ ! -d "$project" || ( "$project" != /srv/git && "$project" != /srv/git/* && "$project" != /srv/shotor && "$project" != /srv/shotor/* ) ]]; then
+  echo 'Project must be a directory under /srv/git or /srv/shotor.' >&2
+  exit 1
+fi
+
+codex_package=$(dirname -- "$(dirname -- "$(readlink -f /usr/bin/codex)")")
+
+umask 0002
+mounts=()
+workspace_args=(--add-dir /srv/git)
+if [[ -d /srv/shotor ]]; then
+  mounts+=(--bind /srv/shotor /srv/shotor)
+  workspace_args+=(--add-dir /srv/shotor)
+fi
+for path in /bin /sbin /lib /lib64; do
+  if [[ -L "$path" ]]; then
+    mounts+=(--symlink "$(readlink -- "$path")" "$path")
+  elif [[ -d "$path" ]]; then
+    mounts+=(--ro-bind "$path" "$path")
+  fi
+done
+for path in /etc/passwd /etc/group /etc/nsswitch.conf /etc/hosts /etc/resolv.conf /etc/ssl/certs /etc/alternatives /etc/localtime /etc/terminfo /opt/neovim; do
+  if [[ -e "$path" ]]; then
+    mounts+=(--ro-bind "$path" "$path")
+  fi
+done
+
+exec bwrap \
+  --unshare-all --share-net --die-with-parent --new-session \
+  --cap-drop ALL --clearenv \
+  --ro-bind /usr /usr \
+  --ro-bind /opt/codex /opt/codex \
+  "${mounts[@]}" \
+  --proc /proc --dev /dev --tmpfs /tmp --dir /run \
+  --tmpfs /home --dir /home/agent \
+  --bind /var/lib/codex-agent /home/agent/.codex \
+  --bind /srv/git /srv/git \
+  --setenv HOME /home/agent \
+  --setenv USER agent --setenv LOGNAME agent \
+  --setenv CODEX_HOME /home/agent/.codex \
+  --setenv PATH "$codex_package/codex-path:/usr/bin:/bin" \
+  --setenv TERM "${TERM:-xterm-256color}" \
+  --setenv LANG C.UTF-8 --setenv LC_ALL C.UTF-8 \
+  --setenv GIT_CONFIG_COUNT 2 \
+  --setenv GIT_CONFIG_KEY_0 safe.directory \
+  --setenv GIT_CONFIG_VALUE_0 "$project" \
+  --setenv GIT_CONFIG_KEY_1 core.sharedRepository \
+  --setenv GIT_CONFIG_VALUE_1 group \
+  --chdir "$project" \
+  /usr/bin/codex --sandbox workspace-write "${workspace_args[@]}" --ask-for-approval on-request "$@"

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 3 ]]; then
+  echo "Usage: $0 VM_NAME REMOTE_PATH LOCAL_PATH" >&2
+  exit 1
+fi
+
+remote_file=${2//\'/\'\\\'\'}
+if qvm-run --pass-io "$1" "test -d '$remote_file'"; then
+  mkdir -p -- "$3"
+  qvm-run --pass-io "$1" "tar -C '$remote_file' -cf - ." |
+    tar -xf - -C "$3"
+else
+  qvm-run --pass-io "$1" "cat -- '$remote_file'" > "$3"
+fi
