@@ -21,3 +21,5 @@ base:
     - shotor.templates.deb-13-usb
   tpl-deb-13-vault:
     - shotor.templates.deb-13-vault
+  tpl-deb-13-vault-net:
+    - shotor.templates.deb-13-vault-net
