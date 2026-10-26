@@ -7,4 +7,5 @@ ts-packages:
   pkg.installed:
     - pkgs:
       - lsd
+      - zoxide
       - htop

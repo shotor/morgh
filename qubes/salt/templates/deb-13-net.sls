@@ -7,6 +7,7 @@ network-packages:
   pkg.installed:
     - pkgs:
       - lsd
+      - zoxide
       - htop
       - qubes-core-agent-network-manager
       - network-manager-gnome
