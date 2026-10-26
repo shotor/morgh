@@ -39,8 +39,13 @@ for path in /etc/passwd /etc/group /etc/nsswitch.conf /etc/hosts /etc/resolv.con
   fi
 done
 
-exec bwrap \
-  --unshare-all --share-net --die-with-parent --new-session \
+terminal_args=(--new-session)
+if [[ -t 0 && -t 1 ]]; then
+  terminal_args=()
+fi
+
+sandbox=(bwrap \
+  --unshare-all --share-net --die-with-parent "${terminal_args[@]}" \
   --cap-drop ALL --clearenv \
   --ro-bind /usr /usr \
   --ro-bind /opt/codex /opt/codex \
@@ -61,4 +66,11 @@ exec bwrap \
   --setenv GIT_CONFIG_KEY_1 core.sharedRepository \
   --setenv GIT_CONFIG_VALUE_1 group \
   --chdir "$project" \
-  /usr/bin/codex --no-alt-screen --sandbox workspace-write "${workspace_args[@]}" --ask-for-approval on-request "$@"
+  /usr/bin/codex --no-alt-screen --sandbox workspace-write "${workspace_args[@]}" --ask-for-approval on-request "$@")
+
+if [[ -t 0 && -t 1 ]]; then
+  printf -v sandbox_command '%q ' "${sandbox[@]}"
+  exec env SHELL=/bin/bash script --quiet --return --command "exec $sandbox_command" /dev/null
+fi
+
+exec "${sandbox[@]}"
