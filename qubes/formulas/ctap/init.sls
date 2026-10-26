@@ -3,6 +3,30 @@ ctap-packages:
     - pkgs:
       - qubes-ctap: '>=2.0.8'
 
+ctap-registration-rp-entity:
+  file.replace:
+    - name: /usr/lib/python3/dist-packages/qubesctap/ctap2.py
+    - pattern: '(?m)^@Ctap2RequestRegister.add\(Ctap2.CMD.MAKE_CREDENTIAL\)'
+    - repl: |
+        @dataclass(eq=False, frozen=True)
+        class CtapRpEntity(PublicKeyCredentialRpEntity):
+            name: Optional[str] = None
+
+
+        @Ctap2RequestRegister.add(Ctap2.CMD.MAKE_CREDENTIAL)
+    - unless: grep -q '^class CtapRpEntity(' /usr/lib/python3/dist-packages/qubesctap/ctap2.py
+    - count: 1
+    - require:
+      - pkg: ctap-packages
+
+ctap-registration-rp-field:
+  file.replace:
+    - name: /usr/lib/python3/dist-packages/qubesctap/ctap2.py
+    - pattern: '(?m)^    rp: PublicKeyCredentialRpEntity$'
+    - repl: '    rp: CtapRpEntity'
+    - require:
+      - file: ctap-registration-rp-entity
+
 ctap-pin-field-mapping:
   file.replace:
     - name: /usr/lib/python3/dist-packages/qubesctap/ctap2.py

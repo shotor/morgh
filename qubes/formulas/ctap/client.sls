@@ -25,5 +25,6 @@ qubes-ctapproxy@sys-fido.service:
       - pkg: ctap-packages
       - file: ctap-response-command
       - file: ctap-pin-field-mapping
+      - file: ctap-registration-rp-field
       - file: ctap-discoverable-client
       - service: qubes-ctapproxy@sys-usb.service
