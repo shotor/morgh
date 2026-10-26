@@ -12,6 +12,7 @@ codex-packages:
       - tar
       - gzip
       - bubblewrap
+      - bsdutils
       - ca-certificates
       - git
       - acl
