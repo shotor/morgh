@@ -2,6 +2,9 @@
 vim.opt.number = true
 vim.opt.clipboard = "unnamedplus" 
 
+vim.opt.termguicolors = true
+vim.cmd.colorscheme('shotormorgh-dark')
+
 -- transparent when opened in kitty-dropdown-wl
 if vim.env.NVIM_MODE == "dropdown" then
   vim.cmd [[

@@ -1,3 +1,4 @@
+set nocompatible
 set number
 
 set expandtab
@@ -11,3 +12,6 @@ set fixendofline
 
 filetype plugin indent on
 
+syntax enable
+set termguicolors
+colorscheme shotormorgh-dark
