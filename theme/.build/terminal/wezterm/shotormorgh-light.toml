@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-light"
+author = "shotor"
+
+[colors]
+foreground = "#3a2013"
+background = "#fdf8f2"
+cursor_bg = "#946200"
+cursor_fg = "#fdf8f2"
+cursor_border = "#946200"
+selection_fg = "#3a2013"
+selection_bg = "#ecd2b4"
+ansi = ["#3a2013","#a43d32","#44643c","#876000","#365f83","#80516f","#286967","#ecd2b4"]
+brights = ["#80634e","#b34536","#4c703f","#946200","#3b6b94","#92577e","#287976","#fdf8f2"]
+
+[colors.tab_bar]
+background = "#f6e6d3"
+
+[colors.tab_bar.active_tab]
+bg_color = "#e3b25c"
+fg_color = "#3a2013"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "#f6e6d3"
+fg_color = "#80634e"
+
+[colors.tab_bar.new_tab]
+bg_color = "#f6e6d3"
+fg_color = "#946200"

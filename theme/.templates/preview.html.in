@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Shotor · terminal & editor study
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f1e8da;
+        color: #3a2013;
+        font-family: system-ui,sans-serif;
+      }
+
+      header,main,footer {
+        max-width: 1500px;
+        margin: auto;
+        padding: 28px 32px;
+      }
+
+      header {
+        border-bottom: 1px solid #d5c1a8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
+
+      h1 {
+        font-size: 42px;
+        letter-spacing: -2px;
+        margin: 4px 0;
+      }
+
+      p {
+        line-height: 1.6;
+      }
+
+      .eyebrow,.label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      select {
+        background: #fdf8f2;
+        border: 1px solid #b89b7c;
+        border-radius: 6px;
+        padding: 8px;
+        color: #3a2013;
+        font: inherit;
+      }
+
+      label {
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 28px;
+      }
+
+      .card {
+        min-width: 0;
+        background: var(--bg);
+        color: var(--fg);
+        border: 1px solid var(--selection);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 36px #3a201310;
+      }
+
+      .bar {
+        display: flex;
+        justify-content: space-between;
+        background: var(--header);
+        color: var(--header-fg);
+        padding: 14px 20px;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .body,.palette {
+        padding: 24px;
+      }
+
+      .label {
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+
+      .mono {
+        font-family: 'DejaVu Sans Mono',Consolas,monospace;
+        font-size: var(--font,13px);
+        line-height: 1.85;
+      }
+
+      .term {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        min-height: 300px;
+      }
+
+      .code {
+        white-space: pre;
+        overflow: auto;
+        margin: 0;
+        min-height: 300px;
+      }
+
+      .prompt,.ok,.str {
+        color: var(--green);
+      }
+
+      .host,.type {
+        color: var(--yellow);
+      }
+
+      .path,.fn {
+        color: var(--blue);
+      }
+
+      .branch,.kw {
+        color: var(--magenta);
+      }
+
+      .num {
+        color: var(--accent);
+      }
+
+      .dim,.comment {
+        color: var(--muted);
+      }
+
+      .comment {
+        font-style: italic;
+      }
+
+      .err {
+        color: var(--red);
+      }
+
+      .sel {
+        background: var(--selection);
+      }
+
+      .cursor {
+        background: var(--accent);
+        color: var(--bg);
+      }
+
+      .status {
+        display: flex;
+        justify-content: space-between;
+        background: var(--surface);
+        padding: 8px 20px;
+        font-size: 12px;
+      }
+
+      .active {
+        color: var(--accent);
+        font-weight: bold;
+      }
+
+      .sample,.palette {
+        border-top: 1px solid var(--surface);
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(8,1fr);
+        gap: 6px;
+      }
+
+      .chip {
+        height: 30px;
+        border-radius: 3px;
+        border: 1px solid #8884;
+      }
+
+      .hex {
+        font: 9px/1.6 monospace;
+        color: var(--muted);
+        padding: 4px 0;
+      }
+
+      .swatch span {
+        font: 10px monospace;
+      }
+
+      .palette p,footer {
+        font-size: 12px;
+      }
+
+      .contrast {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 16px;
+      }
+
+      body:has(#mode option[value="light"]:checked) .dark,body:has(#mode option[value="dark"]:checked) .light {
+        display: none;
+      }
+
+      body:not(:has(#mode option[value="both"]:checked)) .grid {
+        grid-template-columns: minmax(0,900px);
+        justify-content: center;
+      }
+
+      body:has(#view option[value="terminal"]:checked) .editor,body:has(#view option[value="editor"]:checked) .terminal {
+        display: none;
+      }
+
+      @media(max-width:1050px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        header {
+          align-items: start;
+          flex-direction: column;
+        }
+
+        header,main,footer {
+          padding: 24px 16px;
+        }
+
+      }
+
+      body:has(#size option[value="15"]:checked) {
+        --font: 15px;
+      }
+
+      body:has(#size option[value="17"]:checked) {
+        --font: 17px;
+      }
+
+      .color-details {
+        margin-top: 16px;
+      }
+
+      .table-scroll {
+        overflow: auto;
+      }
+
+      .color-details table {
+        font: 11px/1.8 monospace;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .color-details th, .color-details td {
+        padding: 2px 12px 2px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div>
+        <div class="eyebrow">
+          Shotor / first palette study
+        </div>
+        <h1>
+          A little shade.
+        </h1>
+        <p>
+          Keycloak’s desert colors, translated for a terminal and editor.
+        </p>
+      </div>
+      <div class="controls">
+        <label>
+          Palette
+          <select id="mode">
+            <option value="both">
+              Side by side
+            </option>
+            <option value="light">
+              Light
+            </option>
+            <option value="dark">
+              Dark
+            </option>
+          </select>
+        </label>
+        <label>
+          View
+          <select id="view">
+            <option value="both">
+              Terminal + editor
+            </option>
+            <option value="terminal">
+              Terminal
+            </option>
+            <option value="editor">
+              Editor
+            </option>
+          </select>
+        </label>
+        <label>
+          Type
+          <select id="size">
+            <option value="13">
+              13px
+            </option>
+            <option value="15">
+              15px
+            </option>
+            <option value="17">
+              17px
+            </option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <article class="card light" style="
+          --bg:{{light.bg}};
+          --fg:{{light.fg}};
+          --surface:{{light.surface}};
+          --selection:{{light.selection}};
+          --muted:{{light.muted}};
+          --accent:{{light.accent}};
+          --header:{{light.header}};
+          --red:{{light.red}};
+          --green:{{light.green}};
+          --yellow:{{light.yellow}};
+          --blue:{{light.blue}};
+          --magenta:{{light.magenta}};
+          --cyan:{{light.cyan}};
+          --add:{{light.add}};
+          --del:{{light.del}};
+          --change:{{light.change}};
+          --header-fg:{{light.header_fg}};
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-light
+            </span>
+            <span>
+              Sand · gold · brown
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-light.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"light"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.0}}" title="black {{light.ansi.0}}">
+                </div>
+                <span style="color:{{light.ansi.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{light.ansi.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.1}}" title="red {{light.ansi.1}}">
+                </div>
+                <span style="color:{{light.ansi.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{light.ansi.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.2}}" title="green {{light.ansi.2}}">
+                </div>
+                <span style="color:{{light.ansi.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{light.ansi.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.3}}" title="yellow {{light.ansi.3}}">
+                </div>
+                <span style="color:{{light.ansi.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{light.ansi.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.4}}" title="blue {{light.ansi.4}}">
+                </div>
+                <span style="color:{{light.ansi.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{light.ansi.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.5}}" title="magenta {{light.ansi.5}}">
+                </div>
+                <span style="color:{{light.ansi.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{light.ansi.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.6}}" title="cyan {{light.ansi.6}}">
+                </div>
+                <span style="color:{{light.ansi.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{light.ansi.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.ansi.7}}" title="white {{light.ansi.7}}">
+                </div>
+                <span style="color:{{light.ansi.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{light.ansi.7}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.0}}" title="black {{light.brights.0}}">
+                </div>
+                <span style="color:{{light.brights.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{light.brights.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.1}}" title="red {{light.brights.1}}">
+                </div>
+                <span style="color:{{light.brights.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{light.brights.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.2}}" title="green {{light.brights.2}}">
+                </div>
+                <span style="color:{{light.brights.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{light.brights.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.3}}" title="yellow {{light.brights.3}}">
+                </div>
+                <span style="color:{{light.brights.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{light.brights.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.4}}" title="blue {{light.brights.4}}">
+                </div>
+                <span style="color:{{light.brights.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{light.brights.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.5}}" title="magenta {{light.brights.5}}">
+                </div>
+                <span style="color:{{light.brights.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{light.brights.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.6}}" title="cyan {{light.brights.6}}">
+                </div>
+                <span style="color:{{light.brights.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{light.brights.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{light.brights.7}}" title="white {{light.brights.7}}">
+                </div>
+                <span style="color:{{light.brights.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{light.brights.7}}
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground {{light.contrast_fg}}:1 · comments {{light.contrast_muted}}:1 · lowest semantic ANSI {{light.contrast_ansi}}:1
+            </div>
+            {{light.color_details}}
+          </section>
+
+        </article>
+
+        <article class="card dark" style="
+          --bg:{{dark.bg}};
+          --fg:{{dark.fg}};
+          --surface:{{dark.surface}};
+          --selection:{{dark.selection}};
+          --muted:{{dark.muted}};
+          --accent:{{dark.accent}};
+          --header:{{dark.header}};
+          --red:{{dark.red}};
+          --green:{{dark.green}};
+          --yellow:{{dark.yellow}};
+          --blue:{{dark.blue}};
+          --magenta:{{dark.magenta}};
+          --cyan:{{dark.cyan}};
+          --add:{{dark.add}};
+          --del:{{dark.del}};
+          --change:{{dark.change}};
+          --header-fg:{{dark.header_fg}};
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-dark
+            </span>
+            <span>
+              Earth · terracotta · sand
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-dark.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"dark"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.0}}" title="black {{dark.ansi.0}}">
+                </div>
+                <span style="color:{{dark.ansi.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{dark.ansi.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.1}}" title="red {{dark.ansi.1}}">
+                </div>
+                <span style="color:{{dark.ansi.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{dark.ansi.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.2}}" title="green {{dark.ansi.2}}">
+                </div>
+                <span style="color:{{dark.ansi.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{dark.ansi.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.3}}" title="yellow {{dark.ansi.3}}">
+                </div>
+                <span style="color:{{dark.ansi.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{dark.ansi.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.4}}" title="blue {{dark.ansi.4}}">
+                </div>
+                <span style="color:{{dark.ansi.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{dark.ansi.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.5}}" title="magenta {{dark.ansi.5}}">
+                </div>
+                <span style="color:{{dark.ansi.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{dark.ansi.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.6}}" title="cyan {{dark.ansi.6}}">
+                </div>
+                <span style="color:{{dark.ansi.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{dark.ansi.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.ansi.7}}" title="white {{dark.ansi.7}}">
+                </div>
+                <span style="color:{{dark.ansi.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{dark.ansi.7}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.0}}" title="black {{dark.brights.0}}">
+                </div>
+                <span style="color:{{dark.brights.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{dark.brights.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.1}}" title="red {{dark.brights.1}}">
+                </div>
+                <span style="color:{{dark.brights.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{dark.brights.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.2}}" title="green {{dark.brights.2}}">
+                </div>
+                <span style="color:{{dark.brights.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{dark.brights.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.3}}" title="yellow {{dark.brights.3}}">
+                </div>
+                <span style="color:{{dark.brights.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{dark.brights.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.4}}" title="blue {{dark.brights.4}}">
+                </div>
+                <span style="color:{{dark.brights.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{dark.brights.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.5}}" title="magenta {{dark.brights.5}}">
+                </div>
+                <span style="color:{{dark.brights.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{dark.brights.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.6}}" title="cyan {{dark.brights.6}}">
+                </div>
+                <span style="color:{{dark.brights.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{dark.brights.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{dark.brights.7}}" title="white {{dark.brights.7}}">
+                </div>
+                <span style="color:{{dark.brights.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{dark.brights.7}}
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground {{dark.contrast_fg}}:1 · comments {{dark.contrast_muted}}:1 · lowest semantic ANSI {{dark.contrast_ansi}}:1
+            </div>
+            {{dark.color_details}}
+          </section>
+
+        </article>
+
+      </div>
+    </main>
+
+    <footer>
+      Interactive palette mockup, not a screenshot. Actual syntax groups depend on the editor and plugins. Colors are generated from the OKLCH source and match the exported sRGB theme files. No network requests or external assets.
+    </footer>
+  </body>
+</html>

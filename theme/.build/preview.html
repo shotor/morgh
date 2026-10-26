@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Shotor · terminal & editor study
+    </title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f1e8da;
+        color: #3a2013;
+        font-family: system-ui,sans-serif;
+      }
+
+      header,main,footer {
+        max-width: 1500px;
+        margin: auto;
+        padding: 28px 32px;
+      }
+
+      header {
+        border-bottom: 1px solid #d5c1a8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
+
+      h1 {
+        font-size: 42px;
+        letter-spacing: -2px;
+        margin: 4px 0;
+      }
+
+      p {
+        line-height: 1.6;
+      }
+
+      .eyebrow,.label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      select {
+        background: #fdf8f2;
+        border: 1px solid #b89b7c;
+        border-radius: 6px;
+        padding: 8px;
+        color: #3a2013;
+        font: inherit;
+      }
+
+      label {
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 28px;
+      }
+
+      .card {
+        min-width: 0;
+        background: var(--bg);
+        color: var(--fg);
+        border: 1px solid var(--selection);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 36px #3a201310;
+      }
+
+      .bar {
+        display: flex;
+        justify-content: space-between;
+        background: var(--header);
+        color: var(--header-fg);
+        padding: 14px 20px;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .body,.palette {
+        padding: 24px;
+      }
+
+      .label {
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+
+      .mono {
+        font-family: 'DejaVu Sans Mono',Consolas,monospace;
+        font-size: var(--font,13px);
+        line-height: 1.85;
+      }
+
+      .term {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        min-height: 300px;
+      }
+
+      .code {
+        white-space: pre;
+        overflow: auto;
+        margin: 0;
+        min-height: 300px;
+      }
+
+      .prompt,.ok,.str {
+        color: var(--green);
+      }
+
+      .host,.type {
+        color: var(--yellow);
+      }
+
+      .path,.fn {
+        color: var(--blue);
+      }
+
+      .branch,.kw {
+        color: var(--magenta);
+      }
+
+      .num {
+        color: var(--accent);
+      }
+
+      .dim,.comment {
+        color: var(--muted);
+      }
+
+      .comment {
+        font-style: italic;
+      }
+
+      .err {
+        color: var(--red);
+      }
+
+      .sel {
+        background: var(--selection);
+      }
+
+      .cursor {
+        background: var(--accent);
+        color: var(--bg);
+      }
+
+      .status {
+        display: flex;
+        justify-content: space-between;
+        background: var(--surface);
+        padding: 8px 20px;
+        font-size: 12px;
+      }
+
+      .active {
+        color: var(--accent);
+        font-weight: bold;
+      }
+
+      .sample,.palette {
+        border-top: 1px solid var(--surface);
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(8,1fr);
+        gap: 6px;
+      }
+
+      .chip {
+        height: 30px;
+        border-radius: 3px;
+        border: 1px solid #8884;
+      }
+
+      .hex {
+        font: 9px/1.6 monospace;
+        color: var(--muted);
+        padding: 4px 0;
+      }
+
+      .swatch span {
+        font: 10px monospace;
+      }
+
+      .palette p,footer {
+        font-size: 12px;
+      }
+
+      .contrast {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 16px;
+      }
+
+      body:has(#mode option[value="light"]:checked) .dark,body:has(#mode option[value="dark"]:checked) .light {
+        display: none;
+      }
+
+      body:not(:has(#mode option[value="both"]:checked)) .grid {
+        grid-template-columns: minmax(0,900px);
+        justify-content: center;
+      }
+
+      body:has(#view option[value="terminal"]:checked) .editor,body:has(#view option[value="editor"]:checked) .terminal {
+        display: none;
+      }
+
+      @media(max-width:1050px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        header {
+          align-items: start;
+          flex-direction: column;
+        }
+
+        header,main,footer {
+          padding: 24px 16px;
+        }
+
+      }
+
+      body:has(#size option[value="15"]:checked) {
+        --font: 15px;
+      }
+
+      body:has(#size option[value="17"]:checked) {
+        --font: 17px;
+      }
+
+      .color-details {
+        margin-top: 16px;
+      }
+
+      .table-scroll {
+        overflow: auto;
+      }
+
+      .color-details table {
+        font: 11px/1.8 monospace;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .color-details th, .color-details td {
+        padding: 2px 12px 2px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div>
+        <div class="eyebrow">
+          Shotor / first palette study
+        </div>
+        <h1>
+          A little shade.
+        </h1>
+        <p>
+          Keycloak’s desert colors, translated for a terminal and editor.
+        </p>
+      </div>
+      <div class="controls">
+        <label>
+          Palette
+          <select id="mode">
+            <option value="both">
+              Side by side
+            </option>
+            <option value="light">
+              Light
+            </option>
+            <option value="dark">
+              Dark
+            </option>
+          </select>
+        </label>
+        <label>
+          View
+          <select id="view">
+            <option value="both">
+              Terminal + editor
+            </option>
+            <option value="terminal">
+              Terminal
+            </option>
+            <option value="editor">
+              Editor
+            </option>
+          </select>
+        </label>
+        <label>
+          Type
+          <select id="size">
+            <option value="13">
+              13px
+            </option>
+            <option value="15">
+              15px
+            </option>
+            <option value="17">
+              17px
+            </option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <article class="card light" style="
+          --bg:#fdf8f2;
+          --fg:#3a2013;
+          --surface:#f6e6d3;
+          --selection:#ecd2b4;
+          --muted:#80634e;
+          --accent:#946200;
+          --header:#e3b25c;
+          --red:#a43d32;
+          --green:#44643c;
+          --yellow:#876000;
+          --blue:#365f83;
+          --magenta:#80516f;
+          --cyan:#286967;
+          --add:#e4eddb;
+          --del:#fae0d0;
+          --change:#fdf0cd;
+          --header-fg:#3a2013;
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-light
+            </span>
+            <span>
+              Sand · gold · brown
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-light.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"light"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:#3a2013" title="black #3a2013">
+                </div>
+                <span style="color:#3a2013">
+                  black
+                </span>
+                <div class="hex">
+                  #3a2013
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#a43d32" title="red #a43d32">
+                </div>
+                <span style="color:#a43d32">
+                  red
+                </span>
+                <div class="hex">
+                  #a43d32
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#44643c" title="green #44643c">
+                </div>
+                <span style="color:#44643c">
+                  green
+                </span>
+                <div class="hex">
+                  #44643c
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#876000" title="yellow #876000">
+                </div>
+                <span style="color:#876000">
+                  yellow
+                </span>
+                <div class="hex">
+                  #876000
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#365f83" title="blue #365f83">
+                </div>
+                <span style="color:#365f83">
+                  blue
+                </span>
+                <div class="hex">
+                  #365f83
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#80516f" title="magenta #80516f">
+                </div>
+                <span style="color:#80516f">
+                  magenta
+                </span>
+                <div class="hex">
+                  #80516f
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#286967" title="cyan #286967">
+                </div>
+                <span style="color:#286967">
+                  cyan
+                </span>
+                <div class="hex">
+                  #286967
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ecd2b4" title="white #ecd2b4">
+                </div>
+                <span style="color:#ecd2b4">
+                  white
+                </span>
+                <div class="hex">
+                  #ecd2b4
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#80634e" title="black #80634e">
+                </div>
+                <span style="color:#80634e">
+                  black
+                </span>
+                <div class="hex">
+                  #80634e
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#b34536" title="red #b34536">
+                </div>
+                <span style="color:#b34536">
+                  red
+                </span>
+                <div class="hex">
+                  #b34536
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#4c703f" title="green #4c703f">
+                </div>
+                <span style="color:#4c703f">
+                  green
+                </span>
+                <div class="hex">
+                  #4c703f
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#946200" title="yellow #946200">
+                </div>
+                <span style="color:#946200">
+                  yellow
+                </span>
+                <div class="hex">
+                  #946200
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#3b6b94" title="blue #3b6b94">
+                </div>
+                <span style="color:#3b6b94">
+                  blue
+                </span>
+                <div class="hex">
+                  #3b6b94
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#92577e" title="magenta #92577e">
+                </div>
+                <span style="color:#92577e">
+                  magenta
+                </span>
+                <div class="hex">
+                  #92577e
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#287976" title="cyan #287976">
+                </div>
+                <span style="color:#287976">
+                  cyan
+                </span>
+                <div class="hex">
+                  #287976
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#fdf8f2" title="white #fdf8f2">
+                </div>
+                <span style="color:#fdf8f2">
+                  white
+                </span>
+                <div class="hex">
+                  #fdf8f2
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground 14.2:1 · comments 5.2:1 · lowest semantic ANSI 5.4:1
+            </div>
+            <details class="color-details">
+  <summary>OKLCH source → sRGB (0 gamut-mapped)</summary>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Role</th><th>Source</th><th>Output</th><th>Gamut</th></tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td>bg</td>
+            <td>oklch(98.133% 0.00959 72.66)</td>
+            <td>#fdf8f2</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>fg</td>
+            <td>oklch(27.463% 0.04617 46.77)</td>
+            <td>#3a2013</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>surface</td>
+            <td>oklch(93.268% 0.03072 72.17)</td>
+            <td>#f6e6d3</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>selection</td>
+            <td>oklch(87.773% 0.04942 71.10)</td>
+            <td>#ecd2b4</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>muted</td>
+            <td>oklch(52.327% 0.04907 57.32)</td>
+            <td>#80634e</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>accent</td>
+            <td>oklch(53.666% 0.11358 74.30)</td>
+            <td>#946200</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>header</td>
+            <td>oklch(79.118% 0.11843 79.71)</td>
+            <td>#e3b25c</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>red</td>
+            <td>oklch(50.176% 0.13860 28.99)</td>
+            <td>#a43d32</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>green</td>
+            <td>oklch(46.722% 0.07279 139.48)</td>
+            <td>#44643c</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>yellow</td>
+            <td>oklch(51.635% 0.10670 80.83)</td>
+            <td>#876000</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>blue</td>
+            <td>oklch(47.177% 0.07472 246.67)</td>
+            <td>#365f83</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>magenta</td>
+            <td>oklch(49.765% 0.07546 341.49)</td>
+            <td>#80516f</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>cyan</td>
+            <td>oklch(47.896% 0.06545 192.38)</td>
+            <td>#286967</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>add</td>
+            <td>oklch(93.441% 0.02576 128.77)</td>
+            <td>#e4eddb</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>del</td>
+            <td>oklch(92.371% 0.03592 53.71)</td>
+            <td>#fae0d0</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>change</td>
+            <td>oklch(95.652% 0.04768 90.06)</td>
+            <td>#fdf0cd</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>header_fg</td>
+            <td>oklch(27.463% 0.04617 46.77)</td>
+            <td>#3a2013</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_red</td>
+            <td>oklch(53.730% 0.14642 30.31)</td>
+            <td>#b34536</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_green</td>
+            <td>oklch(50.481% 0.08484 137.78)</td>
+            <td>#4c703f</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_blue</td>
+            <td>oklch(51.219% 0.08389 246.17)</td>
+            <td>#3b6b94</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_magenta</td>
+            <td>oklch(53.656% 0.09369 340.80)</td>
+            <td>#92577e</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_cyan</td>
+            <td>oklch(52.721% 0.07676 191.57)</td>
+            <td>#287976</td>
+            <td>In sRGB</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+          </section>
+
+        </article>
+
+        <article class="card dark" style="
+          --bg:#2a2119;
+          --fg:#fdf4ec;
+          --surface:#3a2b22;
+          --selection:#5c3a2d;
+          --muted:#bd9e82;
+          --accent:#f0b48a;
+          --header:#8f5543;
+          --red:#ef9a86;
+          --green:#b7c892;
+          --yellow:#ecc985;
+          --blue:#9ebed5;
+          --magenta:#d2a9c4;
+          --cyan:#96c5bd;
+          --add:#35402c;
+          --del:#53302a;
+          --change:#4b3d24;
+          --header-fg:#fdf1ea;
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-dark
+            </span>
+            <span>
+              Earth · terracotta · sand
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-dark.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"dark"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:#2a2119" title="black #2a2119">
+                </div>
+                <span style="color:#2a2119">
+                  black
+                </span>
+                <div class="hex">
+                  #2a2119
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ef9a86" title="red #ef9a86">
+                </div>
+                <span style="color:#ef9a86">
+                  red
+                </span>
+                <div class="hex">
+                  #ef9a86
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#b7c892" title="green #b7c892">
+                </div>
+                <span style="color:#b7c892">
+                  green
+                </span>
+                <div class="hex">
+                  #b7c892
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ecc985" title="yellow #ecc985">
+                </div>
+                <span style="color:#ecc985">
+                  yellow
+                </span>
+                <div class="hex">
+                  #ecc985
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#9ebed5" title="blue #9ebed5">
+                </div>
+                <span style="color:#9ebed5">
+                  blue
+                </span>
+                <div class="hex">
+                  #9ebed5
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#d2a9c4" title="magenta #d2a9c4">
+                </div>
+                <span style="color:#d2a9c4">
+                  magenta
+                </span>
+                <div class="hex">
+                  #d2a9c4
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#96c5bd" title="cyan #96c5bd">
+                </div>
+                <span style="color:#96c5bd">
+                  cyan
+                </span>
+                <div class="hex">
+                  #96c5bd
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ecd2b4" title="white #ecd2b4">
+                </div>
+                <span style="color:#ecd2b4">
+                  white
+                </span>
+                <div class="hex">
+                  #ecd2b4
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#bd9e82" title="black #bd9e82">
+                </div>
+                <span style="color:#bd9e82">
+                  black
+                </span>
+                <div class="hex">
+                  #bd9e82
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ffb49e" title="red #ffb49e">
+                </div>
+                <span style="color:#ffb49e">
+                  red
+                </span>
+                <div class="hex">
+                  #ffb49e
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#ceddaa" title="green #ceddaa">
+                </div>
+                <span style="color:#ceddaa">
+                  green
+                </span>
+                <div class="hex">
+                  #ceddaa
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#f6d76f" title="yellow #f6d76f">
+                </div>
+                <span style="color:#f6d76f">
+                  yellow
+                </span>
+                <div class="hex">
+                  #f6d76f
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#b9d6ea" title="blue #b9d6ea">
+                </div>
+                <span style="color:#b9d6ea">
+                  blue
+                </span>
+                <div class="hex">
+                  #b9d6ea
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#e6bfd8" title="magenta #e6bfd8">
+                </div>
+                <span style="color:#e6bfd8">
+                  magenta
+                </span>
+                <div class="hex">
+                  #e6bfd8
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#b3ded4" title="cyan #b3ded4">
+                </div>
+                <span style="color:#b3ded4">
+                  cyan
+                </span>
+                <div class="hex">
+                  #b3ded4
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:#fdf4ec" title="white #fdf4ec">
+                </div>
+                <span style="color:#fdf4ec">
+                  white
+                </span>
+                <div class="hex">
+                  #fdf4ec
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground 14.5:1 · comments 6.3:1 · lowest semantic ANSI 7.2:1
+            </div>
+            <details class="color-details">
+  <summary>OKLCH source → sRGB (0 gamut-mapped)</summary>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Role</th><th>Source</th><th>Output</th><th>Gamut</th></tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td>bg</td>
+            <td>oklch(25.565% 0.01997 63.38)</td>
+            <td>#2a2119</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>fg</td>
+            <td>oklch(97.197% 0.01440 64.35)</td>
+            <td>#fdf4ec</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>surface</td>
+            <td>oklch(30.361% 0.02729 52.35)</td>
+            <td>#3a2b22</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>selection</td>
+            <td>oklch(38.512% 0.05316 41.68)</td>
+            <td>#5c3a2d</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>muted</td>
+            <td>oklch(71.992% 0.05357 63.91)</td>
+            <td>#bd9e82</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>accent</td>
+            <td>oklch(81.551% 0.08955 56.08)</td>
+            <td>#f0b48a</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>header</td>
+            <td>oklch(51.154% 0.08258 38.01)</td>
+            <td>#8f5543</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>red</td>
+            <td>oklch(76.705% 0.10678 33.92)</td>
+            <td>#ef9a86</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>green</td>
+            <td>oklch(80.621% 0.07504 122.28)</td>
+            <td>#b7c892</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>yellow</td>
+            <td>oklch(85.084% 0.09473 83.33)</td>
+            <td>#ecc985</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>blue</td>
+            <td>oklch(78.555% 0.04773 239.47)</td>
+            <td>#9ebed5</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>magenta</td>
+            <td>oklch(77.978% 0.05978 339.11)</td>
+            <td>#d2a9c4</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>cyan</td>
+            <td>oklch(78.781% 0.05076 183.40)</td>
+            <td>#96c5bd</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>add</td>
+            <td>oklch(35.528% 0.03639 131.47)</td>
+            <td>#35402c</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>del</td>
+            <td>oklch(35.114% 0.05271 30.41)</td>
+            <td>#53302a</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>change</td>
+            <td>oklch(36.829% 0.04336 81.24)</td>
+            <td>#4b3d24</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>header_fg</td>
+            <td>oklch(96.563% 0.01602 52.56)</td>
+            <td>#fdf1ea</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>white</td>
+            <td>oklch(87.773% 0.04942 71.10)</td>
+            <td>#ecd2b4</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_red</td>
+            <td>oklch(83.537% 0.09333 37.03)</td>
+            <td>#ffb49e</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_green</td>
+            <td>oklch(87.335% 0.06955 121.16)</td>
+            <td>#ceddaa</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_yellow</td>
+            <td>oklch(88.463% 0.12827 93.04)</td>
+            <td>#f6d76f</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_blue</td>
+            <td>oklch(86.117% 0.04164 238.12)</td>
+            <td>#b9d6ea</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_magenta</td>
+            <td>oklch(84.582% 0.05515 339.70)</td>
+            <td>#e6bfd8</td>
+            <td>In sRGB</td>
+          </tr>
+          <tr>
+            <td>bright_cyan</td>
+            <td>oklch(86.726% 0.04691 179.40)</td>
+            <td>#b3ded4</td>
+            <td>In sRGB</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+          </section>
+
+        </article>
+
+      </div>
+    </main>
+
+    <footer>
+      Interactive palette mockup, not a screenshot. Actual syntax groups depend on the editor and plugins. Colors are generated from the OKLCH source and match the exported sRGB theme files. No network requests or external assets.
+    </footer>
+  </body>
+</html>
