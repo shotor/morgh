@@ -6,6 +6,7 @@ include:
 network-packages:
   pkg.installed:
     - pkgs:
+      - lsd
       - qubes-core-agent-network-manager
       - network-manager-gnome
       - wpasupplicant
