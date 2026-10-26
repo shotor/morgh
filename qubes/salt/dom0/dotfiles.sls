@@ -3,9 +3,17 @@
 dom0-dotfile-packages:
   pkg.installed:
     - pkgs:
+      - bash
       - feh
       - git
       - stow
+
+dom0-user-shell:
+  user.present:
+    - name: {{ user }}
+    - shell: /bin/bash
+    - require:
+      - pkg: dom0-dotfile-packages
 
 dom0-stow:
   cmd.run:

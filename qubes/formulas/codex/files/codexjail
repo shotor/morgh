@@ -61,4 +61,4 @@ exec bwrap \
   --setenv GIT_CONFIG_KEY_1 core.sharedRepository \
   --setenv GIT_CONFIG_VALUE_1 group \
   --chdir "$project" \
-  /usr/bin/codex --sandbox workspace-write "${workspace_args[@]}" --ask-for-approval on-request "$@"
+  /usr/bin/codex --no-alt-screen --sandbox workspace-write "${workspace_args[@]}" --ask-for-approval on-request "$@"
