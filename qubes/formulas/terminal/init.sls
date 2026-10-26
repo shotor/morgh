@@ -44,6 +44,16 @@ terminal-locale:
     - require:
       - pkg: terminal-packages
 
+{% for mode in ['light', 'dark'] %}
+/etc/wezterm/colors/shotormorgh-{{ mode }}.toml:
+  file.managed:
+    - source: salt://shotor/morgh-theme/terminal/wezterm/shotormorgh-{{ mode }}.toml
+    - user: root
+    - group: root
+    - mode: '0644'
+    - makedirs: true
+{% endfor %}
+
 /etc/wezterm/wezterm.lua:
   file.managed:
     - source: salt://shotor/morgh-dotfiles/wezterm/.config/wezterm/wezterm.lua
@@ -51,6 +61,9 @@ terminal-locale:
     - group: root
     - mode: '0644'
     - makedirs: true
+    - require:
+      - file: /etc/wezterm/colors/shotormorgh-light.toml
+      - file: /etc/wezterm/colors/shotormorgh-dark.toml
 
 /usr/bin/wezterm-terminal:
   file.managed:

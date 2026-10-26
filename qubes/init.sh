@@ -7,7 +7,7 @@ if [[ "$repo" != /srv/shotor/morgh ]]; then
   echo 'Copy or clone morgh to /srv/shotor/morgh in dom0 first.' >&2
   exit 1
 fi
-sources=("$qubes_dir"/formulas/* "$qubes_dir/salt/dom0" "$qubes_dir/salt/templates" "$repo/dotfiles" "$qubes_dir/salt/top.sls")
+sources=("$qubes_dir"/formulas/* "$qubes_dir/salt/dom0" "$qubes_dir/salt/templates" "$repo/dotfiles" "$repo/theme/.build" "$qubes_dir/salt/top.sls")
 targets=()
 for source in "${sources[@]}"; do
   if [[ ! -e "$source" ]]; then
@@ -16,6 +16,7 @@ for source in "${sources[@]}"; do
   fi
   case "$source" in
     "$repo/dotfiles") name=morgh-dotfiles ;;
+    "$repo/theme/.build") name=morgh-theme ;;
     "$qubes_dir/salt/top.sls") name=morgh.top ;;
     *) name=${source##*/} ;;
   esac
