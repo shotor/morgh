@@ -11,7 +11,7 @@ Run commands from the `dotfiles` directory.
 
 For Qubes, the checkout is `/srv/shotor/morgh`. Salt and the dev-session login
 hook run Stow automatically; see [the Qubes setup](../qubes/README.md).
-The dev profile uses `git vim wezterm nvim tmux zsh starship firefox`. Dom0 uses `git vim` here plus
+The dev profile uses `git vim urxvt nvim tmux zsh starship firefox`. Dom0 uses `git vim` here plus
 the Qubes-specific `i3` and `x11` packages under `qubes/salt/dom0/files`.
 
 Theme files link to the checked-in outputs in `../theme/.build/`. Include

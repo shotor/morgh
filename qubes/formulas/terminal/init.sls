@@ -1,42 +1,14 @@
-wezterm-repository-tools:
-  pkg.installed:
-    - pkgs:
-      - ca-certificates
-      - curl
-      - gnupg
-
-wezterm-repository-key:
-  cmd.run:
-    - name: >-
-        curl --fail --location --retry 3
-        --proxy http://127.0.0.1:8082 --noproxy ''
-        --output /var/cache/wezterm-repository.asc https://apt.fury.io/wez/gpg.key &&
-        gpg --batch --yes --dearmor --output /usr/share/keyrings/wezterm-fury.gpg
-        /var/cache/wezterm-repository.asc &&
-        chmod 0644 /usr/share/keyrings/wezterm-fury.gpg
-    - creates: /usr/share/keyrings/wezterm-fury.gpg
-    - require:
-      - pkg: wezterm-repository-tools
-
-wezterm-repository:
-  pkgrepo.managed:
-    - name: deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *
-    - file: /etc/apt/sources.list.d/wezterm.list
-    - require:
-      - cmd: wezterm-repository-key
-
 terminal-packages:
   pkg.installed:
     - pkgs:
-      - wezterm
+      - rxvt-unicode
+      - xterm
       - fonts-dejavu-core
       - fonts-symbola
       - fonts-font-awesome
       - fonts-powerline
       - fontconfig
       - locales
-    - require:
-      - pkgrepo: wezterm-repository
 
 terminal-locale:
   locale.present:
@@ -45,46 +17,51 @@ terminal-locale:
       - pkg: terminal-packages
 
 {% for mode in ['light', 'dark'] %}
-/etc/wezterm/colors/shotormorgh-{{ mode }}.toml:
+/etc/urxvt/shotormorgh-{{ mode }}.Xresources:
   file.managed:
-    - source: salt://shotor/morgh-theme/terminal/wezterm/shotormorgh-{{ mode }}.toml
+    - source: salt://shotor/morgh-theme/terminal/urxvt/shotormorgh-{{ mode }}.Xresources
     - user: root
     - group: root
     - mode: '0644'
     - makedirs: true
 {% endfor %}
 
-/etc/wezterm/wezterm.lua:
+/etc/urxvt/config:
+  file.symlink:
+    - target: /etc/urxvt/shotormorgh-dark.Xresources
+    - require:
+      - file: /etc/urxvt/shotormorgh-dark.Xresources
+
+/etc/X11/app-defaults/URxvt:
   file.managed:
-    - source: salt://shotor/morgh-dotfiles/wezterm/.config/wezterm/wezterm.lua
+    - source: salt://shotor/morgh-theme/terminal/urxvt/shotormorgh-dark.Xresources
     - user: root
     - group: root
     - mode: '0644'
-    - makedirs: true
     - require:
-      - file: /etc/wezterm/colors/shotormorgh-light.toml
-      - file: /etc/wezterm/colors/shotormorgh-dark.toml
+      - pkg: terminal-packages
 
-/usr/bin/wezterm-terminal:
+/usr/bin/urxvt-terminal:
   file.managed:
-    - source: salt://shotor/terminal/files/wezterm-terminal
+    - source: salt://shotor/terminal/files/urxvt-terminal
     - mode: '0755'
     - require:
       - pkg: terminal-packages
-      - file: /etc/wezterm/wezterm.lua
+      - file: /etc/urxvt/config
+      - file: /etc/X11/app-defaults/URxvt
 
-wezterm-terminal-alternative:
+urxvt-terminal-alternative:
   alternatives.install:
     - name: x-terminal-emulator
     - link: /usr/bin/x-terminal-emulator
-    - path: /usr/bin/wezterm-terminal
+    - path: /usr/bin/urxvt-terminal
     - priority: 60
     - require:
-      - file: /usr/bin/wezterm-terminal
+      - file: /usr/bin/urxvt-terminal
 
 default-terminal:
   alternatives.set:
     - name: x-terminal-emulator
-    - path: /usr/bin/wezterm-terminal
+    - path: /usr/bin/urxvt-terminal
     - require:
-      - alternatives: wezterm-terminal-alternative
+      - alternatives: urxvt-terminal-alternative

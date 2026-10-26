@@ -7,3 +7,4 @@ ts-packages:
   pkg.installed:
     - pkgs:
       - lsd
+      - htop

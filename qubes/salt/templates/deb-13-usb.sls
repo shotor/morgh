@@ -5,6 +5,7 @@ usb-packages:
   pkg.installed:
     - pkgs:
       - lsd
+      - htop
       - qubes-core-agent-passwordless-root
       - qubes-usb-proxy
       - qubes-input-proxy-sender

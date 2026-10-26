@@ -1,0 +1,45 @@
+URxvt.font: xft:DejaVu Sans Mono:size=12,xft:FontAwesome,xft:Symbola
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.saveLines: 10000
+URxvt.scrollTtyOutput: false
+URxvt.scrollWithBuffer: true
+URxvt.scrollTtyKeypress: true
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+URxvt.termName: rxvt-unicode-256color
+URxvt.internalBorder: 6
+
+URxvt.perl-ext-common: default,font-size
+URxvt.keysym.C-S-c: eval:selection_to_clipboard
+URxvt.keysym.C-S-v: eval:paste_clipboard
+URxvt.keysym.C-Insert: eval:selection_to_clipboard
+URxvt.keysym.S-Insert: eval:paste_clipboard
+URxvt.keysym.C-plus: font-size:increase
+URxvt.keysym.C-equal: font-size:increase
+URxvt.keysym.C-minus: font-size:decrease
+URxvt.keysym.C-0: font-size:reset
+
+URxvt.background: {{dark.bg}}
+URxvt.foreground: {{dark.fg}}
+URxvt.cursorColor: {{dark.accent}}
+URxvt.cursorColor2: {{dark.bg}}
+URxvt.highlightColor: {{dark.selection}}
+URxvt.highlightTextColor: {{dark.fg}}
+
+URxvt.color0: {{dark.ansi.0}}
+URxvt.color1: {{dark.ansi.1}}
+URxvt.color2: {{dark.ansi.2}}
+URxvt.color3: {{dark.ansi.3}}
+URxvt.color4: {{dark.ansi.4}}
+URxvt.color5: {{dark.ansi.5}}
+URxvt.color6: {{dark.ansi.6}}
+URxvt.color7: {{dark.ansi.7}}
+URxvt.color8: {{dark.brights.0}}
+URxvt.color9: {{dark.brights.1}}
+URxvt.color10: {{dark.brights.2}}
+URxvt.color11: {{dark.brights.3}}
+URxvt.color12: {{dark.brights.4}}
+URxvt.color13: {{dark.brights.5}}
+URxvt.color14: {{dark.brights.6}}
+URxvt.color15: {{dark.brights.7}}
