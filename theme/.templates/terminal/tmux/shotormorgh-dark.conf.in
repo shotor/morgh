@@ -1,3 +1,10 @@
+set -g @shotormorgh_header '{{dark.header}}'
+set -g @shotormorgh_header_fg '{{dark.header_fg}}'
+set -g @shotormorgh_accent '{{dark.accent}}'
+set -g @shotormorgh_bg '{{dark.bg}}'
+set -g @shotormorgh_yellow '{{dark.yellow}}'
+set -g @shotormorgh_red '{{dark.red}}'
+
 set -g status-style 'bg={{dark.surface}},fg={{dark.fg}}'
 set -g message-style 'bg={{dark.selection}},fg={{dark.fg}}'
 set -g message-command-style 'bg={{dark.selection}},fg={{dark.fg}}'
