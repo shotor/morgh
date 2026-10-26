@@ -9,9 +9,9 @@ dom0-dotfile-packages:
       - stow
 
 dom0-user-shell:
-  user.present:
-    - name: {{ user }}
-    - shell: /bin/bash
+  cmd.run:
+    - name: usermod --shell /bin/bash -- {{ user | quote }}
+    - unless: test "$(getent passwd {{ user | quote }} | cut -d ':' -f 7)" = /bin/bash
     - require:
       - pkg: dom0-dotfile-packages
 
