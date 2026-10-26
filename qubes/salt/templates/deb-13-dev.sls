@@ -1,5 +1,6 @@
 include:
   - shotor.dev-shell
+  - shotor.mise
   - shotor.tpack
   - shotor.terminal
   - shotor.firefox
@@ -15,6 +16,7 @@ dev-packages:
       - lsd
       - zoxide
       - htop
+      - jq
       - qubes-core-agent-passwordless-root
       - qubes-core-agent-networking
       - vim
