@@ -10,6 +10,7 @@ ssh-packages:
   pkg.installed:
     - pkgs:
       - lsd
+      - htop
       - qubes-core-agent-passwordless-root
       - qubes-usb-proxy
       - openssh-client

@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+config=/etc/urxvt/config
+user_config=${XDG_CONFIG_HOME:-$HOME/.config}/urxvt/config
+if [ -f "$user_config" ]; then
+  config=$user_config
+fi
+exec env XENVIRONMENT="$config" /usr/bin/urxvt "$@"

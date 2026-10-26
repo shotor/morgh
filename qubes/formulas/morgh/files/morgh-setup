@@ -44,7 +44,7 @@ stow_package() {
 stow_package "$repo/dotfiles" git
 stow_package "$repo/dotfiles" vim
 if [[ "$profile" == dev ]]; then
-  stow_package "$repo/dotfiles" wezterm
+  stow_package "$repo/dotfiles" urxvt
   stow_package "$repo/dotfiles" nvim
   stow_package "$repo/dotfiles" tmux
   stow_package "$repo/dotfiles" zsh
