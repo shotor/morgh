@@ -1,4 +1,5 @@
-URxvt.font: xft:DejaVu Sans Mono:size=12,xft:FontAwesome,xft:Symbola
+URxvt.font: xft:DejaVuSansM Nerd Font Mono:size=12,xft:Symbola:size=12
+URxvt.geometry: 400x400
 URxvt.scrollBar: false
 URxvt.scrollBar_right: false
 URxvt.saveLines: 10000
