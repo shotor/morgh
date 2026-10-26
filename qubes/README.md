@@ -17,16 +17,18 @@ cd /srv/shotor/morgh/qubes
 Dom0:
 
 ```sh
-sudo qubesctl state.highstate
+./apply.sh dom0
 ```
 
-One template (replace the name as needed):
+One or more templates:
 
 ```sh
-sudo qubesctl --skip-dom0 --show-output --targets=tpl-deb-13-dev state.highstate
+./apply.sh tpl-deb-13-dev
+./apply.sh tpl-deb-13-net tpl-deb-13-vault-net
 ```
 
-Shut down the updated template and restart its AppVMs afterward.
+For subsequent copies, run `./sync.sh` in dom0. Restart the affected AppVMs
+after applying template changes.
 
 ## Network templates
 

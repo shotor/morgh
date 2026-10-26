@@ -1,6 +1,7 @@
 include:
   - shotor.terminal
   - shotor.network
+  - shotor.network.tray
   - shotor.wireguard
 
 network-packages:

@@ -62,6 +62,9 @@ bindsym XF86AudioLowerVolume exec --no-startup-id $audio_lower
 bindsym XF86AudioMute exec --no-startup-id $audio_mute
 bindsym XF86AudioMicMute exec --no-startup-id $audio_mic_mute
 
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl --min-value=1 set 5%-
+
 client.background       dom0            #c4c4c4
 client.focused          dom0    #f7f7f7 #f5f5f5 #000000 #0a0a0a
 client.focused_inactive dom0    #f7f7f7 #dcdcdc #191919 #232323
@@ -274,7 +277,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
 	position top
-        status_command qubes-i3status
+        status_command ~/.local/bin/morgh-i3status
         colors {
             background #d2d2d2
             statusline #333333
