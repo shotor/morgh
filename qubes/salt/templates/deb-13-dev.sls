@@ -1,4 +1,6 @@
 include:
+  - shotor.dev-shell
+  - shotor.tpack
   - shotor.terminal
   - shotor.firefox
   - shotor.codex
@@ -10,6 +12,7 @@ include:
 dev-packages:
   pkg.installed:
     - pkgs:
+      - lsd
       - qubes-core-agent-passwordless-root
       - qubes-core-agent-networking
       - vim

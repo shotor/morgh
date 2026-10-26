@@ -5,6 +5,7 @@ include:
 dvm-packages:
   pkg.installed:
     - pkgs:
+      - lsd
       - qubes-core-agent-passwordless-root
       - qubes-core-agent-networking
       - mupdf
