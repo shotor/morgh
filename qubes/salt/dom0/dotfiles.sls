@@ -4,6 +4,7 @@ dom0-dotfile-packages:
   pkg.installed:
     - pkgs:
       - bash
+      - brightnessctl
       - feh
       - git
       - stow

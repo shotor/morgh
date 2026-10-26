@@ -3,6 +3,7 @@ include:
   - shotor.firefox
   - shotor.ctap.client
   - shotor.nextcloud
+  - shotor.nextcloud.tray
 
 vault-net-packages:
   pkg.installed:

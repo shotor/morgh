@@ -1,0 +1,95 @@
+#!/usr/bin/python3
+import argparse
+import base64
+import configparser
+import io
+import json
+from pathlib import Path
+import struct
+import xml.etree.ElementTree as ET
+
+
+BACKGROUND = '#d2d2d2'
+SVG = 'http://www.w3.org/2000/svg'
+XLINK = 'http://www.w3.org/1999/xlink'
+ET.register_namespace('', SVG)
+ET.register_namespace('xlink', XLINK)
+
+
+def opaque_png(data):
+    if data[:8] != b'\x89PNG\r\n\x1a\n':
+        raise ValueError('Expected a PNG icon')
+    width, height = struct.unpack('>II', data[16:24])
+    root = ET.Element(f'{{{SVG}}}svg', width=str(width), height=str(height),
+                      viewBox=f'0 0 {width} {height}')
+    ET.SubElement(root, f'{{{SVG}}}rect', width='100%', height='100%', fill=BACKGROUND)
+    ET.SubElement(root, f'{{{SVG}}}image', width=str(width), height=str(height),
+                  attrib={f'{{{XLINK}}}href': 'data:image/png;base64,' +
+                          base64.b64encode(data).decode()})
+    return ET.tostring(root)
+
+
+def opaque_svg(data):
+    root = ET.fromstring(data)
+    box = root.get('viewBox', '').split()
+    if len(box) != 4:
+        raise ValueError('Expected an SVG viewBox')
+    root.insert(0, ET.Element(f'{{{SVG}}}rect', x=box[0], y=box[1],
+                             width=box[2], height=box[3], fill=BACKGROUND))
+    return ET.tostring(root)
+
+
+def build(kind, source, target):
+    files = {}
+    directories = {}
+    if kind == 'network':
+        for icon in sorted(source.glob('*x*/apps/nm-*.png')):
+            size = icon.parent.parent.name.split('x')[0]
+            directory = f'{size}x{size}/apps'
+            directories[directory] = {'Size': size, 'Type': 'Fixed', 'Context': 'Applications'}
+            overlay = icon.stem.startswith(('nm-vpn-', 'nm-tech-')) or icon.stem in {
+                'nm-secure-lock', 'nm-insecure-warn', 'nm-mb-roam'}
+            name = icon.name if overlay else icon.with_suffix('.svg').name
+            files[f'{directory}/{name}'] = icon.read_bytes() if overlay else opaque_png(icon.read_bytes())
+    else:
+        directory = 'scalable/status'
+        directories[directory] = {'Size': '22', 'Type': 'Scalable', 'MinSize': '8',
+                                  'MaxSize': '256', 'Context': 'Status'}
+        for icon in sorted(source.glob('state-*.svg')):
+            files[f'{directory}/{icon.name}'] = opaque_svg(icon.read_bytes())
+    if not files:
+        raise RuntimeError(f'No {kind} icons found in {source}')
+
+    config = configparser.ConfigParser()
+    config.optionxform = str
+    index = target / 'index.theme'
+    if index.exists():
+        config.read(index)
+    for directory, values in directories.items():
+        config[directory] = values
+    config['Icon Theme'] = {'Name': 'MorghTray', 'Inherits': 'Adwaita,hicolor',
+                            'Directories': ','.join(s for s in config.sections() if s != 'Icon Theme')}
+    output = io.StringIO()
+    config.write(output)
+    files['index.theme'] = output.getvalue().encode()
+    changed = False
+    for name, data in files.items():
+        path = target / name
+        if not path.exists() or path.read_bytes() != data:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+            path.chmod(0o644)
+            changed = True
+    return changed, len(files) - 1
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('kind', choices=('network', 'nextcloud'))
+    parser.add_argument('--source', type=Path)
+    parser.add_argument('--target', type=Path, default=Path('/usr/share/icons/MorghTray'))
+    args = parser.parse_args()
+    source = args.source or Path('/usr/share/icons/hicolor' if args.kind == 'network'
+                                 else '/usr/share/morgh/nextcloud-tray')
+    changed, count = build(args.kind, source, args.target)
+    print(json.dumps({'changed': changed, 'comment': f'{count} {args.kind} tray icons prepared'}))
