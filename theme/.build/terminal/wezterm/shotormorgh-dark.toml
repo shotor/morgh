@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-dark"
+author = "shotor"
+
+[colors]
+foreground = "#fdf4ec"
+background = "#2a2119"
+cursor_bg = "#f0b48a"
+cursor_fg = "#2a2119"
+cursor_border = "#f0b48a"
+selection_fg = "#fdf4ec"
+selection_bg = "#5c3a2d"
+ansi = ["#2a2119","#ef9a86","#b7c892","#ecc985","#9ebed5","#d2a9c4","#96c5bd","#ecd2b4"]
+brights = ["#bd9e82","#ffb49e","#ceddaa","#f6d76f","#b9d6ea","#e6bfd8","#b3ded4","#fdf4ec"]
+
+[colors.tab_bar]
+background = "#3a2b22"
+
+[colors.tab_bar.active_tab]
+bg_color = "#8f5543"
+fg_color = "#fdf1ea"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "#3a2b22"
+fg_color = "#bd9e82"
+
+[colors.tab_bar.new_tab]
+bg_color = "#3a2b22"
+fg_color = "#f0b48a"

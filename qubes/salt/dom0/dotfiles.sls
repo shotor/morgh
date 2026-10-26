@@ -3,6 +3,7 @@
 dom0-dotfile-packages:
   pkg.installed:
     - pkgs:
+      - feh
       - git
       - stow
 

@@ -17,7 +17,7 @@ stow_package() {
     relative=${source#"$directory/$package/"}
     target="$HOME/$relative"
     if [[ -e "$target" || -L "$target" ]]; then
-      if [[ $(readlink -f -- "$target") == "$source" ]]; then
+      if [[ $(readlink -f -- "$target") == $(readlink -f -- "$source") ]]; then
         continue
       fi
       parent=$(dirname -- "$target")
@@ -37,7 +37,7 @@ stow_package() {
       mkdir -p -- "$backup/$(dirname -- "$relative")"
       mv -- "$target" "$backup/$relative"
     fi
-  done < <(find "$directory/$package" -type f -print0)
+  done < <(find "$directory/$package" \( -type f -o -type l \) -print0)
   stow --dir="$directory" --target="$HOME" --no-folding --restow "$package"
 }
 
@@ -48,6 +48,7 @@ if [[ "$profile" == dev ]]; then
   stow_package "$repo/dotfiles" nvim
   stow_package "$repo/dotfiles" tmux
   stow_package "$repo/dotfiles" zsh
+  stow_package "$repo/dotfiles" starship
   stow_package "$repo/dotfiles" firefox
 else
   stow_package "$repo/qubes/salt/dom0/files" i3

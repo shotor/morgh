@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-light"
+author = "shotor"
+
+[colors]
+foreground = "{{light.fg}}"
+background = "{{light.bg}}"
+cursor_bg = "{{light.accent}}"
+cursor_fg = "{{light.bg}}"
+cursor_border = "{{light.accent}}"
+selection_fg = "{{light.fg}}"
+selection_bg = "{{light.selection}}"
+ansi = ["{{light.ansi.0}}","{{light.ansi.1}}","{{light.ansi.2}}","{{light.ansi.3}}","{{light.ansi.4}}","{{light.ansi.5}}","{{light.ansi.6}}","{{light.ansi.7}}"]
+brights = ["{{light.brights.0}}","{{light.brights.1}}","{{light.brights.2}}","{{light.brights.3}}","{{light.brights.4}}","{{light.brights.5}}","{{light.brights.6}}","{{light.brights.7}}"]
+
+[colors.tab_bar]
+background = "{{light.surface}}"
+
+[colors.tab_bar.active_tab]
+bg_color = "{{light.header}}"
+fg_color = "{{light.header_fg}}"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "{{light.surface}}"
+fg_color = "{{light.muted}}"
+
+[colors.tab_bar.new_tab]
+bg_color = "{{light.surface}}"
+fg_color = "{{light.accent}}"

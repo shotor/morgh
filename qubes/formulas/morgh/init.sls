@@ -48,9 +48,9 @@ morgh-template-sparse-checkout:
   cmd.run:
     - name: >-
         git -c http.proxy=http://127.0.0.1:8082 -C /srv/shotor/morgh
-        sparse-checkout set --cone dotfiles qubes
+        sparse-checkout set --cone dotfiles qubes theme
     - runas: user
-    - unless: test "$(git -C /srv/shotor/morgh sparse-checkout list 2>/dev/null)" = "$(printf 'dotfiles\nqubes')"
+    - unless: test "$(git -C /srv/shotor/morgh sparse-checkout list 2>/dev/null)" = "$(printf 'dotfiles\nqubes\ntheme')"
     - require:
       - cmd: morgh-template-clone
 

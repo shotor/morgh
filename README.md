@@ -20,6 +20,10 @@ Docker images and supporting tooling.
 
 Shell, terminal, editor, and application configuration.
 
+### [theme](theme)
+
+shotormorgh light and dark themes.
+
 ### [qubes](qubes)
 
 Qubes OS Salt states.
