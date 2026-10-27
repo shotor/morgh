@@ -12,4 +12,3 @@ gitshotor() {
   git config sendemail.smtpUser shotor@shotor.com
   git config sendemail.from shotor@shotor.com
 }
-

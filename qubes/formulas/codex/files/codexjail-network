@@ -1,0 +1,114 @@
+#!/usr/bin/python3
+import ipaddress
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+NS = 'codexjail'
+LINK = 'cj-host'
+PRIVATE = Path('/rw/config/codexjail/blocked-v4')
+BLOCKED = ('0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8',
+           '169.254.0.0/16', '172.16.0.0/12', '192.0.0.0/24', '192.0.2.0/24',
+           '192.168.0.0/16', '198.18.0.0/15', '198.51.100.0/24',
+           '203.0.113.0/24', '224.0.0.0/4', '240.0.0.0/4')
+
+
+def run(*args, **kwargs):
+    return subprocess.run(args, check=True, **kwargs)
+
+
+def rules():
+    networks = [ipaddress.IPv4Network(value) for value in BLOCKED]
+    if PRIVATE.exists():
+        for line in PRIVATE.read_text().splitlines():
+            value = line.split('#', 1)[0].strip()
+            if value:
+                networks.append(ipaddress.IPv4Network(value))
+    blocked = ', '.join(map(str, ipaddress.collapse_addresses(networks)))
+    return '''add table inet codexjail
+delete table inet codexjail
+table inet codexjail {
+    set blocked_v4 { type ipv4_addr; flags interval; elements = { %s }; }
+    chain input {
+        type filter hook input priority -10; policy accept;
+        iifname "cj-host" counter drop
+    }
+    chain forward {
+        type filter hook forward priority -10; policy accept;
+        iifname "cj-host" jump outbound
+        oifname "cj-host" meta nfproto ipv4 ip daddr 192.0.2.2 ct state established,related accept
+        oifname "cj-host" counter drop
+    }
+    chain outbound {
+        meta nfproto != ipv4 counter drop
+        ip saddr != 192.0.2.2 counter drop
+        ip daddr @blocked_v4 counter drop
+        oifname != "eth0" counter drop
+        ct state invalid counter drop
+        udp dport 53 ip daddr { 1.1.1.1, 9.9.9.9 } accept
+        tcp dport 53 ip daddr { 1.1.1.1, 9.9.9.9 } accept
+        udp dport 53 counter drop
+        tcp dport 53 counter drop
+        meta l4proto { tcp, udp, icmp } accept
+        counter drop
+    }
+    chain nat {
+        type nat hook postrouting priority 99; policy accept;
+        iifname "cj-host" oifname "eth0" ip saddr 192.0.2.2 masquerade
+    }
+}
+''' % blocked
+
+
+def apply_rules():
+    run('/usr/sbin/nft', '-f', '-', input=rules(), text=True)
+
+
+def down():
+    # Cut the link before removing the filtering, including for surviving processes.
+    exists = subprocess.run(['/usr/sbin/ip', 'link', 'show', LINK],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if exists.returncode == 0:
+        run('/usr/sbin/ip', 'link', 'delete', LINK)
+    if Path('/run/netns/' + NS).exists():
+        run('/usr/sbin/ip', 'netns', 'delete', NS)
+    exists = subprocess.run(['/usr/sbin/nft', 'list', 'table', 'inet', NS],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if exists.returncode == 0:
+        run('/usr/sbin/nft', 'delete', 'table', 'inet', NS)
+
+
+def up():
+    down()
+    try:
+        apply_rules()
+        run('/usr/sbin/ip', 'netns', 'add', NS)
+        run('/usr/sbin/ip', 'link', 'add', LINK, 'type', 'veth',
+            'peer', 'name', 'cj-net', 'netns', NS)
+        run('/usr/sbin/ip', 'address', 'add', '192.0.2.1/30', 'dev', LINK)
+        run('/usr/sbin/ip', '-n', NS, 'address', 'add', '192.0.2.2/30', 'dev', 'cj-net')
+        run('/usr/sbin/ip', 'netns', 'exec', NS, '/usr/sbin/sysctl', '-qw',
+            'net.ipv6.conf.all.disable_ipv6=1', 'net.ipv6.conf.default.disable_ipv6=1')
+        run('/usr/sbin/sysctl', '-qw', 'net.ipv4.ip_forward=1')
+        run('/usr/sbin/ip', '-n', NS, 'link', 'set', 'lo', 'up')
+        run('/usr/sbin/ip', '-n', NS, 'link', 'set', 'cj-net', 'up')
+        run('/usr/sbin/ip', '-n', NS, 'route', 'add', 'default', 'via', '192.0.2.1')
+        run('/usr/sbin/ip', 'link', 'set', LINK, 'up')
+    except BaseException:
+        down()
+        raise
+
+
+if __name__ == '__main__':
+    os.environ['PATH'] = '/usr/sbin:/usr/bin:/sbin:/bin'
+    if os.geteuid() != 0:
+        sys.exit('codexjail-network requires root')
+    if sys.argv[1:] == ['up']:
+        up()
+    elif sys.argv[1:] == ['down']:
+        down()
+    elif sys.argv[1:] == ['refresh']:
+        apply_rules()
+    else:
+        sys.exit('usage: codexjail-network up|down|refresh')

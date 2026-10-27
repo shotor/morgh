@@ -6,8 +6,23 @@ if [[ $# -lt 1 || "$1" == --help ]]; then
   exit 0
 fi
 
-if [[ $(id -un) != agent || $(id -gn) != work ]]; then
-  exec sudo -H -u agent -g work -- /usr/bin/codexjail "$@"
+if [[ $EUID == 0 ]]; then
+  export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+  systemctl start codexjail-network.service
+  /usr/local/libexec/codexjail-network refresh
+  exec ip netns exec codexjail setpriv \
+    --reuid=agent --regid=work --init-groups --no-new-privs \
+    env -i HOME=/home/agent PATH=/usr/sbin:/usr/bin:/sbin:/bin \
+    TERM="${TERM:-xterm-256color}" /usr/bin/codexjail "$@"
+elif [[ $(id -un) != agent || $(id -gn) != work ]]; then
+  exec sudo -- /usr/bin/codexjail "$@"
+fi
+
+current_net=$(stat -Lc %i /proc/self/ns/net) || exit 1
+isolated_net=$(stat -Lc %i /run/netns/codexjail) || exit 1
+if [[ $current_net != "$isolated_net" ]]; then
+  echo 'Codex must run in its isolated network namespace.' >&2
+  exit 1
 fi
 
 project=$(realpath -e -- "$1")
@@ -33,7 +48,7 @@ for path in /bin /sbin /lib /lib64; do
     mounts+=(--ro-bind "$path" "$path")
   fi
 done
-for path in /etc/passwd /etc/group /etc/nsswitch.conf /etc/hosts /etc/resolv.conf /etc/ssl/certs /etc/alternatives /etc/localtime /etc/terminfo /opt/neovim; do
+for path in /etc/passwd /etc/group /etc/ssl/certs /etc/alternatives /etc/localtime /etc/terminfo /opt/neovim; do
   if [[ -e "$path" ]]; then
     mounts+=(--ro-bind "$path" "$path")
   fi
@@ -49,6 +64,9 @@ sandbox=(bwrap \
   --cap-drop ALL --clearenv \
   --ro-bind /usr /usr \
   --ro-bind /opt/codex /opt/codex \
+  --ro-bind /etc/codexjail/resolv.conf /etc/resolv.conf \
+  --ro-bind /etc/codexjail/nsswitch.conf /etc/nsswitch.conf \
+  --ro-bind /etc/codexjail/hosts /etc/hosts \
   "${mounts[@]}" \
   --proc /proc --dev /dev --tmpfs /tmp --dir /run \
   --tmpfs /home --dir /home/agent \

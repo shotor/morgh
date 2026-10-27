@@ -1,0 +1,9 @@
+[Unit]
+Description=Isolated internet network for Codex
+After=network.target qubes-iptables.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/libexec/codexjail-network up
+ExecStop=/usr/local/libexec/codexjail-network down

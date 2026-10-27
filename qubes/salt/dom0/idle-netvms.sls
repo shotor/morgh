@@ -1,30 +1,25 @@
-{% set gateways = salt['pillar.get']('idle_netvms:gateways', []) %}
-{% if gateways is string or gateways is mapping or gateways is not sequence %}
-{{ raise('idle_netvms:gateways must be a list of VM names.') }}
-{% endif %}
-{% for name in gateways %}
-{% if name is not string or (name | regex_match('^[A-Za-z][A-Za-z0-9_-]{0,30}$')) is none or name == 'dom0' %}
-{{ raise('Invalid VM name in idle_netvms:gateways.') }}
-{% endif %}
-{% endfor %}
+morgh-idle-netvms.timer:
+  service.dead:
+    - enable: false
+    - onlyif: test -f /etc/systemd/system/morgh-idle-netvms.timer
 
-/etc/morgh/idle-netvms.json:
-  file.managed:
-    - contents: '{{ gateways | tojson }}'
-    - mode: '0600'
-    - makedirs: true
+morgh-idle-netvms.service:
+  service.dead:
+    - onlyif: test -f /etc/systemd/system/morgh-idle-netvms.service
+    - require:
+      - service: morgh-idle-netvms.timer
 
-/usr/local/libexec/morgh-idle-netvms:
-  file.managed:
-    - source: salt://shotor/dom0/files/idle-netvms
-    - mode: '0755'
-    - makedirs: true
-
-{% for unit in ['service', 'timer'] %}
-/etc/systemd/system/morgh-idle-netvms.{{ unit }}:
-  file.managed:
-    - source: salt://shotor/dom0/files/idle-netvms.{{ unit }}
-    - mode: '0644'
+{% for path in [
+  '/etc/systemd/system/morgh-idle-netvms.timer',
+  '/etc/systemd/system/morgh-idle-netvms.service',
+  '/usr/local/libexec/morgh-idle-netvms',
+  '/etc/morgh/idle-netvms.json',
+  '/run/morgh-idle-netvms',
+] %}
+{{ path }}:
+  file.absent:
+    - require:
+      - service: morgh-idle-netvms.service
 {% endfor %}
 
 idle-netvms-systemd-reload:
@@ -33,11 +28,3 @@ idle-netvms-systemd-reload:
     - onchanges:
       - file: /etc/systemd/system/morgh-idle-netvms.service
       - file: /etc/systemd/system/morgh-idle-netvms.timer
-
-morgh-idle-netvms.timer:
-  service.running:
-    - enable: true
-    - require:
-      - cmd: idle-netvms-systemd-reload
-      - file: /etc/morgh/idle-netvms.json
-      - file: /usr/local/libexec/morgh-idle-netvms

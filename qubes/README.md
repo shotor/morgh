@@ -47,9 +47,46 @@ selections. After installing new applications, run `qvm-sync-appmenus TEMPLATE`
 and `morgh-appmenus` in dom0 to refresh the selections. Nextcloud continues
 syncing independently of its menu entry.
 
-## KeePassXC and idle gateways
+## Codex networking
 
-Keep client-to-vault mappings and idle gateway names in a private dom0 pillar:
+`codexjail` starts a dedicated network namespace in the same AppVM. Project
+folders remain shared. A root-managed nftables table allows IPv4 internet
+traffic through `eth0`, blocks private/reserved destinations (including
+Tailscale's IPv4 range), and blocks IPv6 and access to AppVM-local services.
+DNS uses 1.1.1.1 and 9.9.9.9 instead of the AppVM's internal resolver.
+The namespace uses 192.0.2.0/30 for its virtual link.
+
+Apply `tpl-deb-13-dev`, restart the AppVM, and launch `codexjail` normally.
+Existing jail sessions must be closed; they retain their old network access.
+The namespace is created on first launch, not in the template during Salt.
+
+Additional VPN destinations using public IPv4 space must be listed as CIDRs,
+one per line, in `/rw/config/codexjail/blocked-v4` inside the AppVM. Keep this
+file and its parent root-owned and unwritable by `agent`. The file is private
+and persists across AppVM restarts. Invalid entries prevent new jail launches.
+To apply changes to running sessions:
+
+```sh
+sudo /usr/local/libexec/codexjail-network refresh
+```
+
+Inspect the host-side rules and test from the namespace:
+
+```sh
+sudo nft list table inet codexjail
+sudo ip netns exec codexjail curl -4 -I --max-time 10 https://example.com
+sudo ip netns exec codexjail curl -4 -I --max-time 3 http://172.18.1.1
+```
+
+The internet request should succeed; the private-address request should time
+out. Internet traffic still follows the AppVM's upstream gateway, including
+any VPN exit node. This is direct-network isolation, not protection against
+public relays or modified shared scripts that you later execute outside the
+jail. Stopping `codexjail-network.service` disconnects running jail sessions.
+
+## KeePassXC
+
+Keep client-to-vault mappings in a private dom0 pillar:
 
 ```sh
 sudo install -d -m 0700 /srv/pillar/base/services
@@ -62,9 +99,6 @@ sudoedit /srv/pillar/base/services/init.sls /srv/pillar/base/services/init.top
 keepassxc:
   clients:
     CLIENT_VM: VAULT_VM
-idle_netvms:
-  gateways:
-    - VPN_VM
 ```
 
 `init.top`:
@@ -88,11 +122,6 @@ database and enable Firefox under Settings → Browser Integration. In each
 allowed client, connect KeePassXC-Browser and approve pairing in the vault.
 The vault must be running; an empty client mapping denies access. The offline
 vault template does not install the remote service.
-
-The dom0 timer checks configured gateways every minute and requests normal
-shutdown after five minutes without running dependents. Paused dependents and
-downstream gateways keep their upstream running. Failed dependency checks reset
-the countdown. This does not enable WireGuard tunnels at startup.
 
 ## Network templates
 

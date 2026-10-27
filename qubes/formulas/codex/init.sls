@@ -17,6 +17,10 @@ codex-packages:
       - git
       - acl
       - sudo
+      - iproute2
+      - nftables
+      - python3
+      - util-linux
 
 codex-download:
   cmd.run:
@@ -138,3 +142,60 @@ work-git-trust:
       - file: /etc/sudoers.d/zz-agent
       - file: /var/lib/codex-agent
       - cmd: work-default-permissions
+      - cmd: codexjail-network-reload
+
+/usr/local/libexec/codexjail-network:
+  file.managed:
+    - source: salt://shotor/codex/files/codexjail-network
+    - mode: '0755'
+    - makedirs: true
+
+/etc/systemd/system/codexjail-network.service:
+  file.managed:
+    - source: salt://shotor/codex/files/codexjail-network.service
+    - mode: '0644'
+
+codexjail-network-reload:
+  cmd.run:
+    - name: systemctl daemon-reload
+    - onchanges:
+      - file: /etc/systemd/system/codexjail-network.service
+    - require:
+      - pkg: codex-packages
+      - file: /usr/local/libexec/codexjail-network
+      - file: /etc/codexjail/resolv.conf
+      - file: /etc/codexjail/nsswitch.conf
+      - file: /etc/codexjail/hosts
+      - file: /etc/netns/codexjail/resolv.conf
+
+/etc/codexjail/resolv.conf:
+  file.managed:
+    - contents: |
+        nameserver 1.1.1.1
+        nameserver 9.9.9.9
+    - mode: '0644'
+    - makedirs: true
+
+/etc/codexjail/nsswitch.conf:
+  file.managed:
+    - contents: |
+        passwd: files
+        group: files
+        shadow: files
+        hosts: files dns
+        networks: files
+    - mode: '0644'
+    - makedirs: true
+
+/etc/netns/codexjail/resolv.conf:
+  file.symlink:
+    - target: /etc/codexjail/resolv.conf
+    - makedirs: true
+    - require:
+      - file: /etc/codexjail/resolv.conf
+
+/etc/codexjail/hosts:
+  file.managed:
+    - contents: '127.0.0.1 localhost'
+    - mode: '0644'
+    - makedirs: true
