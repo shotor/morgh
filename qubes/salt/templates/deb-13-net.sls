@@ -7,6 +7,7 @@ include:
 network-packages:
   pkg.installed:
     - pkgs:
+      - bind9-utils
       - lsd
       - zoxide
       - htop

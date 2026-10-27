@@ -1,4 +1,4 @@
-{% set addons = ['ublock-origin', 'vimium-ff'] %}
+{% set addons = ['ublock-origin', 'vimium-ff', 'keepassxc-browser'] %}
 {% if grains['id'] == 'tpl-deb-13-dev' %}
 {% set addons = addons + ['multi-account-containers', 'containers-new-tab'] %}
 {% endif %}

@@ -23,6 +23,10 @@ wezterm-terminal-alternative-removed:
     - require:
       - alternatives: default-terminal
 
+thunar-removed:
+  pkg.removed:
+    - name: thunar
+
 terminal-packages:
   pkg.installed:
     - pkgs:

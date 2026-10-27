@@ -1,6 +1,7 @@
 include:
   - shotor.terminal
   - shotor.firefox
+  - shotor.keepassxc.client
 
 dvm-packages:
   pkg.installed:

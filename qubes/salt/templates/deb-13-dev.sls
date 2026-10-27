@@ -4,6 +4,7 @@ include:
   - shotor.tpack
   - shotor.terminal
   - shotor.firefox
+  - shotor.keepassxc.client
   - shotor.codex
   - shotor.neovim
   - shotor.ssh-agent.client
@@ -13,6 +14,7 @@ include:
 dev-packages:
   pkg.installed:
     - pkgs:
+      - bind9-utils
       - lsd
       - zoxide
       - htop

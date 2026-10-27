@@ -4,6 +4,9 @@ base:
     - shotor.dom0.dotfiles
     - shotor.dom0.ssh-agent
     - shotor.dom0.ctap
+    - shotor.dom0.keepassxc
+    - shotor.dom0.idle-netvms
+    - shotor.dom0.appmenus
 
   tpl-deb-13-dev:
     - shotor.templates.deb-13-dev
