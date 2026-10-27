@@ -5,6 +5,7 @@ dom0-dotfile-packages:
     - pkgs:
       - bash
       - brightnessctl
+      - python3-i3ipc
       - feh
       - git
       - stow

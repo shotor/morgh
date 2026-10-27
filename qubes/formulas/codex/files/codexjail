@@ -9,7 +9,7 @@ fi
 if [[ $EUID == 0 ]]; then
   export PATH=/usr/sbin:/usr/bin:/sbin:/bin
   systemctl start codexjail-network.service
-  /usr/local/libexec/codexjail-network refresh
+  /usr/libexec/morgh/codexjail-network refresh
   exec ip netns exec codexjail setpriv \
     --reuid=agent --regid=work --init-groups --no-new-privs \
     env -i HOME=/home/agent PATH=/usr/sbin:/usr/bin:/sbin:/bin \

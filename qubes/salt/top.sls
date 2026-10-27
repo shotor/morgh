@@ -2,6 +2,7 @@ base:
   dom0:
     - shotor.dom0.cpfrom
     - shotor.dom0.dotfiles
+    - shotor.dom0.display
     - shotor.dom0.ssh-agent
     - shotor.dom0.ctap
     - shotor.dom0.keepassxc

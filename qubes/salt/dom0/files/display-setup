@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+import argparse
+import os
+from pathlib import Path
+import re
+import subprocess
+
+
+def read_modes(text):
+    outputs = {}
+    current = None
+    for line in text.splitlines():
+        header = re.match(r'^(\S+) (connected|disconnected)\b', line)
+        if header:
+            current = header[1]
+            outputs[current] = {'connected': header[2] == 'connected', 'modes': []}
+            continue
+        mode = re.match(r'^\s+(\d+)x(\d+)\s+(.+)$', line)
+        if current and mode:
+            width, height = int(mode[1]), int(mode[2])
+            for token in mode[3].split():
+                rate = token.rstrip('*+')
+                if re.fullmatch(r'\d+(?:\.\d+)?', rate):
+                    outputs[current]['modes'].append((width * height, width, height, float(rate), rate))
+    return outputs
+
+
+def profile_config(outputs, selected):
+    best = max(outputs[selected]['modes'])
+    lines = []
+    for name in outputs:
+        lines.append(f'output {name}')
+        if name == selected:
+            lines.extend(['primary', f'mode {best[1]}x{best[2]}', f'rate {best[4]}', 'pos 0x0', 'rotate normal'])
+        else:
+            lines.append('off')
+    return '\n'.join(lines) + '\n', best
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Remember a monitor for automatic external-only display switching.')
+    parser.add_argument('output', help='Connected external output, e.g. DP-4')
+    args = parser.parse_args()
+    env = dict(os.environ, LC_ALL='C')
+    outputs = read_modes(subprocess.check_output(['xrandr', '--query'], text=True, env=env))
+    internal = [name for name, value in outputs.items()
+                if name.startswith(('eDP', 'LVDS')) and value['connected'] and value['modes']]
+    if len(internal) != 1:
+        parser.error('Expected one connected laptop panel; open the laptop lid and retry.')
+    panel = internal[0]
+    if args.output == panel or args.output not in outputs or not outputs[args.output]['connected'] or not outputs[args.output]['modes']:
+        parser.error('Choose a connected external output with advertised modes.')
+    fingerprints = {}
+    for line in subprocess.check_output(['autorandr', '--fingerprint'], text=True, env=env).splitlines():
+        name, edid = line.split()
+        fingerprints[name] = edid
+    if not all(name in fingerprints for name in (panel, args.output)):
+        parser.error('Missing EDID for the laptop panel or external display; no profiles written.')
+    if set(fingerprints) != {panel, args.output}:
+        parser.error('Disconnect other external displays while registering this monitor.')
+
+    root = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config'))) / 'autorandr'
+    for profile, selected, devices in (
+        ('morgh-docked', args.output, [panel, args.output]),
+        ('morgh-mobile', panel, [panel]),
+    ):
+        directory = root / profile
+        directory.mkdir(parents=True, exist_ok=True)
+        config, best = profile_config(outputs, selected)
+        (directory / 'config').write_text(config)
+        (directory / 'setup').write_text(''.join(f'{name} {fingerprints[name]}\n' for name in devices))
+        print(f'{profile}: {selected}, {best[1]}x{best[2]} at {best[4]} Hz', flush=True)
+
+    default = root / 'default'
+    if not default.exists() and not default.is_symlink():
+        default.symlink_to('morgh-mobile')
+
+    subprocess.run(['autorandr', '--change', '--match-edid', '--default', 'morgh-mobile'], check=True, env=env)
+
+
+if __name__ == '__main__':
+    main()

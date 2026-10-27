@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import ipaddress
+import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -8,6 +10,7 @@ import sys
 NS = 'codexjail'
 LINK = 'cj-host'
 PRIVATE = Path('/rw/config/codexjail/blocked-v4')
+DOCKER_NETWORKS = Path('/rw/config/codexjail/docker-networks')
 BLOCKED = ('0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8',
            '169.254.0.0/16', '172.16.0.0/12', '192.0.0.0/24', '192.0.2.0/24',
            '192.168.0.0/16', '198.18.0.0/15', '198.51.100.0/24',
@@ -18,7 +21,36 @@ def run(*args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
 
 
-def rules():
+def docker_networks():
+    selected = []
+    if not DOCKER_NETWORKS.exists():
+        return selected
+    for line in DOCKER_NETWORKS.read_text().splitlines():
+        name = line.split('#', 1)[0].strip()
+        if not name:
+            continue
+        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', name):
+            raise ValueError('Invalid Docker network name')
+        result = run('/usr/bin/docker', '--host=unix:///var/run/docker.sock',
+                     'network', 'inspect', name, capture_output=True, text=True, timeout=15)
+        network, = json.loads(result.stdout)
+        if network['Driver'] != 'bridge' or network.get('Scope') != 'local':
+            raise ValueError(f'{name}: only local Docker bridge networks are supported')
+        bridge = (network.get('Options') or {}).get('com.docker.network.bridge.name')
+        if not bridge:
+            bridge = 'docker0' if network['Name'] == 'bridge' else 'br-' + network['Id'][:12]
+        if not re.fullmatch(r'[A-Za-z0-9_.-]{1,15}', bridge):
+            raise ValueError('Invalid Docker bridge name')
+        if not Path('/sys/class/net', bridge, 'bridge').is_dir():
+            raise ValueError(f'{bridge}: not an active host bridge')
+        for config in network['IPAM']['Config']:
+            subnet = ipaddress.ip_network(config['Subnet'])
+            if subnet.version == 4:
+                selected.append((bridge, str(subnet)))
+    return sorted(set(selected))
+
+
+def rules(docker=()):
     networks = [ipaddress.IPv4Network(value) for value in BLOCKED]
     if PRIVATE.exists():
         for line in PRIVATE.read_text().splitlines():
@@ -26,6 +58,10 @@ def rules():
             if value:
                 networks.append(ipaddress.IPv4Network(value))
     blocked = ', '.join(map(str, ipaddress.collapse_addresses(networks)))
+    allow = '\n'.join(f'        oifname "{bridge}" ip daddr {subnet} accept'
+                      for bridge, subnet in docker)
+    nat = '\n'.join(f'        iifname "cj-host" oifname "{bridge}" ip saddr 192.0.2.2 ip daddr {subnet} masquerade'
+                    for bridge, subnet in docker)
     return '''add table inet codexjail
 delete table inet codexjail
 table inet codexjail {
@@ -43,11 +79,12 @@ table inet codexjail {
     chain outbound {
         meta nfproto != ipv4 counter drop
         ip saddr != 192.0.2.2 counter drop
+        ct state invalid counter drop
+%s
         ip daddr @blocked_v4 counter drop
         oifname != "eth0" counter drop
-        ct state invalid counter drop
-        udp dport 53 ip daddr { 1.1.1.1, 9.9.9.9 } accept
-        tcp dport 53 ip daddr { 1.1.1.1, 9.9.9.9 } accept
+        udp dport 53 ip daddr { 9.9.9.9, 149.112.112.112 } accept
+        tcp dport 53 ip daddr { 9.9.9.9, 149.112.112.112 } accept
         udp dport 53 counter drop
         tcp dport 53 counter drop
         meta l4proto { tcp, udp, icmp } accept
@@ -56,13 +93,42 @@ table inet codexjail {
     chain nat {
         type nat hook postrouting priority 99; policy accept;
         iifname "cj-host" oifname "eth0" ip saddr 192.0.2.2 masquerade
+%s
     }
 }
-''' % blocked
+''' % (blocked, allow, nat)
+
+
+def docker_firewall(remove=False):
+    entries = [
+        ('raw', 'PREROUTING', ['-i', LINK, '-m', 'comment', '--comment', 'codexjail', '-j', 'ACCEPT']),
+        ('filter', 'DOCKER-USER', ['-i', LINK, '-m', 'comment', '--comment', 'codexjail', '-j', 'ACCEPT']),
+        ('filter', 'DOCKER-USER', ['-o', LINK, '-m', 'conntrack', '--ctstate', 'ESTABLISHED,RELATED',
+                                  '-m', 'comment', '--comment', 'codexjail', '-j', 'ACCEPT']),
+    ]
+    for table, chain, rule in entries:
+        base = ['/usr/sbin/iptables', '-w', '5', '-t', table]
+        found = subprocess.run([*base, '-C', chain, *rule],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        if remove and found:
+            run(*base, '-D', chain, *rule)
+        elif not remove and not found:
+            run(*base, '-I', chain, '1', *rule)
 
 
 def apply_rules():
+    # Revoke old Docker exceptions before discovery, including if Docker is unavailable.
     run('/usr/sbin/nft', '-f', '-', input=rules(), text=True)
+    selected = docker_networks()
+    if selected:
+        backend = subprocess.run(['/usr/sbin/iptables', '-w', '5', '-S', 'DOCKER-USER'],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if backend.returncode:
+            raise RuntimeError('Docker access requires its iptables backend and DOCKER-USER chain')
+        docker_firewall()
+        run('/usr/sbin/nft', '-f', '-', input=rules(selected), text=True)
+    else:
+        docker_firewall(remove=True)
 
 
 def down():
@@ -73,6 +139,7 @@ def down():
         run('/usr/sbin/ip', 'link', 'delete', LINK)
     if Path('/run/netns/' + NS).exists():
         run('/usr/sbin/ip', 'netns', 'delete', NS)
+    docker_firewall(remove=True)
     exists = subprocess.run(['/usr/sbin/nft', 'list', 'table', 'inet', NS],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if exists.returncode == 0:

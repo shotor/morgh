@@ -5,5 +5,5 @@ After=network.target qubes-iptables.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/libexec/codexjail-network up
-ExecStop=/usr/local/libexec/codexjail-network down
+ExecStart=/usr/libexec/morgh/codexjail-network up
+ExecStop=/usr/libexec/morgh/codexjail-network down

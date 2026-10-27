@@ -3,6 +3,8 @@
 # Adapted from QubesOS/qubes-desktop-linux-i3-settings-qubes/qubes-i3status.py
 
 import re
+import os
+import i3ipc
 import time
 import json
 import subprocess
@@ -23,6 +25,33 @@ def json_output(name, full_text, color=None):
     if color:
         entry["color"] = color
     return entry
+
+
+layout_connection = None
+
+
+def status_layout():
+    global layout_connection
+    try:
+        if layout_connection is None:
+            layout_connection = i3ipc.Connection()
+        focused = layout_connection.get_tree().find_focused()
+        ws = focused.workspace()
+        state_file = Path(os.environ['XDG_RUNTIME_DIR']) / 'morgh-i3-layout.json'
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+        entry = state.get(str(ws.id), {})
+        preset = entry.get('mode', 'centered' if entry.get('auto') else 'normal')
+        container = focused if focused.nodes else focused.parent
+        layout = {'splith': 'split h', 'splitv': 'split v',
+                  'tabbed': 'tabbed', 'stacked': 'stacked'}.get(container.layout, container.layout)
+        if focused.floating in ('auto_on', 'user_on'):
+            layout = 'floating'
+        if focused.fullscreen_mode:
+            layout = 'fullscreen'
+        return json_output('layout', f'{preset} · {layout}')
+    except (OSError, ValueError, AttributeError, KeyError):
+        layout_connection = None
+        return json_output('layout', 'layout unavailable')
 
 
 def status_net():
@@ -258,8 +287,9 @@ async def painter(app):
             status_list.append(status_volume())
             last_heavy = status_list.copy()
         else:
-            status_list = last_heavy
+            status_list = last_heavy.copy()
 
+        status_list.append(status_layout())
         status_list.append(status_time())
 
         final_status_list = [

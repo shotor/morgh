@@ -47,18 +47,61 @@ selections. After installing new applications, run `qvm-sync-appmenus TEMPLATE`
 and `morgh-appmenus` in dom0 to refresh the selections. Nextcloud continues
 syncing independently of its menu entry.
 
+## Display (dom0)
+
+After applying dom0, register the connected monitor once:
+
+```sh
+morgh-display-setup DP-4
+```
+
+Autorandr uses that monitor alone at its highest advertised resolution and refresh
+rate, and returns to the laptop panel when disconnected. EDID profiles stay in
+`~/.config/autorandr` on dom0. Rerun setup to replace the saved monitor.
+
+On the registered 5120×1440 monitor, new workspaces start with a centered
+2560-wide window. The next two windows fill the right, then left quarter.
+After that, focus a column and use normal i3 splits (`Super+h` / `Super+v`).
+Existing window arrangements are left alone when the helper first starts.
+The registered monitor uses 16-pixel inner gaps; the laptop uses none.
+Automatic layout dimensions account for i3 DPI scaling.
+
+`Super+g` selects presets and adjusts empty space while keeping windows tiled:
+
+- `c`: centered preset for a single window (or an empty workspace).
+- `r`: right-aligned preset on an empty workspace or a flat row. Windows start
+  at 1920 pixels wide; new windows appear on the left, shrinking to fit when full.
+- Left/Right: narrow/widen the occupied area. The right preset changes only the
+  left margin; other modes change both margins.
+- Down/Up: shorten/heighten the area; `0`: reset to normal tiling.
+- Enter/Escape: finish.
+
+Resize shared borders normally with the mouse or `Super+r`. Explicit splits,
+tabs and stacks take precedence over automatic right-preset insertion.
+Presets are per workspace. The bar shows the preset and focused container layout,
+for example `right · tabbed` or `centered · split v`.
+
+After syncing helper changes, restart just the helper and refresh i3/bar:
+
+```sh
+i3-msg 'exec --no-startup-id ~/.local/bin/morgh-i3-layout restart'
+i3-msg restart
+```
+
 ## Codex networking
 
 `codexjail` starts a dedicated network namespace in the same AppVM. Project
 folders remain shared. A root-managed nftables table allows IPv4 internet
 traffic through `eth0`, blocks private/reserved destinations (including
 Tailscale's IPv4 range), and blocks IPv6 and access to AppVM-local services.
-DNS uses 1.1.1.1 and 9.9.9.9 instead of the AppVM's internal resolver.
+DNS uses Quad9 (9.9.9.9 and 149.112.112.112) instead of the AppVM's internal resolver.
 The namespace uses 192.0.2.0/30 for its virtual link.
 
 Apply `tpl-deb-13-dev`, restart the AppVM, and launch `codexjail` normally.
 Existing jail sessions must be closed; they retain their old network access.
 The namespace is created on first launch, not in the template during Salt.
+The network helper is installed under `/usr/libexec/morgh`, since AppVMs keep
+their own `/usr/local` and do not inherit template updates there.
 
 Additional VPN destinations using public IPv4 space must be listed as CIDRs,
 one per line, in `/rw/config/codexjail/blocked-v4` inside the AppVM. Keep this
@@ -67,7 +110,7 @@ and persists across AppVM restarts. Invalid entries prevent new jail launches.
 To apply changes to running sessions:
 
 ```sh
-sudo /usr/local/libexec/codexjail-network refresh
+sudo /usr/libexec/morgh/codexjail-network refresh
 ```
 
 Inspect the host-side rules and test from the namespace:
@@ -77,6 +120,28 @@ sudo nft list table inet codexjail
 sudo ip netns exec codexjail curl -4 -I --max-time 10 https://example.com
 sudo ip netns exec codexjail curl -4 -I --max-time 3 http://172.18.1.1
 ```
+
+To allow all container ports on selected local Docker bridge networks, put
+their Docker network names (one per line) in the private AppVM file
+`/rw/config/codexjail/docker-networks`. Keep the file and parent root-owned and
+unwritable by `agent`. After starting Docker and creating the networks, run:
+
+```sh
+sudo /usr/libexec/morgh/codexjail-network refresh
+```
+
+Codex can then use the containers' actual IPv4 addresses. Each exception matches
+both the Docker subnet and bridge interface; other private destinations and
+AppVM-local services remain blocked. Selected Docker networks override the
+destination blocklist only on their bridges. Container names are not added to
+DNS. No Docker socket is exposed to the jail.
+
+This integration supports Docker's standard iptables backend with a
+`DOCKER-USER` chain, not its native nftables backend or rootless networking.
+Refresh after recreating networks or restarting Docker. Missing or unsupported
+networks prevent a new jail launch and revoke existing Docker exceptions.
+Services on an allowed network are trusted destinations: a proxy service there
+could provide indirect access to other networks.
 
 The internet request should succeed; the private-address request should time
 out. Internet traffic still follows the AppVM's upstream gateway, including

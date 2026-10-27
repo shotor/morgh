@@ -19,6 +19,7 @@ codex-packages:
       - sudo
       - iproute2
       - nftables
+      - iptables
       - python3
       - util-linux
 
@@ -144,7 +145,7 @@ work-git-trust:
       - cmd: work-default-permissions
       - cmd: codexjail-network-reload
 
-/usr/local/libexec/codexjail-network:
+/usr/libexec/morgh/codexjail-network:
   file.managed:
     - source: salt://shotor/codex/files/codexjail-network
     - mode: '0755'
@@ -162,7 +163,7 @@ codexjail-network-reload:
       - file: /etc/systemd/system/codexjail-network.service
     - require:
       - pkg: codex-packages
-      - file: /usr/local/libexec/codexjail-network
+      - file: /usr/libexec/morgh/codexjail-network
       - file: /etc/codexjail/resolv.conf
       - file: /etc/codexjail/nsswitch.conf
       - file: /etc/codexjail/hosts
@@ -171,8 +172,8 @@ codexjail-network-reload:
 /etc/codexjail/resolv.conf:
   file.managed:
     - contents: |
-        nameserver 1.1.1.1
         nameserver 9.9.9.9
+        nameserver 149.112.112.112
     - mode: '0644'
     - makedirs: true
 

@@ -1,0 +1,248 @@
+#!/usr/bin/python3
+import fcntl
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+import i3ipc
+
+
+runtime = Path(os.environ['XDG_RUNTIME_DIR'])
+state_file = runtime / 'morgh-i3-layout.json'
+i3 = i3ipc.Connection(auto_reconnect=len(sys.argv) == 1)
+gap_scale = None
+
+
+def command(text):
+    for reply in i3.command(text):
+        if not reply.success:
+            raise RuntimeError(reply.error)
+
+
+def workspace():
+    return i3.get_tree().find_focused().workspace()
+
+
+def gap_pixels(value):
+    global gap_scale
+    if gap_scale is None:
+        previous = workspace().ipc_data['gaps']['left']
+        # IPC reports physical pixels; commands take DPI-scaled logical pixels.
+        command('gaps left current set 96')
+        gap_scale = workspace().ipc_data['gaps']['left'] / 96
+        command(f'gaps left current set {round(previous / gap_scale)}')
+    return round(value / gap_scale)
+
+
+def inner_gaps(enabled):
+    value = gap_pixels(16 if enabled else 0)
+    command(f'gaps inner current set {value}')
+
+
+def gaps(left, right, top=0, bottom=0):
+    inner = workspace().ipc_data['gaps']['inner']
+    command('; '.join(f'gaps {side} current set {gap_pixels(max(0, value - inner))}'
+                     for side, value in [('left', left), ('right', right),
+                                         ('top', top), ('bottom', bottom)]))
+
+
+def eligible(ws):
+    output = next((o for o in i3.get_outputs() if o.name == ws.ipc_data.get('output')), None)
+    if output is None:
+        node = ws.parent
+        while node and node.type != 'output':
+            node = node.parent
+        output = next((o for o in i3.get_outputs() if node and o.name == node.name), None)
+    if not output or output.rect.width != 5120 or output.rect.height != 1440:
+        return False
+    setup = Path.home() / '.config/autorandr/morgh-docked/setup'
+    if not setup.exists():
+        return False
+    wanted = {line.split()[1] for line in setup.read_text().splitlines()
+              if len(line.split()) == 2 and not line.startswith(('eDP', 'LVDS'))}
+    result = subprocess.run(['autorandr', '--fingerprint'], capture_output=True, text=True, timeout=5)
+    return any(parts[0] == output.name and parts[1] in wanted
+               for line in result.stdout.splitlines() if len(parts := line.split()) == 2)
+
+
+def right_layout(ws, entry, reset=False, closed=None):
+    nodes = ws.nodes
+    if any(not node.window or node.fullscreen_mode for node in nodes):
+        return entry
+    if nodes and ws.layout != 'splith':
+        if len(nodes) == 1:
+            command(f'[con_id={nodes[0].id}] split h')
+        else:
+            return entry
+    ids = [node.id for node in nodes]
+    old = entry.get('order', [])
+    if not reset and set(ids) == set(old):
+        return entry
+    if not nodes:
+        return {'mode': 'right', 'order': []}
+    current = workspace().ipc_data['gaps']
+    inner = current['inner']
+    full_width = ws.rect.width + current['left'] + current['right']
+    surviving = [node for node in nodes if node.id in old]
+    new = [node for node in nodes if node.id not in old]
+    if reset:
+        widths = {node.id: 1920 for node in nodes}
+        order = ids
+    else:
+        old_total = ws.rect.width - inner * (len(old) + 1)
+        # i3 proportionally shrinks existing siblings when inserting a new one.
+        # Recover their previous sizes, including manual border resizes.
+        if closed is not None and closed.id in old:
+            old_total -= closed.rect.width
+        total_weight = sum(node.percent or 1 for node in surviving)
+        widths = {node.id: max(100, old_total) * (node.percent or 1) / total_weight
+                  for node in surviving}
+        widths.update({node.id: 1920 for node in new})
+        order = [node.id for node in reversed(new)] + [ident for ident in old if ident in ids]
+    available = full_width - inner * (len(nodes) + 1)
+    factor = min(1, available / sum(widths.values()))
+    widths = {ident: round(width * factor) for ident, width in widths.items()}
+    left = max(inner, full_width - sum(widths.values()) - inner * len(nodes))
+    gaps(left, 0, current['top'] + inner, current['bottom'] + inner)
+    for ident in reversed(order):
+        for _ in range(len(nodes) - 1):
+            command(f'[con_id={ident}] move left')
+    # Work from the left: each boundary adjustment leaves earlier widths intact.
+    for ident in order[:-1]:
+        node = i3.get_tree().find_by_id(ident)
+        delta = widths[ident] - node.rect.width
+        if delta:
+            command(f'[con_id={ident}] resize {"grow" if delta > 0 else "shrink"} right {abs(delta)} px')
+    return {'mode': 'right', 'order': order}
+
+
+def update(action=None, closed=None):
+    with (runtime / 'morgh-i3-layout-state.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+        ws = workspace()
+        if ws is None:
+            return
+        key = str(ws.id)
+        entry = state.get(key, {})
+        nodes = ws.nodes
+        monitor = eligible(ws)
+        inner_gaps(monitor)
+        if monitor and not nodes and (action == 'center' or not entry):
+            entry = {'mode': 'centered'}
+        if action == 'right':
+            if not monitor:
+                return
+            entry = right_layout(ws, {}, reset=True)
+        elif entry.get('mode') == 'right' and monitor and action in (None, 'horizontal-plus', 'horizontal-minus', 'vertical-plus', 'vertical-minus'):
+            if action:
+                axis, operation = action.split('-')
+                if axis == 'horizontal':
+                    axis = 'left'
+                command(f'gaps {axis} current {operation} {gap_pixels(64)}')
+            else:
+                entry = right_layout(ws, entry, closed=closed)
+        elif action and action != 'center':
+            entry = {'done': True, 'mode': 'normal' if action == 'reset' else 'manual'}
+            if action == 'reset':
+                gaps(0, 0)
+            else:
+                axis, operation = action.split('-')
+                command(f'gaps {axis} current {operation} {gap_pixels(64)}')
+        elif not monitor:
+            if entry.get('auto') or entry.get('mode') == 'right':
+                gaps(0, 0)
+                entry = {'done': True}
+        elif entry.get('done') and not action:
+            return
+        elif not entry.get('done') or action == 'center':
+            if not action and entry.get('seen') == sorted(n.id for n in nodes):
+                return
+            # Only bootstrap a flat row. Explicit user splits take precedence.
+            if any(not n.window or n.fullscreen_mode for n in nodes) or len(nodes) > 3:
+                entry = {'done': True}
+            elif action == 'center' and len(nodes) != 1:
+                return
+            elif len(nodes) == 1:
+                command(f'[con_id={nodes[0].id}] split h')
+                gaps(1280, 1280)
+                entry = {'auto': True, 'mode': 'centered', 'center': nodes[0].id}
+            elif len(nodes) == 2 and entry.get('center') in [n.id for n in nodes]:
+                center = entry['center']
+                right = next(n.id for n in nodes if n.id != center)
+                command(f'[con_id={right}] move right')
+                gaps(1280, 0)
+                command(f'[con_id={center}] resize set width 2560 px')
+                entry['right'] = right
+            elif len(nodes) == 3 and entry.get('right') in [n.id for n in nodes]:
+                left = next(n.id for n in nodes if n.id not in (entry['center'], entry['right']))
+                command(f'[con_id={left}] move left; [con_id={left}] move left')
+                gaps(0, 0)
+                for ident, direction in [(left, 'right'), (entry['right'], 'left')]:
+                    node = i3.get_tree().find_by_id(ident)
+                    delta = 1280 - 2 * workspace().ipc_data['gaps']['inner'] - node.rect.width
+                    if delta:
+                        command(f'[con_id={ident}] resize {"grow" if delta > 0 else "shrink"} {direction} {abs(delta)} px')
+                for ident in (left, entry['center'], entry['right']):
+                    command(f'[con_id={ident}] split v')
+                entry = {'done': True, 'mode': 'centered'}
+            elif nodes:
+                entry = {'done': True}
+        entry['seen'] = sorted(n.id for n in nodes)
+        state[key] = entry
+        active = {str(w.id) for w in i3.get_tree().workspaces()}
+        state_file.write_text(json.dumps({k: v for k, v in state.items() if k in active}))
+
+
+def changed(connection, event):
+    try:
+        update(closed=event.container if getattr(event, 'change', None) == 'close' else None)
+    except (RuntimeError, OSError, ValueError, subprocess.TimeoutExpired) as error:
+        print(f'morgh-i3-layout: {error}', file=sys.stderr, flush=True)
+
+
+if len(sys.argv) > 1 and sys.argv[1] == 'restart':
+    import signal
+    with (runtime / 'morgh-i3-layout.lock').open('r+') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            pid = lock.read().strip()
+            if not pid:
+                # Older helpers held the same lock without writing their PID.
+                info = os.fstat(lock.fileno())
+                for line in Path('/proc/locks').read_text().splitlines():
+                    fields = line.split()
+                    if len(fields) < 6 or fields[1] != 'FLOCK':
+                        continue
+                    major, minor, inode = fields[5].split(':')
+                    if (int(major, 16), int(minor, 16), int(inode)) == (
+                            os.major(info.st_dev), os.minor(info.st_dev), info.st_ino):
+                        pid = fields[4]
+                        break
+            if not pid:
+                sys.exit('Cannot identify the layout helper holding its lock.')
+            os.kill(int(pid), signal.SIGTERM)
+            fcntl.flock(lock, fcntl.LOCK_EX)
+    os.execv(sys.executable, [sys.executable, __file__])
+elif len(sys.argv) > 1:
+    update(sys.argv[1])
+else:
+    with (runtime / 'morgh-i3-layout.lock').open('a+') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            sys.exit(0)
+        lock.seek(0)
+        lock.truncate()
+        lock.write(str(os.getpid()))
+        lock.flush()
+        # Do not rearrange populated workspaces when first installing the helper.
+        if not state_file.exists():
+            state_file.write_text(json.dumps({str(w.id): {'done': True}
+                                             for w in i3.get_tree().workspaces() if w.nodes}))
+        for event in ['window::new', 'window::close', 'window::move', 'workspace::focus', 'output']:
+            i3.on(event, changed)
+        i3.main()
