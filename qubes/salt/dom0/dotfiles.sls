@@ -8,6 +8,23 @@ dom0-dotfile-packages:
       - feh
       - git
       - stow
+      - rxvt-unicode
+      - tmux
+      - xsel
+      - dejavu-sans-mono-fonts
+
+/usr/local/bin/urxvt-terminal:
+  file.managed:
+    - source: salt://shotor/dom0/files/urxvt-terminal
+    - mode: '0755'
+    - makedirs: true
+    - require:
+      - pkg: dom0-dotfile-packages
+
+/etc/profile.d/morgh-terminal.sh:
+  file.managed:
+    - contents: 'export TERMINAL=/usr/local/bin/urxvt-terminal'
+    - mode: '0644'
 
 dom0-user-shell:
   cmd.run:

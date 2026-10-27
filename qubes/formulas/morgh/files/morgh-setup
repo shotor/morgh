@@ -51,6 +51,7 @@ if [[ "$profile" == dev ]]; then
   stow_package "$repo/dotfiles" starship
   stow_package "$repo/dotfiles" firefox
 else
+  stow_package "$repo/qubes/salt/dom0/files" terminal
   stow_package "$repo/qubes/salt/dom0/files" i3
   stow_package "$repo/qubes/salt/dom0/files" x11
 fi

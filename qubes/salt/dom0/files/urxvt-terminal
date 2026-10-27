@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+config=${XDG_CONFIG_HOME:-$HOME/.config}/urxvt/config
+exec env XENVIRONMENT="$config" /usr/bin/urxvt \
+  -fn 'xft:DejaVu Sans Mono:size=12' \
+  -xrm 'URxvt.perl-ext-common: default' "$@"
