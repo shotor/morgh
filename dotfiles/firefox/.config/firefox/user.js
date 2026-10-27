@@ -10,3 +10,11 @@ user_pref("toolkit.telemetry.unified", false);
 user_pref("browser.newtabpage.activity-stream.showSponsored", false);
 user_pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);
 user_pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
+
+user_pref("signon.rememberSignons", false);
+user_pref("signon.autofillForms", false);
+user_pref("signon.generation.enabled", false);
+user_pref("signon.formlessCapture.enabled", false);
+user_pref("extensions.formautofill.addresses.enabled", false);
+user_pref("extensions.formautofill.creditCards.enabled", false);
+user_pref("browser.formfill.enable", false);
