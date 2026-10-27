@@ -25,6 +25,7 @@ One or more templates:
 ```sh
 ./apply.sh tpl-deb-13-dev
 ./apply.sh tpl-deb-13-net tpl-deb-13-vault-net
+./apply.sh --template
 ```
 
 For subsequent copies, run `./sync.sh` in dom0. Restart the affected AppVMs
