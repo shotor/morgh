@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+git() {
+  command git -c http.proxy=http://127.0.0.1:8082 "$@"
+}
+
+before=$(git rev-parse HEAD)
+git pull --ff-only --no-rebase --no-tags >&2
+
+after=$(git rev-parse HEAD)
+if [[ "$before" == "$after" ]]; then
+  printf "changed=no comment='Morgh is current'\n"
+else
+  printf "changed=yes comment='Updated Morgh before Stow'\n"
+fi

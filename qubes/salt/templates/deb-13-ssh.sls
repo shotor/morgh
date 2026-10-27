@@ -42,9 +42,6 @@ ssh-packages:
     - require:
       - pkg: ssh-packages
 
-/etc/qubes-rpc/fido.Agent:
-  file.absent: []
-
 /etc/qubes/rpc-config/fido.Agent:
   file.managed:
     - user: root

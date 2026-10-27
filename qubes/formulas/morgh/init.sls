@@ -54,23 +54,20 @@ morgh-template-sparse-checkout:
     - require:
       - cmd: morgh-template-clone
 
+/usr/bin/morgh-update:
+  file.managed:
+    - source: salt://shotor/morgh/files/morgh-update
+    - mode: '0755'
+
 morgh-template-update:
   cmd.run:
-    - name: |
-        set -eu
-        before=$(git rev-parse HEAD)
-        git -c http.proxy=http://127.0.0.1:8082 pull --ff-only --no-rebase --no-tags >/dev/null
-        after=$(git rev-parse HEAD)
-        if [ "$before" = "$after" ]; then
-          printf "changed=no comment='Morgh is current'\n"
-        else
-          printf "changed=yes comment='Updated Morgh before Stow'\n"
-        fi
+    - name: /usr/bin/morgh-update
     - cwd: /srv/shotor/morgh
     - runas: user
     - stateful: true
     - require:
       - cmd: morgh-template-sparse-checkout
+      - file: /usr/bin/morgh-update
 
 /usr/bin/morgh-setup:
   file.managed:

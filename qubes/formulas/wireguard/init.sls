@@ -32,15 +32,6 @@ wireguard-packages:
     - mode: '0755'
     - makedirs: true
 
-/usr/libexec/morgh/wg-autostart:
-  file.absent
-
-/etc/systemd/system/wg-vpn.service:
-  file.absent
-
-/etc/systemd/system/multi-user.target.wants/wg-vpn.service:
-  file.absent
-
 /etc/systemd/system/wg-quick@.service.d/dns.conf:
   file.managed:
     - contents: |
@@ -64,5 +55,3 @@ wireguard-systemd-reload:
     - name: systemctl daemon-reload
     - onchanges:
       - file: /etc/systemd/system/wg-quick@.service.d/dns.conf
-      - file: /etc/systemd/system/wg-vpn.service
-      - file: /etc/systemd/system/multi-user.target.wants/wg-vpn.service
