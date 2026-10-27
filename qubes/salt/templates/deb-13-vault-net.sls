@@ -4,6 +4,7 @@ include:
   - shotor.ctap.client
   - shotor.nextcloud
   - shotor.nextcloud.tray
+  - shotor.keepassxc.server
 
 vault-net-packages:
   pkg.installed:

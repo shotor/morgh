@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+from pathlib import Path
+
+import qubesadmin
+from qubesappmenus import Appmenus
+
+
+TEMPLATES = {
+    'tpl-deb-13-' + suffix
+    for suffix in ('dev', 'dvm', 'net', 'ts', 'ssh', 'usb', 'vault', 'vault-net')
+}
+
+
+def select(available):
+    selected = []
+    for alternatives in (
+        ('firefox.desktop', 'firefox-esr.desktop'),
+        ('org.keepassxc.KeePassXC.desktop', 'keepassxc.desktop'),
+        ('qubes-run-terminal.desktop',),
+    ):
+        selected.extend(next(([name] for name in alternatives if name in available), []))
+    return ' '.join(selected)
+
+
+def main():
+    app = qubesadmin.Qubes()
+    menus = Appmenus()
+    for vm in app.domains:
+        template = getattr(vm, 'template', None)
+        if vm.klass == 'TemplateVM' and vm.name in TEMPLATES:
+            features = ('default-menu-items', 'netvm-menu-items')
+        elif vm.klass == 'AppVM' and template is not None and template.name in TEMPLATES:
+            features = ('menu-items',)
+        else:
+            continue
+
+        available = {Path(path).name for path in menus.get_available_filenames(vm)}
+        if not available:
+            print(f'{vm.name}: no cached applications; run qvm-sync-appmenus then morgh-appmenus')
+            continue
+        selected = select(available)
+        if not selected:
+            print(f'{vm.name}: no matching applications; keeping existing menu')
+            continue
+        for feature in features:
+            if vm.features.get(feature, None) != selected:
+                vm.features[feature] = selected
+                print(f'{vm.name}: {feature} = {selected}')
+        if vm.klass == 'AppVM':
+            menus.appmenus_create(vm)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,7 @@
+{
+  "name": "org.keepassxc.keepassxc_browser",
+  "description": "KeePassXC through Qubes qrexec",
+  "path": "/usr/bin/keepassxc-remote",
+  "type": "stdio",
+  "allowed_extensions": ["keepassxc-browser@keepassxc.org"]
+}

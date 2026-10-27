@@ -40,6 +40,59 @@ Dom0 uses urxvt with the dark theme and Bash. Run `tmux` for the simplified,
 plugin-free tmux setup. WezTerm dotfiles remain available for other machines,
 but the template packages are removed.
 
+AppVM menus show Firefox and KeePassXC where installed, plus Run Terminal.
+Dom0 highstate sets the template defaults and existing AppVM
+selections. After installing new applications, run `qvm-sync-appmenus TEMPLATE`
+and `morgh-appmenus` in dom0 to refresh the selections. Nextcloud continues
+syncing independently of its menu entry.
+
+## KeePassXC and idle gateways
+
+Keep client-to-vault mappings and idle gateway names in a private dom0 pillar:
+
+```sh
+sudo install -d -m 0700 /srv/pillar/base/services
+sudoedit /srv/pillar/base/services/init.sls /srv/pillar/base/services/init.top
+```
+
+`init.sls` (replace the example VM names):
+
+```yaml
+keepassxc:
+  clients:
+    CLIENT_VM: VAULT_VM
+idle_netvms:
+  gateways:
+    - VPN_VM
+```
+
+`init.top`:
+
+```yaml
+base:
+  dom0:
+    - services
+```
+
+```sh
+sudo chmod 0600 /srv/pillar/base/services/init.{sls,top}
+sudo qubesctl top.enable services pillar=True
+./sync.sh
+./init.sh
+./apply.sh tpl-deb-13-dev tpl-deb-13-dvm tpl-deb-13-vault-net dom0
+```
+
+Restart the affected AppVMs. In the networked vault, open KeePassXC, unlock the
+database and enable Firefox under Settings → Browser Integration. In each
+allowed client, connect KeePassXC-Browser and approve pairing in the vault.
+The vault must be running; an empty client mapping denies access. The offline
+vault template does not install the remote service.
+
+The dom0 timer checks configured gateways every minute and requests normal
+shutdown after five minutes without running dependents. Paused dependents and
+downstream gateways keep their upstream running. Failed dependency checks reset
+the countdown. This does not enable WireGuard tunnels at startup.
+
 ## Network templates
 
 `tpl-deb-13-net` supplies networking and WireGuard packages for network, firewall,
