@@ -1,3 +1,10 @@
+wezterm-removed:
+  pkg.removed:
+    - name: wezterm
+
+/etc/apt/sources.list.d/wezterm.list:
+  file.absent
+
 mgmt-packages:
   pkg.installed:
     - pkgs:

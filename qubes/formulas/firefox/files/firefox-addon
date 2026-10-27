@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+addon=${1:?Missing add-on slug}
+[[ $addon =~ ^[a-z0-9-]+$ ]] || exit 1
+directory=/usr/share/morgh/firefox-addons
+install -d -m 0755 "$directory"
+temporary=$(mktemp "$directory/.download.XXXXXXXX")
+trap 'rm -f "$temporary"' EXIT
+curl --fail --location --retry 3 --proxy http://127.0.0.1:8082 --noproxy '' \
+  --output "$temporary" "https://addons.mozilla.org/firefox/downloads/latest/$addon/latest.xpi"
+if cmp -s "$temporary" "$directory/$addon.xpi"; then
+  echo 'changed=no'
+else
+  install -m 0644 "$temporary" "$directory/$addon.xpi"
+  echo 'changed=yes'
+fi

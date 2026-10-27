@@ -1,0 +1,25 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "normal_installed",
+        "install_url": "file:///usr/share/morgh/firefox-addons/ublock-origin.xpi",
+        "private_browsing": true
+      },
+      "{d7742d87-e61d-4b78-b8a1-b469842139fa}": {
+        "installation_mode": "normal_installed",
+        "install_url": "file:///usr/share/morgh/firefox-addons/vimium-ff.xpi"
+      }{% if grains['id'] == 'tpl-deb-13-dev' %},
+      "@testpilot-containers": {
+        "installation_mode": "normal_installed",
+        "install_url": "file:///usr/share/morgh/firefox-addons/multi-account-containers.xpi"
+      },
+      "containers-new-tab@shotor.dev": {
+        "installation_mode": "normal_installed",
+        "install_url": "file:///usr/share/morgh/firefox-addons/containers-new-tab.xpi"
+      }{% endif %}
+
+    }
+  }
+}

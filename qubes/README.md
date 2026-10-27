@@ -30,6 +30,16 @@ One or more templates:
 For subsequent copies, run `./sync.sh` in dom0. Restart the affected AppVMs
 after applying template changes.
 
+Dev and dvm use stable Firefox from Mozilla's APT repository. Salt updates Firefox
+and downloads the default extensions through the Qubes update proxy. Both get
+uBlock Origin (including private windows) and Vimium; dev also gets Multi-Account
+Containers and Containers New Tab. Check `about:policies` after starting Firefox.
+If switching from ESR opens a new profile, select the existing one in `about:profiles`.
+
+Dom0 uses urxvt with the dark theme and Bash. Run `tmux` for the simplified,
+plugin-free tmux setup. WezTerm dotfiles remain available for other machines,
+but the template packages are removed.
+
 ## Network templates
 
 `tpl-deb-13-net` supplies networking and WireGuard packages for network, firewall,
