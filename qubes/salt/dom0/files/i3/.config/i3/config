@@ -29,10 +29,7 @@ set $audio_mic_mute pactl set-source-mute @DEFAULT_SOURCE@ toggle
 set $terminal env TERMINAL=/usr/local/bin/urxvt-terminal qubes-i3-sensible-terminal
 set $console qubes-i3-sensible-terminal console
 
-# start dmenu (a program launcher)
-# j4-dmenu-desktop is not upstreamed but it is much faster.
-set $dmenu_common_args --dmenu="dmenu -l 25 -i -nb \#d2d2d2 -nf \#333333 -sb \#63a0ff -sf \#f5f5f5"
-#set $dmenu i3-dmenu-desktop
+set $dmenu_common_args --dmenu="$HOME/.local/bin/morgh-rofi -dmenu -i -p Applications"
 set $dmenu j4-dmenu-desktop
 set $dmenu_extra_args --no-generic --term=qubes-i3-sensible-terminal
 

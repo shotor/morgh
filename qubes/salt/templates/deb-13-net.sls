@@ -15,6 +15,8 @@ network-packages:
       - network-manager-gnome
       - wpasupplicant
       - firmware-iwlwifi
+      - firmware-realtek
+      - qubes-usb-proxy
       - gnome-keyring
       - systemd-timesyncd
       - pciutils

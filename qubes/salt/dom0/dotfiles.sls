@@ -10,6 +10,7 @@ dom0-dotfile-packages:
       - git
       - stow
       - rxvt-unicode
+      - rofi
       - tmux
       - xsel
       - dejavu-sans-mono-fonts

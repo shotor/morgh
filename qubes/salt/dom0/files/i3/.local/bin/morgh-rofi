@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+terminal_config=$(readlink -f -- "$config_home/urxvt/config" || true)
+case "$terminal_config" in
+    */shotormorgh-light.Xresources) mode=light ;;
+    *) mode=dark ;;
+esac
+exec rofi -theme "$config_home/rofi/themes/shotormorgh-$mode.rasi" "$@"

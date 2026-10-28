@@ -1,0 +1,5 @@
+configuration {
+    font: "DejaVu Sans Mono 12";
+    show-icons: false;
+}
+

@@ -12,6 +12,7 @@ ssh-packages:
       - lsd
       - zoxide
       - htop
+      - vim
       - qubes-core-agent-passwordless-root
       - qubes-usb-proxy
       - openssh-client

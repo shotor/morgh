@@ -54,4 +54,5 @@ else
   stow_package "$repo/qubes/salt/dom0/files" terminal
   stow_package "$repo/qubes/salt/dom0/files" i3
   stow_package "$repo/qubes/salt/dom0/files" x11
+  stow_package "$repo/dotfiles" rofi
 fi

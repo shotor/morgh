@@ -15,7 +15,9 @@
 
 /etc/qubes/policy.d/30-keepassxc.policy:
   file.managed:
-    - mode: '0600'
+    - user: root
+    - group: root
+    - mode: '0644'
     - makedirs: true
     - contents: |
 {% for client, vault in clients | dictsort %}

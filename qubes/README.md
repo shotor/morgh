@@ -329,19 +329,37 @@ The formula requires `qubes-ctap` 2.0.8 or newer, which includes the
 
 ## FIDO key assignments (sys-fido)
 
-For existing resident SSH keys, use the original handle filename produced by
-`ssh-keygen -K`, without `.pub`. Put one filename per line in the client's file.
+Store public keys under `~/.ssh/fido/nfc`, `primary`, and `backup` on sys-fido.
+Put one permitted public-key path per line in `~/.config/fido/CLIENT_VM`, relative
+to `~/.ssh/fido`. These assignments stay private in sys-fido.
 
 ```sh
 mkdir -p ~/.config/fido
 chmod 700 ~/.config/fido
-printf '%s\n' 'KEY_HANDLE_FILENAME' > ~/.config/fido/CLIENT_VM
+printf '%s\n' 'primary/KEY_HANDLE_FILENAME.pub' 'backup/KEY_HANDLE_FILENAME.pub' > ~/.config/fido/CLIENT_VM
 chmod 600 ~/.config/fido/CLIENT_VM
 fido-load CLIENT_VM
 ```
 
-Enter the YubiKey PIN when prompted. Repeat `fido-load CLIENT_VM` after restarting
-`sys-fido`. Handles are retrieved temporarily; no saved private handle files are needed.
+Attach the YubiKeys you want to use, then run `fido-load`. It enumerates all
+attached FIDO authenticators and retrieves resident handles from each device,
+with a separate PIN prompt for each. It clears the client's agent first and
+loads only keys whose SHA256 public-key fingerprints are permitted. Identical
+filenames on different devices do not collide, and duplicate fingerprints are
+loaded once. The list is
+an allowlist of alternatives: other devices' keys need not be present, but at
+least one permitted key must match across the attached devices. Failure on any
+device leaves the client's agent empty. Temporary handles are always removed.
+An empty list explicitly clears the agent.
+
+Existing bare handle filenames (with or without `.pub`) resolve to saved public
+keys in `~/.ssh/fido` and its immediate subdirectories. Explicit paths restrict
+permission to particular inventories. Every reference must resolve to a saved
+public key; filenames alone never authorize an attached key.
+
+Repeat `fido-load CLIENT_VM` after restarting sys-fido or swapping YubiKeys.
+No saved private handle files are needed. SSH services must separately authorize
+each device's public key.
 
 In the client VM, check the available keys:
 

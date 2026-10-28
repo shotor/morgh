@@ -10,7 +10,7 @@ ctap-dom0-packages:
   file.managed:
     - user: root
     - group: root
-    - mode: '0600'
+    - mode: '0644'
     - makedirs: true
     - contents: |
 {% for service in ['ctap.GetInfo', 'ctap.ClientPin', 'u2f.Authenticate', 'u2f.Register'] %}

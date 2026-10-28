@@ -35,22 +35,85 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'exit 129' HUP
-[[ -f "$config" ]] || { echo "Create $config with one key handle filename per line" >&2; exit 1; }
-keys=()
+[[ -f "$config" ]] || { echo "Create $config with one permitted public-key reference per line" >&2; exit 1; }
+
+fingerprint() {
+  local output fingerprint_value
+  output=$(ssh-keygen -E sha256 -lf "$1") || return 1
+  [[ $output != *$'\n'* ]] || { echo "Expected one public key in $1" >&2; return 1; }
+  read -r _ fingerprint_value _ <<< "$output"
+  [[ $fingerprint_value == SHA256:* ]] || return 1
+  printf '%s\n' "$fingerprint_value"
+}
+
+declare -A permitted=()
+shopt -s nullglob
 while IFS= read -r key || [[ -n "$key" ]]; do
   case "$key" in
     ''|\#*) continue ;;
-    *[!a-zA-Z0-9_.-]*|.*|-*|*.pub) echo 'Invalid key handle filename' >&2; exit 1 ;;
   esac
-  keys+=("$key")
+  if [[ $key =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*/[a-zA-Z0-9_][a-zA-Z0-9_.-]*\.pub$ ]]; then
+    candidates=("$HOME/.ssh/fido/$key")
+  elif [[ $key =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]; then
+    # Existing bare handle names permit matching public keys in every inventory.
+    key=${key%.pub}
+    candidates=("$HOME/.ssh/fido/$key.pub" "$HOME/.ssh/fido"/*/"$key.pub")
+  else
+    echo "Invalid public-key reference: $key" >&2
+    exit 1
+  fi
+  found=false
+  for public_key in "${candidates[@]}"; do
+    [[ -f $public_key ]] || continue
+    permitted["$(fingerprint "$public_key")"]=1
+    found=true
+  done
+  [[ $found == true ]] || { echo "No saved public key for: $key" >&2; exit 1; }
 done < "$config"
-[[ ${#keys[@]} -gt 0 ]] || exit 0
+[[ ${#permitted[@]} -gt 0 ]] || { loaded=true; exit 0; }
+
+device_listing=$(fido2-token -L)
+devices=()
+while IFS= read -r line; do
+  [[ -n $line ]] || continue
+  device=${line%%:*}
+  [[ $device =~ ^/dev/hidraw[0-9]+$ ]] || {
+    echo "Unexpected authenticator path: $device" >&2
+    exit 1
+  }
+  devices+=("$device")
+done <<< "$device_listing"
+[[ ${#devices[@]} -gt 0 ]] || { echo 'No FIDO authenticators attached.' >&2; exit 1; }
+
 handles=$(mktemp -d "$runtime/fido-load.XXXXXXXXXX")
-(cd "$handles" && ssh-keygen -K -w internal -N '')
-for key in "${keys[@]}"; do
-  [[ -f "$handles/$key" ]] || { echo "Assigned resident key not found: $key" >&2; exit 1; }
+for index in "${!devices[@]}"; do
+  device=${devices[$index]}
+  directory="$handles/device-$index"
+  mkdir "$directory"
+  printf 'Reading authenticator %s/%s: %s\n' "$((index + 1))" "${#devices[@]}" "$device"
+  (cd "$directory" && ssh-keygen -K -w internal -O "device=$device" -N '') || {
+    echo "Failed to retrieve keys from $device; the client agent remains empty." >&2
+    exit 1
+  }
 done
+
+keys=()
+declare -A selected=()
+for public_key in "$handles"/*/*.pub; do
+  key=${public_key%.pub}
+  [[ -f $key ]] || continue
+  key_fingerprint=$(fingerprint "$public_key")
+  if [[ -n ${permitted[$key_fingerprint]:-} && -z ${selected[$key_fingerprint]:-} ]]; then
+    keys+=("$key")
+    selected["$key_fingerprint"]=1
+  fi
+done
+[[ ${#keys[@]} -gt 0 ]] || {
+  echo 'No attached authenticator has resident SSH keys permitted for this client.' >&2
+  exit 1
+}
 for key in "${keys[@]}"; do
-  ssh-add "$handles/$key"
+  ssh-add "$key"
 done
 loaded=true
+printf 'Loaded %s permitted key(s) for %s.\n' "${#keys[@]}" "$1"
