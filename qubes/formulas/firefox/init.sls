@@ -19,6 +19,18 @@ common-firefox:
     - name: firefox-esr
 {% endif %}
 
+/usr/lib/{{ firefox }}/distribution/policies.json:
+  file.managed:
+    - source: salt://shotor/firefox/files/policies.json.jinja
+    - template: jinja
+    - mode: '0644'
+    - makedirs: true
+    - require:
+      - pkg: common-firefox
+{% if release %}
+      - sls: shotor.firefox.extensions
+{% endif %}
+
 /etc/firefox/morgh-user.js:
   file.managed:
     - source: salt://shotor/morgh-dotfiles/firefox/.config/firefox/user.js

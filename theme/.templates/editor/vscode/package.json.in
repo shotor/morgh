@@ -1,7 +1,7 @@
 {
   "name": "shotormorgh",
   "displayName": "shotormorgh",
-  "description": "Sand and terracotta themes for VS Code and VSCodium.",
+  "description": "Sand, terracotta, and purple themes for VS Code and VSCodium.",
   "version": "0.1.0",
   "publisher": "shotor",
   "engines": {
@@ -21,6 +21,16 @@
         "label": "shotormorgh-dark",
         "uiTheme": "vs-dark",
         "path": "./themes/shotormorgh-dark.json"
+      },
+      {
+        "label": "shotormorgh-purple-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-purple-light.json"
+      },
+      {
+        "label": "shotormorgh-purple-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-purple-dark.json"
       }
     ]
   }

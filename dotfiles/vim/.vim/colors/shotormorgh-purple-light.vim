@@ -1,0 +1,1 @@
+../../../../theme/.build/editor/vim/colors/shotormorgh-purple-light.vim

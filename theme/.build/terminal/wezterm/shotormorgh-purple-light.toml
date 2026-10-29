@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-purple-light"
+author = "shotor"
+
+[colors]
+foreground = "#2d2239"
+background = "#faf7ff"
+cursor_bg = "#8155ae"
+cursor_fg = "#faf7ff"
+cursor_border = "#8155ae"
+selection_fg = "#2d2239"
+selection_bg = "#ddd0ef"
+ansi = ["#2d2239","#a43d32","#44643c","#876000","#365f83","#80516f","#286967","#ddd0ef"]
+brights = ["#706381","#b34536","#4c703f","#8155ae","#3b6b94","#92577e","#287976","#faf7ff"]
+
+[colors.tab_bar]
+background = "#ede5f8"
+
+[colors.tab_bar.active_tab]
+bg_color = "#c8adea"
+fg_color = "#2d213a"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "#ede5f8"
+fg_color = "#706381"
+
+[colors.tab_bar.new_tab]
+bg_color = "#ede5f8"
+fg_color = "#8155ae"

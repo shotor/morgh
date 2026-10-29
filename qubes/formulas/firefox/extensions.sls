@@ -24,15 +24,3 @@ firefox-addon-{{ addon }}:
       - pkg: firefox-extension-tools
       - file: /usr/libexec/morgh/firefox-addon
 {% endfor %}
-
-/usr/lib/firefox/distribution/policies.json:
-  file.managed:
-    - source: salt://shotor/firefox/files/policies.json.jinja
-    - template: jinja
-    - mode: '0644'
-    - makedirs: true
-    - require:
-      - pkg: common-firefox
-{% for addon in addons %}
-      - cmd: firefox-addon-{{ addon }}
-{% endfor %}

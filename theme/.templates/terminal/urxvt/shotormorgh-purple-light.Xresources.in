@@ -1,0 +1,46 @@
+URxvt.font: xft:DejaVuSansM Nerd Font Mono:size=12,xft:Symbola:size=12
+URxvt.geometry: 400x400
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.saveLines: 10000
+URxvt.scrollTtyOutput: false
+URxvt.scrollWithBuffer: true
+URxvt.scrollTtyKeypress: true
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+URxvt.termName: rxvt-unicode-256color
+URxvt.internalBorder: 6
+
+URxvt.perl-ext-common: default,font-size
+URxvt.keysym.C-S-c: eval:selection_to_clipboard
+URxvt.keysym.C-S-v: eval:paste_clipboard
+URxvt.keysym.C-Insert: eval:selection_to_clipboard
+URxvt.keysym.S-Insert: eval:paste_clipboard
+URxvt.keysym.C-plus: font-size:increase
+URxvt.keysym.C-equal: font-size:increase
+URxvt.keysym.C-minus: font-size:decrease
+URxvt.keysym.C-0: font-size:reset
+
+URxvt.background: {{purple_light.bg}}
+URxvt.foreground: {{purple_light.fg}}
+URxvt.cursorColor: {{purple_light.accent}}
+URxvt.cursorColor2: {{purple_light.bg}}
+URxvt.highlightColor: {{purple_light.selection}}
+URxvt.highlightTextColor: {{purple_light.fg}}
+
+URxvt.color0: {{purple_light.ansi.0}}
+URxvt.color1: {{purple_light.ansi.1}}
+URxvt.color2: {{purple_light.ansi.2}}
+URxvt.color3: {{purple_light.ansi.3}}
+URxvt.color4: {{purple_light.ansi.4}}
+URxvt.color5: {{purple_light.ansi.5}}
+URxvt.color6: {{purple_light.ansi.6}}
+URxvt.color7: {{purple_light.ansi.7}}
+URxvt.color8: {{purple_light.brights.0}}
+URxvt.color9: {{purple_light.brights.1}}
+URxvt.color10: {{purple_light.brights.2}}
+URxvt.color11: {{purple_light.brights.3}}
+URxvt.color12: {{purple_light.brights.4}}
+URxvt.color13: {{purple_light.brights.5}}
+URxvt.color14: {{purple_light.brights.6}}
+URxvt.color15: {{purple_light.brights.7}}

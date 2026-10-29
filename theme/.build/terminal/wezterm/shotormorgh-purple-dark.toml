@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-purple-dark"
+author = "shotor"
+
+[colors]
+foreground = "#f8f4fe"
+background = "#271f31"
+cursor_bg = "#d1b4f5"
+cursor_fg = "#271f31"
+cursor_border = "#d1b4f5"
+selection_fg = "#f8f4fe"
+selection_bg = "#4c3a60"
+ansi = ["#271f31","#ef9a86","#b7c892","#ecc985","#9ebed5","#d2a9c4","#96c5bd","#decff2"]
+brights = ["#ac9dc0","#ffb49e","#ceddaa","#f6d76f","#b9d6ea","#e6bfd8","#b3ded4","#f8f4fe"]
+
+[colors.tab_bar]
+background = "#342941"
+
+[colors.tab_bar.active_tab]
+bg_color = "#745794"
+fg_color = "#f6f1fd"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "#342941"
+fg_color = "#ac9dc0"
+
+[colors.tab_bar.new_tab]
+bg_color = "#342941"
+fg_color = "#d1b4f5"

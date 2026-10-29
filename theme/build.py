@@ -103,7 +103,7 @@ def palette_tokens(source):
 
     tokens = {}
 
-    for mode in ('light', 'dark'):
+    for mode in ('light', 'dark', 'purple_light', 'purple_dark'):
         palette = modes.get(mode)
 
         if not isinstance(palette, dict) or not isinstance(palette.get('colors'), dict):

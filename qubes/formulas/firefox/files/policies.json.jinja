@@ -1,6 +1,11 @@
 {
   "policies": {
     "DisableAppUpdate": true,
+    "SkipTermsOfUse": true,
+    "OverrideFirstRunPage": "",
+    "UserMessaging": {
+      "SkipOnboarding": true
+    }{% if grains['id'] in ['tpl-deb-13-dev', 'tpl-deb-13-dvm'] %},
     "ExtensionSettings": {
       "keepassxc-browser@keepassxc.org": {
         "installation_mode": "normal_installed",
@@ -24,6 +29,6 @@
         "install_url": "file:///usr/share/morgh/firefox-addons/containers-new-tab.xpi"
       }{% endif %}
 
-    }
+    }{% endif %}
   }
 }

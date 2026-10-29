@@ -19,6 +19,10 @@ dev-packages:
       - zoxide
       - htop
       - jq
+      - lazygit
+      - pass
+      - podman
+      - python3.13-venv
       - qubes-core-agent-passwordless-root
       - qubes-core-agent-networking
       - vim

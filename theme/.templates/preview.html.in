@@ -211,7 +211,10 @@
         margin-top: 16px;
       }
 
-      body:has(#mode option[value="light"]:checked) .dark,body:has(#mode option[value="dark"]:checked) .light {
+      body:has(#mode option[value="light"]:checked) .card:not(.light),
+      body:has(#mode option[value="dark"]:checked) .card:not(.dark),
+      body:has(#mode option[value="purple-light"]:checked) .card:not(.purple-light),
+      body:has(#mode option[value="purple-dark"]:checked) .card:not(.purple-dark) {
         display: none;
       }
 
@@ -291,6 +294,8 @@
             <option value="light">
               Light
             </option>
+            <option value="purple-light">Purple light</option>
+            <option value="purple-dark">Purple dark</option>
             <option value="dark">
               Dark
             </option>
@@ -851,6 +856,532 @@
               Foreground {{dark.contrast_fg}}:1 · comments {{dark.contrast_muted}}:1 · lowest semantic ANSI {{dark.contrast_ansi}}:1
             </div>
             {{dark.color_details}}
+          </section>
+
+        </article>
+
+        <article class="card purple-light" style="
+          --bg:{{purple_light.bg}};
+          --fg:{{purple_light.fg}};
+          --surface:{{purple_light.surface}};
+          --selection:{{purple_light.selection}};
+          --muted:{{purple_light.muted}};
+          --accent:{{purple_light.accent}};
+          --header:{{purple_light.header}};
+          --red:{{purple_light.red}};
+          --green:{{purple_light.green}};
+          --yellow:{{purple_light.yellow}};
+          --blue:{{purple_light.blue}};
+          --magenta:{{purple_light.magenta}};
+          --cyan:{{purple_light.cyan}};
+          --add:{{purple_light.add}};
+          --del:{{purple_light.del}};
+          --change:{{purple_light.change}};
+          --header-fg:{{purple_light.header_fg}};
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-purple-light
+            </span>
+            <span>
+              Lilac · violet · plum
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-purple-light.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"light"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.0}}" title="black {{purple_light.ansi.0}}">
+                </div>
+                <span style="color:{{purple_light.ansi.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.1}}" title="red {{purple_light.ansi.1}}">
+                </div>
+                <span style="color:{{purple_light.ansi.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.2}}" title="green {{purple_light.ansi.2}}">
+                </div>
+                <span style="color:{{purple_light.ansi.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.3}}" title="yellow {{purple_light.ansi.3}}">
+                </div>
+                <span style="color:{{purple_light.ansi.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.4}}" title="blue {{purple_light.ansi.4}}">
+                </div>
+                <span style="color:{{purple_light.ansi.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.5}}" title="magenta {{purple_light.ansi.5}}">
+                </div>
+                <span style="color:{{purple_light.ansi.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.6}}" title="cyan {{purple_light.ansi.6}}">
+                </div>
+                <span style="color:{{purple_light.ansi.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.ansi.7}}" title="white {{purple_light.ansi.7}}">
+                </div>
+                <span style="color:{{purple_light.ansi.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{purple_light.ansi.7}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.0}}" title="black {{purple_light.brights.0}}">
+                </div>
+                <span style="color:{{purple_light.brights.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.1}}" title="red {{purple_light.brights.1}}">
+                </div>
+                <span style="color:{{purple_light.brights.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.2}}" title="green {{purple_light.brights.2}}">
+                </div>
+                <span style="color:{{purple_light.brights.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.3}}" title="yellow {{purple_light.brights.3}}">
+                </div>
+                <span style="color:{{purple_light.brights.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.4}}" title="blue {{purple_light.brights.4}}">
+                </div>
+                <span style="color:{{purple_light.brights.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.5}}" title="magenta {{purple_light.brights.5}}">
+                </div>
+                <span style="color:{{purple_light.brights.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.6}}" title="cyan {{purple_light.brights.6}}">
+                </div>
+                <span style="color:{{purple_light.brights.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_light.brights.7}}" title="white {{purple_light.brights.7}}">
+                </div>
+                <span style="color:{{purple_light.brights.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{purple_light.brights.7}}
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground {{purple_light.contrast_fg}}:1 · comments {{purple_light.contrast_muted}}:1 · lowest semantic ANSI {{purple_light.contrast_ansi}}:1
+            </div>
+            {{purple_light.color_details}}
+          </section>
+
+        </article>
+
+        <article class="card purple-dark" style="
+          --bg:{{purple_dark.bg}};
+          --fg:{{purple_dark.fg}};
+          --surface:{{purple_dark.surface}};
+          --selection:{{purple_dark.selection}};
+          --muted:{{purple_dark.muted}};
+          --accent:{{purple_dark.accent}};
+          --header:{{purple_dark.header}};
+          --red:{{purple_dark.red}};
+          --green:{{purple_dark.green}};
+          --yellow:{{purple_dark.yellow}};
+          --blue:{{purple_dark.blue}};
+          --magenta:{{purple_dark.magenta}};
+          --cyan:{{purple_dark.cyan}};
+          --add:{{purple_dark.add}};
+          --del:{{purple_dark.del}};
+          --change:{{purple_dark.change}};
+          --header-fg:{{purple_dark.header_fg}};
+        ">
+          <div class="bar">
+            <span>
+              shotormorgh-purple-dark
+            </span>
+            <span>
+              Plum · lavender · lilac
+            </span>
+          </div>
+          <section class="body terminal">
+            <div class="label">
+              Terminal / Starship
+            </div>
+            <div class="term mono"><span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span> <span class="host">+2</span>
+<span class="prompt">❯</span> git status --short
+ <span class="host">M</span> theme/terminal/wezterm/shotormorgh-purple-dark.toml
+<span class="ok">??</span> theme/editor/vim/colors/shotormorgh.vim
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> ./check-theme
+<span class="ok">✓</span> Palette loaded
+<span class="host">!</span> Preview data — no commands are running
+<span class="err">×</span> Example error: missing configuration
+
+<span class="host">dev-shotor</span> <span class="path"><b>~/git/morgh</b></span> <span class="branch">main</span>
+<span class="prompt">❯</span> <span class="cursor"> </span></div>
+          </section>
+
+          <div class="status mono terminal">
+            <span class="active">
+              0: zsh*
+            </span>
+            <span>
+              1: nvim &nbsp; 2: logs
+            </span>
+            <span>
+              shotor
+            </span>
+          </div>
+          <section class="body sample editor">
+            <div class="label">
+              Vim / Neovim · syntax study
+            </div>
+            <pre class="code mono"><span class="dim"> 1 </span><span class="comment"># A little shade in the terminal.</span>
+<span class="dim"> 2 </span><span class="kw">from</span> pathlib <span class="kw">import</span> <span class="type">Path</span>
+<span class="dim"> 3 </span>
+<span class="dim"> 4 </span><span class="kw">def</span> <span class="fn">load_theme</span>(name: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+<span class="dim"> 5 </span>    root = <span class="type">Path</span>(<span class="str">"theme/terminal/wezterm"</span>)
+<span class="dim"> 6 </span>    path = root / <span class="str">f"shotor-{name}.toml"</span>
+<span class="dim"> 7 </span>    <span class="kw">if not</span> path.<span class="fn">exists</span>():
+<span class="dim"> 8 </span>        <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Unknown theme"</span>)
+<span class="dim"> 9 </span>    <span class="kw">return</span> path.<span class="fn">read_text</span>()
+<span class="dim">10 </span>
+<span class="dim">11 </span><span class="sel">palette = <span class="fn">load_theme</span>(<span class="str">"dark"</span>)</span>
+<span class="dim">12 </span>contrast_target = <span class="num">4.5</span></pre>
+          </section>
+
+          <div class="status mono editor">
+            <span class="active">
+              NORMAL
+            </span>
+            <span>
+              theme.py &nbsp; utf-8
+            </span>
+            <span>
+              11:1
+            </span>
+          </div>
+          <section class="palette">
+            <div class="label">
+              ANSI palette · normal / bright
+            </div>
+            <p>
+              Swatches show backgrounds; names show text on the terminal background.
+            </p>
+            <div class="swatches">
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.0}}" title="black {{purple_dark.ansi.0}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.1}}" title="red {{purple_dark.ansi.1}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.2}}" title="green {{purple_dark.ansi.2}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.3}}" title="yellow {{purple_dark.ansi.3}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.4}}" title="blue {{purple_dark.ansi.4}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.5}}" title="magenta {{purple_dark.ansi.5}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.6}}" title="cyan {{purple_dark.ansi.6}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.ansi.7}}" title="white {{purple_dark.ansi.7}}">
+                </div>
+                <span style="color:{{purple_dark.ansi.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{purple_dark.ansi.7}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.0}}" title="black {{purple_dark.brights.0}}">
+                </div>
+                <span style="color:{{purple_dark.brights.0}}">
+                  black
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.0}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.1}}" title="red {{purple_dark.brights.1}}">
+                </div>
+                <span style="color:{{purple_dark.brights.1}}">
+                  red
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.1}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.2}}" title="green {{purple_dark.brights.2}}">
+                </div>
+                <span style="color:{{purple_dark.brights.2}}">
+                  green
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.2}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.3}}" title="yellow {{purple_dark.brights.3}}">
+                </div>
+                <span style="color:{{purple_dark.brights.3}}">
+                  yellow
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.3}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.4}}" title="blue {{purple_dark.brights.4}}">
+                </div>
+                <span style="color:{{purple_dark.brights.4}}">
+                  blue
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.4}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.5}}" title="magenta {{purple_dark.brights.5}}">
+                </div>
+                <span style="color:{{purple_dark.brights.5}}">
+                  magenta
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.5}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.6}}" title="cyan {{purple_dark.brights.6}}">
+                </div>
+                <span style="color:{{purple_dark.brights.6}}">
+                  cyan
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.6}}
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="chip" style="background:{{purple_dark.brights.7}}" title="white {{purple_dark.brights.7}}">
+                </div>
+                <span style="color:{{purple_dark.brights.7}}">
+                  white
+                </span>
+                <div class="hex">
+                  {{purple_dark.brights.7}}
+                </div>
+              </div>
+            </div>
+            <div class="contrast">
+              Foreground {{purple_dark.contrast_fg}}:1 · comments {{purple_dark.contrast_muted}}:1 · lowest semantic ANSI {{purple_dark.contrast_ansi}}:1
+            </div>
+            {{purple_dark.color_details}}
           </section>
 
         </article>

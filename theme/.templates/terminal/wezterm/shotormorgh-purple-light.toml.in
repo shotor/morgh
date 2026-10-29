@@ -1,0 +1,30 @@
+[metadata]
+name = "shotormorgh-purple-light"
+author = "shotor"
+
+[colors]
+foreground = "{{purple_light.fg}}"
+background = "{{purple_light.bg}}"
+cursor_bg = "{{purple_light.accent}}"
+cursor_fg = "{{purple_light.bg}}"
+cursor_border = "{{purple_light.accent}}"
+selection_fg = "{{purple_light.fg}}"
+selection_bg = "{{purple_light.selection}}"
+ansi = ["{{purple_light.ansi.0}}","{{purple_light.ansi.1}}","{{purple_light.ansi.2}}","{{purple_light.ansi.3}}","{{purple_light.ansi.4}}","{{purple_light.ansi.5}}","{{purple_light.ansi.6}}","{{purple_light.ansi.7}}"]
+brights = ["{{purple_light.brights.0}}","{{purple_light.brights.1}}","{{purple_light.brights.2}}","{{purple_light.brights.3}}","{{purple_light.brights.4}}","{{purple_light.brights.5}}","{{purple_light.brights.6}}","{{purple_light.brights.7}}"]
+
+[colors.tab_bar]
+background = "{{purple_light.surface}}"
+
+[colors.tab_bar.active_tab]
+bg_color = "{{purple_light.header}}"
+fg_color = "{{purple_light.header_fg}}"
+intensity = "Bold"
+
+[colors.tab_bar.inactive_tab]
+bg_color = "{{purple_light.surface}}"
+fg_color = "{{purple_light.muted}}"
+
+[colors.tab_bar.new_tab]
+bg_color = "{{purple_light.surface}}"
+fg_color = "{{purple_light.accent}}"
