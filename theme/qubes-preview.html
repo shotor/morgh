@@ -1,0 +1,242 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shotormorgh · Qubes color studies</title><style>
+*{box-sizing:border-box}body{margin:0;background:#141219;color:#eee9f3;font:15px/1.6 system-ui,sans-serif}
+header,main,footer{max-width:1500px;margin:auto;padding:32px}header{padding-top:60px}h1{font-size:clamp(32px,5vw,56px);line-height:1.1;letter-spacing:-2px;margin:12px 0}p{color:#bdb4c9;max-width:800px}.eyebrow{color:#c4a9df;text-transform:uppercase;letter-spacing:3px;font-size:11px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}select{background:#28222f;border:1px solid #66566f;border-radius:6px;padding:8px;color:inherit;font:inherit}.group{margin:0 0 44px}.group h2{font-size:18px;font-weight:500;text-transform:capitalize}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.card{background:var(--bg);color:var(--fg);border:1px solid var(--selection);border-radius:10px;padding:20px;overflow:hidden}.heading{display:flex;justify-content:space-between;margin-bottom:18px}.heading span{color:var(--muted);font-size:12px}.window{border:2px solid var(--border)}.title{background:var(--border);color:var(--title);padding:8px 12px;display:flex;justify-content:space-between;font-size:12px;font-weight:600}.terminal{font:13px/1.9 'DejaVu Sans Mono',monospace;padding:18px;overflow:auto;white-space:nowrap}.terminal div{white-space:pre}.status{background:var(--surface);display:flex;justify-content:space-between;padding:6px 12px;font:12px monospace}.status b{color:var(--accent)}.inactive{margin-top:12px;background:var(--inactive);color:var(--inactive-fg);border-left:2px solid var(--border)}.urgent{margin-top:8px;background:var(--urgent);color:var(--urgent-fg);border-left:4px solid var(--border)}
+.green{color:var(--green)}.magenta{color:var(--magenta)}.blue{color:var(--blue)}.accent{color:var(--accent)}.muted{color:var(--muted)}.selection{background:var(--selection)}.cursor{background:var(--accent);color:var(--bg)}.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:22px}.swatches i{display:block;height:26px;border:1px solid #8885;border-radius:3px}.swatches span{font-size:10px}.swatches small{display:block;color:var(--muted);font:10px monospace}.contrast{font-size:11px;color:var(--muted);margin:16px 0 0}
+body:has(#mode option[value=light]:checked) .dark,body:has(#mode option[value=dark]:checked) .light{display:none}body:not(:has(#mode option[value=both]:checked)) .grid{grid-template-columns:minmax(0,800px)}footer{color:#bdb4c9;font-size:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}header,main,footer{padding:20px}.card{padding:12px}}
+body:has(#label option[value=red]:checked) .group:not(.red){display:none}
+body:has(#label option[value=orange]:checked) .group:not(.orange){display:none}
+body:has(#label option[value=yellow]:checked) .group:not(.yellow){display:none}
+body:has(#label option[value=green]:checked) .group:not(.green){display:none}
+body:has(#label option[value=blue]:checked) .group:not(.blue){display:none}
+body:has(#label option[value=purple]:checked) .group:not(.purple){display:none}
+body:has(#label option[value=gray]:checked) .group:not(.gray){display:none}
+body:has(#label option[value=black]:checked) .group:not(.black){display:none}
+</style>
+<header><div class="eyebrow">Shotormorgh / Qubes / color studies</div><h1>Eight identities.<br>A calmer desktop.</h1><p>Light and dark palettes for each Qubes label, with proposed i3 decoration colors. Label identity stays visible; application surfaces use a gentler tint. Gray is slate; black is charcoal.</p><div class="controls"><label>Label <select id="label"><option value="all">All eight</option><option value="red">Red</option><option value="orange">Orange</option><option value="yellow">Yellow</option><option value="green">Green</option><option value="blue">Blue</option><option value="purple">Purple</option><option value="gray">Gray</option><option value="black">Black</option></select></label><label>Appearance <select id="mode"><option value="both">Light + dark</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div></header>
+<main><section class="group red"><h2>red</h2><div class="grid"><article class="card light" style="--bg:#fef6f7;--fg:#322123;--surface:#f2e6e7;--muted:#715e5f;--accent:#a02d47;--selection:#eccbce;--border:#d05a6e;--title:#16131b;--inactive:#eac2c6;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Red</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[red] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[red] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[red] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#fef6f7"></i>bg<small>#fef6f7</small></span><span><i style="background:#f2e6e7"></i>surface<small>#f2e6e7</small></span><span><i style="background:#a02d47"></i>accent<small>#a02d47</small></span><span><i style="background:#d05a6e"></i>border<small>#d05a6e</small></span><span><i style="background:#eac2c6"></i>inactive<small>#eac2c6</small></span><span><i style="background:#eccbce"></i>selection<small>#eccbce</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 5.7:1 · title 4.7:1</p>
+</article><article class="card dark" style="--bg:#30171a;--fg:#fce9eb;--surface:#3b2225;--muted:#bf9ea1;--accent:#f9a7b0;--selection:#603339;--border:#d05a6e;--title:#16131b;--inactive:#58383c;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Red</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[red] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[red] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[red] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#30171a"></i>bg<small>#30171a</small></span><span><i style="background:#3b2225"></i>surface<small>#3b2225</small></span><span><i style="background:#f9a7b0"></i>accent<small>#f9a7b0</small></span><span><i style="background:#d05a6e"></i>border<small>#d05a6e</small></span><span><i style="background:#58383c"></i>inactive<small>#58383c</small></span><span><i style="background:#603339"></i>selection<small>#603339</small></span></div>
+<p class="contrast">Text 14.2:1 · muted 6.8:1 · title 4.7:1</p>
+</article></div></section><section class="group orange"><h2>orange</h2><div class="grid"><article class="card light" style="--bg:#fdf7f3;--fg:#2f2419;--surface:#f0e8e1;--muted:#6e6155;--accent:#864e00;--selection:#e6d0bb;--border:#e39339;--title:#16131b;--inactive:#e2c9b2;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Orange</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[orange] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[orange] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[orange] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#fdf7f3"></i>bg<small>#fdf7f3</small></span><span><i style="background:#f0e8e1"></i>surface<small>#f0e8e1</small></span><span><i style="background:#864e00"></i>accent<small>#864e00</small></span><span><i style="background:#e39339"></i>border<small>#e39339</small></span><span><i style="background:#e2c9b2"></i>inactive<small>#e2c9b2</small></span><span><i style="background:#e6d0bb"></i>selection<small>#e6d0bb</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 5.6:1 · title 7.4:1</p>
+</article><article class="card dark" style="--bg:#2c1b09;--fg:#f8ece1;--surface:#382614;--muted:#baa38e;--accent:#eab582;--selection:#5a3b1a;--border:#e39339;--title:#16131b;--inactive:#523e2a;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Orange</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[orange] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[orange] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[orange] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#2c1b09"></i>bg<small>#2c1b09</small></span><span><i style="background:#382614"></i>surface<small>#382614</small></span><span><i style="background:#eab582"></i>accent<small>#eab582</small></span><span><i style="background:#e39339"></i>border<small>#e39339</small></span><span><i style="background:#523e2a"></i>inactive<small>#523e2a</small></span><span><i style="background:#5a3b1a"></i>selection<small>#5a3b1a</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 6.9:1 · title 7.4:1</p>
+</article></div></section><section class="group yellow"><h2>yellow</h2><div class="grid"><article class="card light" style="--bg:#faf8f2;--fg:#2a2618;--surface:#eceae0;--muted:#686353;--accent:#6f5c00;--selection:#dcd5b9;--border:#d8bd51;--title:#16131b;--inactive:#d5ceb2;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Yellow</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[yellow] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[yellow] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[yellow] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#faf8f2"></i>bg<small>#faf8f2</small></span><span><i style="background:#eceae0"></i>surface<small>#eceae0</small></span><span><i style="background:#6f5c00"></i>accent<small>#6f5c00</small></span><span><i style="background:#d8bd51"></i>border<small>#d8bd51</small></span><span><i style="background:#d5ceb2"></i>inactive<small>#d5ceb2</small></span><span><i style="background:#dcd5b9"></i>selection<small>#dcd5b9</small></span></div>
+<p class="contrast">Text 14.2:1 · muted 5.7:1 · title 9.9:1</p>
+</article><article class="card dark" style="--bg:#372900;--fg:#f1efe5;--surface:#423303;--muted:#aca896;--accent:#d2c181;--selection:#534316;--border:#d8bd51;--title:#16131b;--inactive:#49422a;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Yellow</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[yellow] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[yellow] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[yellow] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#372900"></i>bg<small>#372900</small></span><span><i style="background:#423303"></i>surface<small>#423303</small></span><span><i style="background:#d2c181"></i>accent<small>#d2c181</small></span><span><i style="background:#d8bd51"></i>border<small>#d8bd51</small></span><span><i style="background:#49422a"></i>inactive<small>#49422a</small></span><span><i style="background:#534316"></i>selection<small>#534316</small></span></div>
+<p class="contrast">Text 12.3:1 · muted 5.9:1 · title 9.9:1</p>
+</article></div></section><section class="group green"><h2>green</h2><div class="grid"><article class="card light" style="--bg:#f5faf5;--fg:#1f2a1f;--surface:#e5ece4;--muted:#5b675b;--accent:#286f2f;--selection:#c6dbc5;--border:#549957;--title:#16131b;--inactive:#c0d4c0;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Green</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[green] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[green] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[green] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#f5faf5"></i>bg<small>#f5faf5</small></span><span><i style="background:#e5ece4"></i>surface<small>#e5ece4</small></span><span><i style="background:#286f2f"></i>accent<small>#286f2f</small></span><span><i style="background:#549957"></i>border<small>#549957</small></span><span><i style="background:#c0d4c0"></i>inactive<small>#c0d4c0</small></span><span><i style="background:#c6dbc5"></i>selection<small>#c6dbc5</small></span></div>
+<p class="contrast">Text 14.1:1 · muted 5.6:1 · title 5.3:1</p>
+</article><article class="card dark" style="--bg:#182218;--fg:#eaf1e9;--surface:#222e22;--muted:#9eac9e;--accent:#a2cfa2;--selection:#354835;--border:#549957;--title:#16131b;--inactive:#364837;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Green</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[green] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[green] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[green] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#182218"></i>bg<small>#182218</small></span><span><i style="background:#222e22"></i>surface<small>#222e22</small></span><span><i style="background:#a2cfa2"></i>accent<small>#a2cfa2</small></span><span><i style="background:#549957"></i>border<small>#549957</small></span><span><i style="background:#364837"></i>inactive<small>#364837</small></span><span><i style="background:#354835"></i>selection<small>#354835</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 6.9:1 · title 5.3:1</p>
+</article></div></section><section class="group blue"><h2>blue</h2><div class="grid"><article class="card light" style="--bg:#f5f9fe;--fg:#1e2733;--surface:#e4eaf2;--muted:#5a6472;--accent:#215da5;--selection:#c4d6ed;--border:#4c88d3;--title:#16131b;--inactive:#bdd0e8;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Blue</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[blue] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[blue] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[blue] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#f5f9fe"></i>bg<small>#f5f9fe</small></span><span><i style="background:#e4eaf2"></i>surface<small>#e4eaf2</small></span><span><i style="background:#215da5"></i>accent<small>#215da5</small></span><span><i style="background:#4c88d3"></i>border<small>#4c88d3</small></span><span><i style="background:#bdd0e8"></i>inactive<small>#bdd0e8</small></span><span><i style="background:#c4d6ed"></i>selection<small>#c4d6ed</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 5.7:1 · title 5.0:1</p>
+</article><article class="card dark" style="--bg:#17202b;--fg:#e9eff7;--surface:#222b36;--muted:#9da9b8;--accent:#9cc4f7;--selection:#344458;--border:#4c88d3;--title:#16131b;--inactive:#344357;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Blue</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[blue] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[blue] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[blue] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#17202b"></i>bg<small>#17202b</small></span><span><i style="background:#222b36"></i>surface<small>#222b36</small></span><span><i style="background:#9cc4f7"></i>accent<small>#9cc4f7</small></span><span><i style="background:#4c88d3"></i>border<small>#4c88d3</small></span><span><i style="background:#344357"></i>inactive<small>#344357</small></span><span><i style="background:#344458"></i>selection<small>#344458</small></span></div>
+<p class="contrast">Text 14.2:1 · muted 6.9:1 · title 5.0:1</p>
+</article></div></section><section class="group purple"><h2>purple</h2><div class="grid"><article class="card light" style="--bg:#faf7fd;--fg:#292330;--surface:#ebe8f0;--muted:#66606f;--accent:#6f4797;--selection:#dacfe9;--border:#9970c4;--title:#16131b;--inactive:#d3c8e3;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Purple</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[purple] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[purple] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[purple] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#faf7fd"></i>bg<small>#faf7fd</small></span><span><i style="background:#ebe8f0"></i>surface<small>#ebe8f0</small></span><span><i style="background:#6f4797"></i>accent<small>#6f4797</small></span><span><i style="background:#9970c4"></i>border<small>#9970c4</small></span><span><i style="background:#d3c8e3"></i>inactive<small>#d3c8e3</small></span><span><i style="background:#dacfe9"></i>selection<small>#dacfe9</small></span></div>
+<p class="contrast">Text 14.4:1 · muted 5.7:1 · title 4.8:1</p>
+</article><article class="card dark" style="--bg:#221c29;--fg:#f0ecf5;--surface:#2d2734;--muted:#aba4b5;--accent:#cdb4ed;--selection:#473d54;--border:#9970c4;--title:#16131b;--inactive:#473d53;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Purple</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[purple] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[purple] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[purple] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#221c29"></i>bg<small>#221c29</small></span><span><i style="background:#2d2734"></i>surface<small>#2d2734</small></span><span><i style="background:#cdb4ed"></i>accent<small>#cdb4ed</small></span><span><i style="background:#9970c4"></i>border<small>#9970c4</small></span><span><i style="background:#473d53"></i>inactive<small>#473d53</small></span><span><i style="background:#473d54"></i>selection<small>#473d54</small></span></div>
+<p class="contrast">Text 14.2:1 · muted 6.9:1 · title 4.8:1</p>
+</article></div></section><section class="group gray"><h2>gray</h2><div class="grid"><article class="card light" style="--bg:#f8f8fa;--fg:#252729;--surface:#e8e9eb;--muted:#616367;--accent:#5a5e65;--selection:#d1d4da;--border:#7c8088;--title:#16131b;--inactive:#ccced0;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Gray</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[gray] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[gray] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[gray] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#f8f8fa"></i>bg<small>#f8f8fa</small></span><span><i style="background:#e8e9eb"></i>surface<small>#e8e9eb</small></span><span><i style="background:#5a5e65"></i>accent<small>#5a5e65</small></span><span><i style="background:#7c8088"></i>border<small>#7c8088</small></span><span><i style="background:#ccced0"></i>inactive<small>#ccced0</small></span><span><i style="background:#d1d4da"></i>selection<small>#d1d4da</small></span></div>
+<p class="contrast">Text 14.1:1 · muted 5.7:1 · title 4.6:1</p>
+</article><article class="card dark" style="--bg:#1e1f22;--fg:#edeef0;--surface:#282a2d;--muted:#a5a8ab;--accent:#bec1c6;--selection:#3f4348;--border:#7c8088;--title:#16131b;--inactive:#414244;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Gray</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[gray] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[gray] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[gray] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#1e1f22"></i>bg<small>#1e1f22</small></span><span><i style="background:#282a2d"></i>surface<small>#282a2d</small></span><span><i style="background:#bec1c6"></i>accent<small>#bec1c6</small></span><span><i style="background:#7c8088"></i>border<small>#7c8088</small></span><span><i style="background:#414244"></i>inactive<small>#414244</small></span><span><i style="background:#3f4348"></i>selection<small>#3f4348</small></span></div>
+<p class="contrast">Text 14.2:1 · muted 6.9:1 · title 4.6:1</p>
+</article></div></section><section class="group black"><h2>black</h2><div class="grid"><article class="card light" style="--bg:#f8f8fa;--fg:#252629;--surface:#e9e9eb;--muted:#626367;--accent:#5c5d62;--selection:#d2d4da;--border:#1e1f23;--title:#fffaff;--inactive:#cdcecf;--inactive-fg:#16131b;--urgent:#ea9941;--urgent-fg:#16131b;--red:#844642;--green:#3a673c;--yellow:#6a5a18;--blue:#385c8a;--magenta:#734975;--cyan:#006965">
+<div class="heading"><strong>Black</strong><span>light · proposal</span></div>
+<div class="window"><div class="title"><span>[black] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[black] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[black] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#f8f8fa"></i>bg<small>#f8f8fa</small></span><span><i style="background:#e9e9eb"></i>surface<small>#e9e9eb</small></span><span><i style="background:#5c5d62"></i>accent<small>#5c5d62</small></span><span><i style="background:#1e1f23"></i>border<small>#1e1f23</small></span><span><i style="background:#cdcecf"></i>inactive<small>#cdcecf</small></span><span><i style="background:#d2d4da"></i>selection<small>#d2d4da</small></span></div>
+<p class="contrast">Text 14.3:1 · muted 5.7:1 · title 16.0:1</p>
+</article><article class="card dark" style="--bg:#0c0d10;--fg:#eeeef0;--surface:#16171a;--muted:#a6a7ac;--accent:#bfc1c4;--selection:#404248;--border:#1e1f23;--title:#fffaff;--inactive:#424244;--inactive-fg:#fffaff;--urgent:#ea9941;--urgent-fg:#16131b;--red:#e9a29c;--green:#95c696;--yellow:#c8b778;--blue:#93baed;--magenta:#d4a5d6;--cyan:#72c9c3">
+<div class="heading"><strong>Black</strong><span>dark · proposal</span></div>
+<div class="window"><div class="title"><span>[black] terminal — focused</span><span>− □ ×</span></div>
+<div class="terminal"><div><b class="green">user@work</b> <b class="accent">~/morgh</b> <span class="muted">main</span></div>
+<div>❯ git status <span class="muted">--short</span></div><div class="green"> M theme/design-system/palette.json</div>
+<div class="muted"># a quieter surface, a distinct Qubes identity</div><br>
+<div><b class="magenta">def</b> <b class="blue">build_theme</b>(name):</div>
+<div>    <b class="magenta">return</b> <span class="green">"shotormorgh-"</span> + name</div>
+<div><span class="selection"> selected text </span> <span class="cursor">▏</span></div></div>
+<div class="status"><b> 1: terminal </b><span>main · UTF-8</span></div></div>
+<div class="title inactive"><span>[black] editor — inactive</span><span>− □ ×</span></div>
+<div class="title urgent"><span>[black] request — urgent</span><span>!</span></div>
+<div class="swatches"><span><i style="background:#0c0d10"></i>bg<small>#0c0d10</small></span><span><i style="background:#16171a"></i>surface<small>#16171a</small></span><span><i style="background:#bfc1c4"></i>accent<small>#bfc1c4</small></span><span><i style="background:#1e1f23"></i>border<small>#1e1f23</small></span><span><i style="background:#424244"></i>inactive<small>#424244</small></span><span><i style="background:#404248"></i>selection<small>#404248</small></span></div>
+<p class="contrast">Text 16.8:1 · muted 8.1:1 · title 16.0:1</p>
+</article></div></section></main><footer>Proposal only: no live i3 or application settings are changed. These are HTML mockups, not screenshots. Colors use OKLCH converted to sRGB by the existing theme builder. No JavaScript or external assets.</footer></html>
