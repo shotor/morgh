@@ -1,20 +1,28 @@
+{% set profile = 'mail' if grains['id'] == 'tpl-deb-13-mail' else 'dev' %}
+{% set group = 'user' if profile == 'mail' else 'work' %}
+{% if profile == 'dev' %}
 include:
   - shotor.codex
+{% endif %}
 
 morgh-dotfile-packages:
   pkg.installed:
     - pkgs:
       - git
       - stow
+      - acl
+      - ca-certificates
 
 /srv/shotor:
   file.directory:
     - user: user
-    - group: work
+    - group: {{ group }}
     - mode: '2770'
     - makedirs: true
+{% if profile == 'dev' %}
     - require:
       - group: work
+{% endif %}
 
 morgh-default-permissions:
   cmd.run:
@@ -22,7 +30,7 @@ morgh-default-permissions:
     - unless: getfacl -cp /srv/shotor | grep -Fxq 'default:group::rwx'
     - require:
       - file: /srv/shotor
-      - pkg: codex-packages
+      - pkg: morgh-dotfile-packages
 
 /etc/qubes-bind-dirs.d/60-morgh.conf:
   file.managed:
@@ -76,7 +84,7 @@ morgh-template-update:
 
 morgh-template-stow:
   cmd.run:
-    - name: /usr/bin/morgh-setup dev
+    - name: /usr/bin/morgh-setup {{ profile }}
     - runas: user
     - require:
       - pkg: morgh-dotfile-packages
@@ -92,7 +100,7 @@ morgh-template-stow:
         [Desktop Entry]
         Type=Application
         Name=Morgh dotfiles
-        Exec=/usr/bin/morgh-setup dev
+        Exec=/usr/bin/morgh-setup {{ profile }}
         Terminal=false
         NoDisplay=true
     - require:

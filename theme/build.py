@@ -214,6 +214,9 @@ def render(tokens):
     ):
         outputs[path] = (ROOT / path).read_text(encoding='utf-8')
 
+    from qubes_themes import render_qubes
+    outputs.update(render_qubes(directory, tokens))
+
     return outputs
 
 

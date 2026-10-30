@@ -1,3 +1,6 @@
+include:
+  - shotor.theme
+
 terminal-packages:
   pkg.installed:
     - pkgs:

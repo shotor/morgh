@@ -7,7 +7,7 @@ from qubesappmenus import Appmenus
 
 TEMPLATES = {
     'tpl-deb-13-' + suffix
-    for suffix in ('dev', 'dvm', 'net', 'ts', 'ssh', 'usb', 'vault', 'vault-net')
+    for suffix in ('dev', 'dvm', 'mail', 'net', 'ts', 'ssh', 'usb', 'vault', 'vault-net')
 }
 
 
@@ -15,6 +15,7 @@ def select(available):
     selected = []
     for alternatives in (
         ('firefox.desktop', 'firefox-esr.desktop'),
+        ('thunderbird.desktop', 'org.mozilla.Thunderbird.desktop'),
         ('org.keepassxc.KeePassXC.desktop', 'keepassxc.desktop'),
         ('qubes-run-terminal.desktop',),
     ):

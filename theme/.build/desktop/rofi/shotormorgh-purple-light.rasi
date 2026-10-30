@@ -1,11 +1,11 @@
 @theme "default"
 
 * {
-    background: #faf7ff;
-    foreground: #2d2239;
+    background: #faf7fd;
+    foreground: #292330;
     background-color: @background;
     text-color: @foreground;
-    border-color: #ede5f8;
+    border-color: #ebe8f0;
 }
 
 window {
@@ -45,8 +45,8 @@ element normal.normal, element alternate.normal {
 }
 
 element selected.normal, element selected.active, element selected.urgent {
-    background-color: #ddd0ef;
-    text-color: #2d2239;
+    background-color: #dacfe9;
+    text-color: #292330;
 }
 
 element-text {
@@ -55,5 +55,5 @@ element-text {
 }
 
 prompt {
-    text-color: #8155ae;
+    text-color: #6f4797;
 }

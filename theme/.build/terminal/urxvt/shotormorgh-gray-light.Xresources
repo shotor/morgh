@@ -1,0 +1,46 @@
+URxvt.font: xft:DejaVuSansM Nerd Font Mono:size=12,xft:Symbola:size=12
+URxvt.geometry: 400x400
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.saveLines: 10000
+URxvt.scrollTtyOutput: false
+URxvt.scrollWithBuffer: true
+URxvt.scrollTtyKeypress: true
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+URxvt.termName: rxvt-unicode-256color
+URxvt.internalBorder: 6
+
+URxvt.perl-ext-common: default,font-size
+URxvt.keysym.C-S-c: eval:selection_to_clipboard
+URxvt.keysym.C-S-v: eval:paste_clipboard
+URxvt.keysym.C-Insert: eval:selection_to_clipboard
+URxvt.keysym.S-Insert: eval:paste_clipboard
+URxvt.keysym.C-plus: font-size:increase
+URxvt.keysym.C-equal: font-size:increase
+URxvt.keysym.C-minus: font-size:decrease
+URxvt.keysym.C-0: font-size:reset
+
+URxvt.background: #f8f8fa
+URxvt.foreground: #252729
+URxvt.cursorColor: #5a5e65
+URxvt.cursorColor2: #f8f8fa
+URxvt.highlightColor: #d1d4da
+URxvt.highlightTextColor: #252729
+
+URxvt.color0: #252729
+URxvt.color1: #844642
+URxvt.color2: #3a673c
+URxvt.color3: #6a5a18
+URxvt.color4: #385c8a
+URxvt.color5: #734975
+URxvt.color6: #006965
+URxvt.color7: #e8e9eb
+URxvt.color8: #616367
+URxvt.color9: #844642
+URxvt.color10: #3a673c
+URxvt.color11: #6a5a18
+URxvt.color12: #385c8a
+URxvt.color13: #734975
+URxvt.color14: #006965
+URxvt.color15: #f8f8fa

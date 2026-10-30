@@ -9,7 +9,7 @@ Updates use fast-forward only and do not reset local changes. Existing AppVMs
 keep their independent persistent checkouts.
 
 ```sh
-cpfrom dev-qubes /srv/git/morgh /srv/shotor/morgh
+cpfrom dev-qubes /srv/shotor/morgh /srv/shotor/morgh
 cd /srv/shotor/morgh/qubes
 ./init.sh
 ```
@@ -41,11 +41,33 @@ Dom0 uses urxvt with the dark theme and Bash. Run `tmux` for the simplified,
 plugin-free tmux setup. WezTerm dotfiles remain available for other machines,
 but the template packages are removed.
 
-AppVM menus show Firefox and KeePassXC where installed, plus Run Terminal.
+AppVM menus show Firefox, Thunderbird, and KeePassXC where installed, plus Run Terminal.
 Dom0 highstate sets the template defaults and existing AppVM
 selections. After installing new applications, run `qvm-sync-appmenus TEMPLATE`
 and `morgh-appmenus` in dom0 to refresh the selections. Nextcloud continues
 syncing independently of its menu entry.
+
+## Mail template (dom0)
+
+Clone a clean Debian 13 template, not the dev template (replace `debian-13-minimal`
+if your clean base has a different name):
+
+```sh
+qvm-clone debian-13-minimal tpl-deb-13-mail
+./sync.sh
+./init.sh
+./apply.sh tpl-deb-13-mail
+qvm-sync-appmenus tpl-deb-13-mail
+./apply.sh dom0
+```
+
+Mail uses Thunderbird's latest stable release from Mozilla's `thunderbird-deb`
+APT repository, shared urxvt/themes, Zsh, Oh My Zsh, Starship, tmux, lsd, zoxide,
+and htop. Salt clones morgh into `/srv/shotor/morgh` and runs `morgh-setup mail`
+to Stow urxvt, Zsh, Starship, and the full tmux config with tpack. Existing mail
+AppVM checkouts remain independent and persistent. It does not
+include the dev, FIDO, or KeePassXC formulas. Updates also work through the
+normal Qubes updater.
 
 ## Display (dom0)
 

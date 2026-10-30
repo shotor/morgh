@@ -6,44 +6,44 @@ let g:colors_name = 'shotormorgh-purple'
 
 if &background ==# 'light'
   let s:p = {
-        \ 'bg': '#faf7ff',
-        \ 'fg': '#2d2239',
-        \ 'surface': '#ede5f8',
-        \ 'selection': '#ddd0ef',
-        \ 'muted': '#706381',
-        \ 'accent': '#8155ae',
-        \ 'header': '#c8adea',
-        \ 'red': '#a43d32',
-        \ 'green': '#44643c',
-        \ 'yellow': '#876000',
-        \ 'blue': '#365f83',
-        \ 'magenta': '#80516f',
-        \ 'cyan': '#286967',
+        \ 'bg': '#faf7fd',
+        \ 'fg': '#292330',
+        \ 'surface': '#ebe8f0',
+        \ 'selection': '#dacfe9',
+        \ 'muted': '#66606f',
+        \ 'accent': '#6f4797',
+        \ 'header': '#9970c4',
+        \ 'red': '#844642',
+        \ 'green': '#3a673c',
+        \ 'yellow': '#6a5a18',
+        \ 'blue': '#385c8a',
+        \ 'magenta': '#734975',
+        \ 'cyan': '#006965',
         \ 'add': '#e4eddb',
         \ 'del': '#fae0d0',
         \ 'change': '#fdf0cd',
         \ }
-  let s:terminal = ['#2d2239','#a43d32','#44643c','#876000','#365f83','#80516f','#286967','#ddd0ef','#706381','#b34536','#4c703f','#8155ae','#3b6b94','#92577e','#287976','#faf7ff']
+  let s:terminal = ['#292330','#844642','#3a673c','#6a5a18','#385c8a','#734975','#006965','#ebe8f0','#66606f','#844642','#3a673c','#6a5a18','#385c8a','#734975','#006965','#faf7fd']
 else
   let s:p = {
-        \ 'bg': '#271f31',
-        \ 'fg': '#f8f4fe',
-        \ 'surface': '#342941',
-        \ 'selection': '#4c3a60',
-        \ 'muted': '#ac9dc0',
-        \ 'accent': '#d1b4f5',
-        \ 'header': '#745794',
-        \ 'red': '#ef9a86',
-        \ 'green': '#b7c892',
-        \ 'yellow': '#ecc985',
-        \ 'blue': '#9ebed5',
-        \ 'magenta': '#d2a9c4',
-        \ 'cyan': '#96c5bd',
+        \ 'bg': '#221c29',
+        \ 'fg': '#f0ecf5',
+        \ 'surface': '#2d2734',
+        \ 'selection': '#473d54',
+        \ 'muted': '#aba4b5',
+        \ 'accent': '#cdb4ed',
+        \ 'header': '#9970c4',
+        \ 'red': '#e9a29c',
+        \ 'green': '#95c696',
+        \ 'yellow': '#c8b778',
+        \ 'blue': '#93baed',
+        \ 'magenta': '#d4a5d6',
+        \ 'cyan': '#72c9c3',
         \ 'add': '#35402c',
         \ 'del': '#53302a',
         \ 'change': '#4b3d24',
         \ }
-  let s:terminal = ['#271f31','#ef9a86','#b7c892','#ecc985','#9ebed5','#d2a9c4','#96c5bd','#decff2','#ac9dc0','#ffb49e','#ceddaa','#f6d76f','#b9d6ea','#e6bfd8','#b3ded4','#f8f4fe']
+  let s:terminal = ['#221c29','#e9a29c','#95c696','#c8b778','#93baed','#d4a5d6','#72c9c3','#f0ecf5','#aba4b5','#e9a29c','#95c696','#c8b778','#93baed','#d4a5d6','#72c9c3','#f0ecf5']
 endif
 
 let s:indices = {}

@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+[ -z "${QREXEC_SERVICE_ARGUMENT:-}" ] || exit 1
+source_vm=${QREXEC_REMOTE_DOMAIN:?Missing qrexec source}
+case "$source_vm" in ''|dom0|*[!A-Za-z0-9_-]*|-*) exit 1;; esac
+label=$(/usr/bin/qvm-prefs "$source_vm" label </dev/null)
+case "$label" in
+    red|orange|yellow|green|gray|blue|purple|black) printf '%s\n' "$label";;
+    *) exit 1;;
+esac

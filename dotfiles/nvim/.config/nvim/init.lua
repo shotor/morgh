@@ -7,7 +7,15 @@ vim.opt.showtabline = 2
 vim.opt.clipboard = "unnamedplus" 
 
 vim.opt.termguicolors = true
-vim.cmd.colorscheme('shotormorgh-dark')
+local theme = 'shotormorgh-purple-dark'
+if vim.fn.executable('morgh-theme') == 1 then
+  vim.opt.runtimepath:append('/usr/share/morgh/themes/editor/vim')
+  local selected = vim.fn.trim(vim.fn.system({ 'morgh-theme', 'name' }))
+  if vim.v.shell_error == 0 and selected:match('^shotormorgh%-[a-z%-]+$') then
+    theme = selected
+  end
+end
+vim.cmd.colorscheme(theme)
 
 -- transparent when opened in kitty-dropdown-wl
 if vim.env.NVIM_MODE == "dropdown" then

@@ -5,4 +5,10 @@ user_config=${XDG_CONFIG_HOME:-$HOME/.config}/urxvt/config
 if [ -f "$user_config" ]; then
   config=$user_config
 fi
+if command -v morgh-theme >/dev/null 2>&1; then
+  selected=$(morgh-theme urxvt)
+  if [ -f "$selected" ]; then
+    config=$selected
+  fi
+fi
 exec env XENVIRONMENT="$config" /usr/bin/urxvt "$@"

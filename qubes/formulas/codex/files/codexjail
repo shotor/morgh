@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 1 || "$1" == --help ]]; then
-  echo 'Usage: codexjail /srv/git/PROJECT or /srv/shotor/PROJECT [CODEX_ARGUMENTS...]'
+if [[ ${1-} == --help ]]; then
+  echo 'Usage: codexjail [DIRECTORY] [CODEX_ARGUMENTS...]'
+  echo 'Default directory: /srv. Explicit directories may be /srv or under /srv/git or /srv/shotor.'
   exit 0
+fi
+if [[ $# -eq 0 ]]; then
+  set -- /srv
 fi
 
 if [[ $EUID == 0 ]]; then
@@ -27,8 +31,8 @@ fi
 
 project=$(realpath -e -- "$1")
 shift
-if [[ ! -d "$project" || ( "$project" != /srv/git && "$project" != /srv/git/* && "$project" != /srv/shotor && "$project" != /srv/shotor/* ) ]]; then
-  echo 'Project must be a directory under /srv/git or /srv/shotor.' >&2
+if [[ ! -d "$project" || ( "$project" != /srv && "$project" != /srv/git && "$project" != /srv/git/* && "$project" != /srv/shotor && "$project" != /srv/shotor/* ) ]]; then
+  echo 'Project must be /srv or a directory under /srv/git or /srv/shotor.' >&2
   exit 1
 fi
 

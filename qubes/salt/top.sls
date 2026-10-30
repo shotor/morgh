@@ -1,6 +1,7 @@
 base:
   dom0:
     - shotor.dom0.cpfrom
+    - shotor.dom0.theme
     - shotor.dom0.dotfiles
     - shotor.dom0.display
     - shotor.dom0.ssh-agent
@@ -14,6 +15,8 @@ base:
     - shotor.templates.deb-13-dvm
   tpl-deb-13-mgmt:
     - shotor.templates.deb-13-mgmt
+  tpl-deb-13-mail:
+    - shotor.templates.deb-13-mail
   tpl-deb-13-net:
     - shotor.templates.deb-13-net
   tpl-deb-13-ts:

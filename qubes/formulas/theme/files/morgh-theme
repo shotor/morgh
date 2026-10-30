@@ -1,0 +1,39 @@
+#!/bin/sh
+set -eu
+valid_label() {
+    case "$1" in red|orange|yellow|green|gray|blue|purple|black) return 0;; *) return 1;; esac
+}
+action=${1:-name}
+case "$action" in name|refresh|urxvt|tmux) ;; *) echo 'Usage: morgh-theme [name|refresh|urxvt|tmux]' >&2; exit 2;; esac
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+appearance=dark
+if [ -f "$config_home/morgh/appearance" ]; then
+    read -r appearance < "$config_home/morgh/appearance" || true
+fi
+case "$appearance" in light|dark) ;; *) appearance=dark;; esac
+runtime=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
+cache="$runtime/morgh-theme-label"
+label=
+if [ "$action" != refresh ] && [ -f "$cache" ]; then
+    read -r label < "$cache" || true
+fi
+if ! valid_label "$label"; then
+    label=$(timeout 3 qrexec-client-vm dom0 morgh.Theme </dev/null 2>/dev/null) || label=
+    if valid_label "$label" && [ -d "$runtime" ] && [ -w "$runtime" ]; then
+        umask 077
+        temporary=$(mktemp "$runtime/morgh-theme.XXXXXXXX")
+        printf '%s\n' "$label" > "$temporary"
+        mv -f -- "$temporary" "$cache"
+    fi
+fi
+if valid_label "$label"; then
+    theme="shotormorgh-$label-$appearance"
+else
+    theme="shotormorgh-$appearance"
+fi
+root=/usr/share/morgh/themes
+case "$action" in
+    name|refresh) printf '%s\n' "$theme";;
+    urxvt) printf '%s/terminal/urxvt/%s.Xresources\n' "$root" "$theme";;
+    tmux) exec tmux source-file "$root/terminal/tmux/$theme.conf";;
+esac

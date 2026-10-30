@@ -1,0 +1,59 @@
+@theme "default"
+
+* {
+    background: #faf8f2;
+    foreground: #2a2618;
+    background-color: @background;
+    text-color: @foreground;
+    border-color: #eceae0;
+}
+
+window {
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 960px;
+    padding: 16px;
+    border: 2px;
+}
+
+mainbox {
+    children: [ inputbar, listview ];
+    spacing: 12px;
+}
+
+inputbar {
+    children: [ prompt, entry ];
+    spacing: 10px;
+}
+
+listview {
+    lines: 20;
+    columns: 1;
+    fixed-height: false;
+    scrollbar: false;
+    border: 0px;
+}
+
+element {
+    padding: 4px 8px;
+}
+
+element normal.normal, element alternate.normal {
+    background-color: @background;
+    text-color: @foreground;
+}
+
+element selected.normal, element selected.active, element selected.urgent {
+    background-color: #dcd5b9;
+    text-color: #2a2618;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+prompt {
+    text-color: #6f5c00;
+}

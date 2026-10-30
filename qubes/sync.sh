@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-exec cpfrom dev-qubes /srv/git/morgh /srv/shotor/morgh
+exec cpfrom app-qubes-dev /srv/shotor/morgh /srv/shotor/morgh

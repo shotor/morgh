@@ -2,10 +2,14 @@
 set -eu
 config_home=${XDG_CONFIG_HOME:-$HOME/.config}
 terminal_config=$(readlink -f -- "$config_home/urxvt/config" || true)
-case "$terminal_config" in
-    */shotormorgh-light.Xresources) mode=light ;;
-    */shotormorgh-purple-light.Xresources) mode=purple-light ;;
-    */shotormorgh-purple-dark.Xresources) mode=purple-dark ;;
-    *) mode=dark ;;
+theme=${terminal_config##*/}
+theme=${theme%.Xresources}
+case "$theme" in
+    shotormorgh-*) ;;
+    *) theme=shotormorgh-dark ;;
 esac
-exec rofi -theme "$config_home/rofi/themes/shotormorgh-$mode.rasi" "$@"
+theme_file="$config_home/rofi/themes/$theme.rasi"
+if [ ! -f "$theme_file" ]; then
+    theme_file="$config_home/rofi/themes/shotormorgh-dark.rasi"
+fi
+exec rofi -theme "$theme_file" "$@"

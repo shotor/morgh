@@ -23,6 +23,56 @@
         "path": "./themes/shotormorgh-dark.json"
       },
       {
+        "label": "shotormorgh-red-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-red-light.json"
+      },
+      {
+        "label": "shotormorgh-red-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-red-dark.json"
+      },
+      {
+        "label": "shotormorgh-orange-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-orange-light.json"
+      },
+      {
+        "label": "shotormorgh-orange-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-orange-dark.json"
+      },
+      {
+        "label": "shotormorgh-yellow-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-yellow-light.json"
+      },
+      {
+        "label": "shotormorgh-yellow-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-yellow-dark.json"
+      },
+      {
+        "label": "shotormorgh-green-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-green-light.json"
+      },
+      {
+        "label": "shotormorgh-green-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-green-dark.json"
+      },
+      {
+        "label": "shotormorgh-blue-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-blue-light.json"
+      },
+      {
+        "label": "shotormorgh-blue-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-blue-dark.json"
+      },
+      {
         "label": "shotormorgh-purple-light",
         "uiTheme": "vs",
         "path": "./themes/shotormorgh-purple-light.json"
@@ -31,6 +81,26 @@
         "label": "shotormorgh-purple-dark",
         "uiTheme": "vs-dark",
         "path": "./themes/shotormorgh-purple-dark.json"
+      },
+      {
+        "label": "shotormorgh-gray-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-gray-light.json"
+      },
+      {
+        "label": "shotormorgh-gray-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-gray-dark.json"
+      },
+      {
+        "label": "shotormorgh-black-light",
+        "uiTheme": "vs",
+        "path": "./themes/shotormorgh-black-light.json"
+      },
+      {
+        "label": "shotormorgh-black-dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/shotormorgh-black-dark.json"
       }
     ]
   }

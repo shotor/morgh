@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
-profile=${1:?Usage: morgh-setup dev|dom0}
+profile=${1:?Usage: morgh-setup dev|mail|dom0}
 case "$profile" in
-  dev|dom0) ;;
-  *) echo 'Expected dev or dom0.' >&2; exit 1 ;;
+  dev|mail|dom0) ;;
+  *) echo 'Expected dev, mail, or dom0.' >&2; exit 1 ;;
 esac
 repo=/srv/shotor/morgh
 umask 0002
@@ -41,8 +41,10 @@ stow_package() {
   stow --dir="$directory" --target="$HOME" --no-folding --restow "$package"
 }
 
-stow_package "$repo/dotfiles" git
-stow_package "$repo/dotfiles" vim
+if [[ "$profile" != mail ]]; then
+  stow_package "$repo/dotfiles" git
+  stow_package "$repo/dotfiles" vim
+fi
 if [[ "$profile" == dev ]]; then
   stow_package "$repo/dotfiles" urxvt
   stow_package "$repo/dotfiles" nvim
@@ -50,6 +52,11 @@ if [[ "$profile" == dev ]]; then
   stow_package "$repo/dotfiles" zsh
   stow_package "$repo/dotfiles" starship
   stow_package "$repo/dotfiles" firefox
+elif [[ "$profile" == mail ]]; then
+  stow_package "$repo/dotfiles" urxvt
+  stow_package "$repo/dotfiles" tmux
+  stow_package "$repo/dotfiles" zsh
+  stow_package "$repo/dotfiles" starship
 else
   stow_package "$repo/qubes/salt/dom0/files" terminal
   stow_package "$repo/qubes/salt/dom0/files" i3

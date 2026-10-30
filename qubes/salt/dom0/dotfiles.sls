@@ -13,6 +13,7 @@ dom0-dotfile-packages:
       - rofi
       - tmux
       - xsel
+      - zoxide
       - dejavu-sans-mono-fonts
 
 /usr/local/bin/urxvt-terminal:
@@ -32,6 +33,14 @@ dom0-user-shell:
   cmd.run:
     - name: usermod --shell /bin/bash -- {{ user | quote }}
     - unless: test "$(getent passwd {{ user | quote }} | cut -d ':' -f 7)" = /bin/bash
+    - require:
+      - pkg: dom0-dotfile-packages
+
+/home/{{ user }}/.bashrc:
+  file.append:
+    - text:
+      - 'eval "$(zoxide init bash)"'
+      - 'PS1=''\u@\h:\w\n\$ '''
     - require:
       - pkg: dom0-dotfile-packages
 

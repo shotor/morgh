@@ -20,6 +20,7 @@ dev-packages:
       - htop
       - jq
       - lazygit
+      - make
       - pass
       - podman
       - python3.13-venv
@@ -28,3 +29,4 @@ dev-packages:
       - vim
       - tmux
       - xsel
+      - zip
